@@ -7,6 +7,7 @@
 
 const express = require('express');
 const { getID, createID, createUser, generateAlphanumericCode, setNewKey } = require('../apis/apiDynamoDB');
+const { SingUpEmail1 } = require('../apis/apiAuth');
 const router = express.Router();
 
 /**
