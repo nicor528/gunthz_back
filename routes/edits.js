@@ -10,8 +10,8 @@ router.post("/editInfoUser", async (req, res) => {
     const lastName = req.body.lastName;
     //const email = req.body.email;
     if(id && name && key){
-        verifyKey(user.id, key).then(newKey => {
-            setNewKey(user.id, newKey).then(data => {
+        verifyKey(id, key).then(newKey => {
+            setNewKey(id, newKey).then(data => {
                 editInfoUser(id, name, lastName).then(user => {
                     res.status(200).send({status: true, message: "ok", key: newKey})
                 }).catch(error => {res.status(400).send({error, status: false})})
