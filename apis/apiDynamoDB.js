@@ -546,7 +546,7 @@ function reportTwitt(userID, twittID, reason, ownerID) {
             const command = new PutCommand({
                 TableName: "gunthz-reported-twitts",
                 Item:{ 
-                    id: await generateAlphanumericCode(),
+                    reportID: await generateAlphanumericCode(),
                     reason: reason,
                     twittID: twittID,
                     ownerID: ownerID,
