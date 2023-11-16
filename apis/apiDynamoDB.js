@@ -275,7 +275,7 @@ function likeTwitt (id, ownerID, twittID) {
                 if(twittIndex !== -1){
                     const newLikeID = id;
                     const twitt = newUser.twitts[twittIndex];
-                    if(!twitt.likes.inclued(newLikeID)){
+                    if(!twitt.likes.includes(newLikeID)){
                         newUser.twitts[twittIndex].likes.push(newLikeID);
                         const command = new PutCommand({
                             TableName: "gunthz-twitts",
