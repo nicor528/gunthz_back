@@ -366,7 +366,7 @@ function deleteTwitt (id, twittID) {
                     const updateCommand = new PutCommand({
                         TableName: "gunthz-twitts",
                         Item: {
-                            id: ownerID,
+                            id: id,
                             ...newUser,
                         }
                     })
