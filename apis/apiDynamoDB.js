@@ -543,7 +543,7 @@ function removeFollower(id, followerID) {
 function reportTwitt(userID, twittID, reason, ownerID) {
     return(
         new Promise (async (res, rej) => {
-            const command = PutCommand({
+            const command = new PutCommand({
                 TableName: "gunthz-reported-twitts",
                 Item:{ 
                     id: await generateAlphanumericCode(),
