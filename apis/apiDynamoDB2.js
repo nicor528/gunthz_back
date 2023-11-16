@@ -1,0 +1,209 @@
+const { PutCommand, GetCommand } = require("@aws-sdk/lib-dynamodb");
+const { docClient } = require("./apiDynamoDB");
+
+function addMessage(id, message){
+    let localDate = new Date();
+    let localDay = localDate.getDate();
+    let localMonth = localDate.getMonth() + 1; 
+    let localYear = localDate.getFullYear();
+    localDate = localDay + '/' + localMonth + '/' + localYear;
+    return(
+        new Promise (async (res, rej) => {
+            const command = new GetCommand({
+                TableName: "gunthz-liveChat",
+                Key: {
+                    space: "general"
+                }
+            })
+            docClient.send(command).then(result => {
+                let newChat = result.Item;
+                const newID = newChat.chat.length + 1;
+                const newMessage = {
+                    id: newID,
+                    userID : id,
+                    message: message,
+                    thread: [],
+                    serverDate: localDate,
+                    likes: [],
+                }
+                newChat.chat.push(newMessage);
+                const command = new PutCommand({
+                    TableName: "gunthz-liveChat",
+                    Item: {
+                        space: "general",
+                        ...newChat
+                    }
+                })
+                docClient.send(command).then(result => {
+                    res(newChat)
+                }).catch(error => {
+                    console.log(error);
+                    rej(error)
+                })
+            }).catch(error => {
+                console.log(error);
+                rej(error)
+            })
+        })
+    )
+}
+
+function addThread(id, messageID, message){
+    let localDate = new Date();
+    let localDay = localDate.getDate();
+    let localMonth = localDate.getMonth() + 1; 
+    let localYear = localDate.getFullYear();
+    localDate = localDay + '/' + localMonth + '/' + localYear;
+    return (
+        new Promise (async (res, rej) => {
+            const command = new GetCommand({
+                TableName: "gunthz-liveChat",
+                Key: {
+                    space: "general"
+                }
+            })
+            docClient.send(command).then(result => {
+                let newChat = result.Item;
+                const newID = newChat.chat[messageID - 1].thread.length + 1
+                const newMessage = {
+                    id: newID,
+                    userID: id,
+                    message: message,
+                    serverDate: localDate,
+                    likes: []
+                }
+                newChat.chat[messageID - 1].thread.push(newMessage);
+                const command = new PutCommand({
+                    TableName: "gunthz-liveChat",
+                    Item: {
+                        space: "general",
+                        ...newChat
+                    }
+                })
+                docClient.send(command).then(result => {
+                    res(newChat)
+                }).catch(error => {
+                    console.log(error);
+                    rej(error)
+                })
+            }).catch(error => {
+                console.log(error);
+                rej(error)
+            })
+        })
+    )
+}
+
+function obtenerUltimosElementos(arr, bloque) {
+    // Definir la longitud de cada bloque
+    const longitudBloque = 50;
+  
+    // Calcular el índice de inicio en base al bloque proporcionado
+    const indiceInicio = (bloque - 1) * longitudBloque;
+  
+    // Calcular el índice de fin
+    const indiceFin = bloque * longitudBloque;
+  
+    // Obtener los elementos en el rango especificado
+    const elementos = arr.slice(indiceInicio, indiceFin);
+  
+    return elementos;
+}
+
+function get50LiveChat(index){
+    return(
+        new Promise (async (res, rej) => {
+            const command = new GetCommand({
+                TableName: "gunthz-liveChat",
+                Key: {
+                    space: "general"
+                }
+            })
+            docClient.send(command).then(result => {
+                const chat = result.Item;
+                const sendChat = obtenerUltimosElementos(chat.chat, parseInt(index))
+                res(sendChat)
+            }).catch(error => {
+                console.log(error);
+                rej(error)
+            })
+        })
+    )
+}
+
+function getLiveChat(){
+    return(
+        new Promise (async (res, rej) => {
+            const command = new GetCommand({
+                TableName: "gunthz-liveChat",
+                Key: {
+                    space: "general"
+                }
+            })
+            docClient.send(command).then(result => {
+                const chat = result.Item;
+                res(chat.chat)
+            }).catch(error => {
+                console.log(error);
+                rej(error)
+            })
+        })
+    )
+}
+
+function likeMessage(userID, messageID){
+    return(
+        new Promise (async (res, rej) => {
+            const command = new GetCommand({
+                TableName: "gunthz-liveChat",
+                Key: {
+                    space: "general"
+                }
+            })
+            docClient.send(command).then(result => {
+                let newChat = result.Item;
+                newChat.chat[messageID - 1].likes.push(userID);
+                const command = new PutCommand({
+                    TableName: "gunthz-liveChat",
+                    Item: {
+                        space: "general",
+                        ...newChat
+                    }
+                })
+                docClient.send(command).then(result => {
+                    res(newChat)
+                }).catch(error => {
+                    console.log(error);
+                    rej(error)
+                })
+            }).catch(error => {
+                console.log(error);
+                rej(error)
+            })
+        })
+    )
+}
+
+function unLikeMessage(userID, messageID) {
+    return(
+        new Promise(async (res, rej) => {
+            const command = new GetCommand({
+                TableName: "gunthz-liveChat",
+                Key: {
+                    space: "general"
+                }
+            })
+            
+        })
+    )
+}
+
+module.exports = {
+    addMessage,
+    addThread,
+    get50LiveChat,
+    getLiveChat,
+    likeMessage,
+
+
+}
