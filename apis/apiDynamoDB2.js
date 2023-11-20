@@ -110,7 +110,7 @@ function obtenerUltimosElementos(arr, bloque) {
     return elementos;
 }
 
-function get50LiveChat(index){
+function getLast50LiveChat(index){
     return(
         new Promise (async (res, rej) => {
             const command = new GetCommand({
@@ -184,6 +184,72 @@ function likeMessage(userID, messageID){
     )
 }
 
+function likeThread (id, messageID, threadID){
+    return(
+        new Promise(async (res, rej) => {
+            const command = new GetCommand({
+                TableName: "gunthz-liveChat",
+                Key: {
+                    space: "general"
+                }
+            })
+            docClient.send(command).then(result => {
+                let newChat = result.Item;
+                newChat.chat[messageID - 1].thread[threadID - 1].likes.push(id);
+                const command = new PutCommand({
+                    TableName: "gunthz-liveChat",
+                    Item: {
+                        space: "general",
+                        ...newChat
+                    }
+                })
+                docClient.send(command).then(result => {
+                    res(newChat)
+                }).catch(error => {
+                    console.log(error);
+                    rej(error)
+                })
+            }).catch(error => {
+                console.log(error);
+                rej(error)
+            })
+        })
+    )
+}
+
+function unLikeThread(id, messageID, threadID) {
+    return(
+        new Promise(async (res, rej) => {
+            const command = new GetCommand({
+                TableName: "gunthz-liveChat",
+                Key: {
+                    space: "general"
+                }
+            })
+            docClient.send(command).then(result => {
+                let newChat = result.Item;
+                newChat.chat[messageID - 1].thread[threadID - 1].likes = newChat.chat[messageID - 1].thread[threadID - 1].likes.filter((ids) => ids !== id)
+                const command = new PutCommand({
+                    TableName: "gunthz-liveChat",
+                    Item: {
+                        space: "general",
+                        ...newChat
+                    }
+                })
+                docClient.send(command).then(result => {
+                    res(newChat)
+                }).catch(error => {
+                    console.log(error);
+                    rej(error)
+                })
+            }).catch(error => {
+                console.log(error);
+                rej(error)
+            })
+        })
+    )
+}
+
 function unLikeMessage(userID, messageID) {
     return(
         new Promise(async (res, rej) => {
@@ -193,7 +259,26 @@ function unLikeMessage(userID, messageID) {
                     space: "general"
                 }
             })
-            
+            docClient.send(command).then(async (result) => {
+                let newChat = result.Item;
+                newChat.chat[messageID - 1].likes = await newChat.chat[messageID - 1].likes.filter((ids) => ids !== userID);
+                const command = new PutCommand({
+                    TableName: "gunthz-liveChar",
+                    Item: {
+                        space: "general",
+                        ...newChat
+                    }
+                })
+                docClient.send(command).then(result => {
+                    res(newChat)
+                }).catch(error => {
+                    console.log(error);
+                    rej(error)
+                })
+            }).catch(error => {
+                console.log(error);
+                rej(error)
+            })
         })
     )
 }
@@ -201,9 +286,12 @@ function unLikeMessage(userID, messageID) {
 module.exports = {
     addMessage,
     addThread,
-    get50LiveChat,
+    getLast50LiveChat,
     getLiveChat,
     likeMessage,
+    likeThread,
+    unLikeThread,
+    unLikeMessage
 
 
 }

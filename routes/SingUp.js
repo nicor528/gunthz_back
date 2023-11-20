@@ -69,13 +69,17 @@ router.post("/singUpGoogle", async (req, res) => {
     const name = req.body.name;
     const email = req.body.email;
     const lastName = req.body.lastName;
-    if(uid && name && email && lastName){
+    const country = req.body.country;
+    const city = req.body.city;
+    const state = req.body.state;
+    const zip = req.body.zip;
+    if(uid && name && email && lastName && country && city && state && zip){
         getID(uid).then(() => {
             res.status(401).send({message: "User already exist", status: false})
         }).catch(error => {
             if(error == 1){
                 createID(uid).then(id => {
-                    createUser(id, name, email, lastName).then(async (user) => {
+                    createUser(id, name, email, "", lastName, country, city, state, zip).then(async (user) => {
                         const key = await generateAlphanumericCode();
                         setNewKey(id, key).then(async () => {
                             const data = await {
@@ -141,10 +145,14 @@ router.post("/singUpEmail", async (req, res) => {
     const email = req.body.email;
     const pass = req.body.pass;
     const lastName = req.body.lastName;
-    if(name && email && pass && lastName){
+    const country = req.body.country;
+    const city = req.body.city;
+    const state = req.body.state;
+    const zip = req.body.zip;
+    if(name && email && pass && lastName && country && city && state && zip){
         SingUpEmail1(email, pass).then(user1 => {
             createID(user1.uid).then(id => {
-                createUser(id, name, email, pass, lastName).then(async (user) => {
+                createUser(id, name, email, pass, lastName, country, city, state, zip).then(async (user) => {
                     const key = await generateAlphanumericCode();
                     setNewKey(id, key).then(async () => {
                                 const data = await {

@@ -130,7 +130,7 @@ function getID (uid) {
     )
 }
 
-function createUser (id, name, email, pass, lastName) {
+function createUser (id, name, email, pass, lastName, country, city, state, zip) {
     return(
         new Promise (async (res, rej) => {
             const command = await new PutCommand({
@@ -153,6 +153,10 @@ function createUser (id, name, email, pass, lastName) {
                         following: [],
                         admin: false,
                         moderator: false,
+                        country: country,
+                        city: city,
+                        state: state,
+                        zip: zip
                     }
                 })
                 docClient.send(command).then(result => {
@@ -298,6 +302,39 @@ function likeTwitt (id, ownerID, twittID) {
                     rej("twitt not found");
                     console.log('twitt no encontrado');
                 }
+            }).catch(error => {
+                console.log(error)
+                rej(error)
+            })
+        })
+    )
+}
+
+function unLikeTwitt (id, ownerID, twittID){
+    return(
+        new Promise(async (res, rej) => {
+            const command = new GetCommand({
+                TableName: "gunthz-twitts",
+                Key: {
+                    id: ownerID
+                }
+            })
+            docClient.send(command).then(result => {
+                let twitts = result.Item.twitts;
+                twitts[twittID - 1].likes = twitts[twittID - 1].likes.filter((userID) => userID !== id);
+                const command = new PutCommand({
+                    TableName: "gunthz-twitts",
+                    Item: {
+                        id: id,
+                        ...twitts
+                    }
+                })
+                docClient.send(command).then(result => {
+                    res()
+                }).catch(error => {
+                    console.log(error)
+                    rej(error)
+                })
             }).catch(error => {
                 console.log(error)
                 rej(error)
@@ -563,6 +600,28 @@ function reportTwitt(userID, twittID, reason, ownerID) {
     )
 }
 
+function getUserTwitts(id){
+    return(
+        new Promise(async (res, rej) => {
+            const command = new GetCommand({
+                TableName: "gunthz-twitts",
+                Key: {
+                    id: id
+                }
+            })
+            docClient.send(command).then(result => {
+                res(result.Item.twitts)
+            }).catch(error => {
+                console.log(error);
+                rej(error)
+            })
+        }).catch(error => {
+            console.log(error);
+            rej(error)
+        })
+    )
+}
+
 function checkPermisions(id) {
     return(
         new Promise (async (res, rej) => {
@@ -582,6 +641,87 @@ function checkPermisions(id) {
             }).catch(error => {
                 console.log(error);
                 rej(error);
+            })
+        })
+    )
+}
+
+/*
+function getFollowsTwitts(id){
+    return(
+        new Promise(async (res, rej) => {
+            const command = new GetCommand({
+                TableName: "gunthz-users",
+                Key: {
+                    id: id
+                }
+            })
+            docClient.send(command).then(result => {
+                const follows = result.Item.following;
+                let twitts = [];
+                follows.map(id => {
+                    const command = new GetCommand({
+                        TableName: "gunthz-twitts",
+                        Key: {
+                            id: id
+                        }
+                    })
+                    docClient.send(command).then(result => {
+                        twitts.push(result.Item.twitts)
+                    }).catch(error => {
+                        console.log(error);
+                    })
+                })
+                res(twitts)
+            }).catch(error => {
+                console.log(error);
+                rej(error);
+            })
+        })
+    )
+}*/
+
+function getFollowsTwitts(id) {
+    return new Promise(async (res, rej) => {
+        try {
+            const command = new GetCommand({
+                TableName: "gunthz-users",
+                Key: {
+                    id: id
+                }
+            });
+            const result = await docClient.send(command);
+            const follows = result.Item.following;
+            // Usamos map para obtener un array de promesas
+            const promises = follows.map(async (followId) => {
+                const twittCommand = new GetCommand({
+                    TableName: "gunthz-twitts",
+                    Key: {
+                        id: followId
+                    }
+                });
+                const twittResult = await docClient.send(twittCommand);
+                return twittResult.Item.twitts;
+            });
+            // Esperamos a que todas las promesas se resuelvan
+            const resolvedTwitts = await Promise.all(promises);
+            res(resolvedTwitts);
+        } catch (error) {
+            console.log(error);
+            rej(error);
+        }
+    });
+}
+
+function getAllTwitts(){
+    return(
+        new Promise(async (res, rej) => {
+            const command = await new ScanCommand({TableName: "gunthz-twitts"})
+            docClient.send(command).then(result => {
+                res(result.Items)
+            }).catch(error => {
+                console.log(error);
+                rej(error)
             })
         })
     )
@@ -618,5 +758,9 @@ module.exports = {
     reportTwitt,
     checkPermisions,
     createLiveSpace,
+    unLikeTwitt,
+    getUserTwitts,
+    getFollowsTwitts,
+    getAllTwitts
 
 }
