@@ -17,6 +17,7 @@ function addMessage(id, message){
             })
             docClient.send(command).then(result => {
                 let newChat = result.Item;
+                console.log(newChat)
                 const newID = newChat.chat.length + 1;
                 const newMessage = {
                     id: newID,
