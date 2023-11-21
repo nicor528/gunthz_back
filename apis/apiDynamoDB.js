@@ -437,7 +437,7 @@ function followUser(id, followID) {
                 if(!follows.includes(followID)){
                     newUser.following.push(followID);
                     const command = new PutCommand({
-                        TableName: "gunthz-twitts",
+                        TableName: "gunthz-users",
                         Item: {
                             id: id,
                             ...newUser
