@@ -1,4 +1,4 @@
-const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
+const { DynamoDBClient, ScanCommand } = require("@aws-sdk/client-dynamodb");
 const { fromIni } = require("@aws-sdk/credential-provider-ini");
 const { PutCommand, DynamoDBDocumentClient, GetCommand } = require("@aws-sdk/lib-dynamodb");
 
@@ -295,8 +295,8 @@ function likeTwitt (id, ownerID, twittID) {
                             rej(error)
                         })
                     } else {
-                        rej("El video ya tiene el like");
-                        console.log("El video ya tiene el like");
+                        rej("El twiit ya tiene el like");
+                        console.log("El twiit ya tiene el like");
                       }
                 }else{
                     rej("twitt not found");
