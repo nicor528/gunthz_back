@@ -264,7 +264,7 @@ function unLikeMessage(userID, messageID) {
                 let newChat = result.Item;
                 newChat.chat[messageID - 1].likes = await newChat.chat[messageID - 1].likes.filter((ids) => ids !== userID);
                 const command = new PutCommand({
-                    TableName: "gunthz-liveChar",
+                    TableName: "gunthz-liveChat",
                     Item: {
                         space: "general",
                         ...newChat
