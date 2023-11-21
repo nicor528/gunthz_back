@@ -161,7 +161,9 @@ router.post("/unfollowUser", async (req, res) => {
         verifyKey(id, key).then(newKey => {
             setNewKey(id, newKey).then(() => {
                 unfollowUser(id, unfollowID).then(() => {
+                    console.log("1")
                     removeFollower(unfollowID, id).then(() => {
+                        console.log("2")
                         res.status(200).send({status: true, message: "ok", key: newKey})
                     }).catch(error => {res.status(400).send({error, status: false})})
                 }).catch(error => {res.status(400).send({error, status: false})})
