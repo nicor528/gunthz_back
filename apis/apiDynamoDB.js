@@ -434,7 +434,7 @@ function followUser(id, followID) {
             docClient.send(command).then(result => {
                 let newUser = result.Item;
                 const follows = newUser.following;
-                if(!follows.inclued(followID)){
+                if(!follows.includes(followID)){
                     newUser.following.push(followID);
                     const command = new PutCommand({
                         TableName: "gunthz-twitts",
@@ -472,7 +472,7 @@ function addFollower (id, followerID) {
             })
             docClient.send(command).then(result => {
                 let newUser = result.Item;
-                if(!newUser.followers.inclued(followerID)){
+                if(!newUser.followers.includes(followerID)){
                     newUser.followers.push(followerID);
                     const command = new PutCommand({
                         TableName: "gunthz-users",
