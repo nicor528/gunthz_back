@@ -7,7 +7,7 @@
 
 const express = require('express');
 const { SingInPass, resetPass } = require('../apis/apiAuth');
-const { getID, getKey, getUser, verifyKey, setNewKey } = require('../apis/apiDynamoDB');
+const { getID, getKey, getUser, verifyKey, setNewKey, getToken } = require('../apis/apiDynamoDB');
 const router = express.Router();
 
 /**
@@ -72,12 +72,15 @@ router.post("/getUserData", async (req, res) => {
         verifyKey(id, key).then(newKey => {
             setNewKey(id, newKey).then(() => {
                 getUser(id).then(async (user) => {
-                    const data = await {
-                        user,
-                        key : newKey
-                    }
-                    res.status(200).send({data, status: true})
-                }).catch(error => {res.status(400).send({error, status: false})})
+                    getToken(id).then(async (token) => {
+                        const data = await {
+                            user,
+                            key,
+                            chatToken: token
+                        }
+                        res.status(200).send({data, status: true, message: "succesfull singIn"})
+                    }).catch(error => {res.status(400).send({error, status:false})})
+                }).catch(error => {res.status(400).send({error, status:false})})
             }).catch(error => {res.status(400).send({error, status: false})})
         }).catch(error => {res.status(400).send({error, status: false})})
     }else{
@@ -122,11 +125,14 @@ router.post("/singInWithId", async (req, res) => {
         getID(uid).then(id => {
             getKey(id).then(key => {
                 getUser(id).then(async (user) => {
-                    const data = await {
-                        user,
-                        key
-                    }
-                    res.status(200).send({data, status:true, message: "succesfull singIn"})
+                    getToken(id).then(async (token) => {
+                        const data = await {
+                            user,
+                            key,
+                            chatToken: token
+                        }
+                        res.status(200).send({data, status: true, message: "succesfull singIn"})
+                    }).catch(error => {res.status(400).send({error, status:false})})
                 }).catch(error => {res.status(400).send({error, status:false})})
             }).catch(error => {res.status(400).send({error, status:false})})
         }).catch(error => {

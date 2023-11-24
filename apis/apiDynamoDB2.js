@@ -284,6 +284,50 @@ function unLikeMessage(userID, messageID) {
     )
 }
 
+function verifyToken(token) {
+    return(
+        new Promise (async (res, rej) => {
+            const command = new GetCommand({
+                TableName: "gunthz-chatTokens",
+                Key: {
+                    token: token
+                }
+            })
+            docClient.send(command).then(result => {
+                if(result.Item){
+                    res(result.Item.id)
+                }else{
+                    rej("Wrong Token")
+                }
+            }).catch(error => {
+                console.log(error);
+                rej(error)
+            })
+        })
+    )
+}
+
+function getThread(id) {
+    return(
+        new Promise(async (res, rej) => {
+            const command = new GetCommand({
+                TableName: "gunthz-liveChat",
+                Key: {
+                    space: "general"
+                }
+            })
+            docClient.send(command).then(result => {
+                const chat = result.Item;
+                const thread = chat.chat[messageID - 1].thread
+                res(thread)
+            }).catch(error => {
+                console.log(error);
+                rej(error)
+            })
+        })
+    )
+}
+
 module.exports = {
     addMessage,
     addThread,
@@ -292,7 +336,9 @@ module.exports = {
     likeMessage,
     likeThread,
     unLikeThread,
-    unLikeMessage
-
+    unLikeMessage,
+    verifyToken,
+    getThread,
+    
 
 }

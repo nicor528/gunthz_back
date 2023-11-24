@@ -159,8 +159,18 @@ function createUser (id, name, email, pass, lastName, country, city, state, zip)
                         zip: zip
                     }
                 })
-                docClient.send(command).then(result => {
-                    res()
+                docClient.send(command).then(async (result) => {
+                    const token = await generateAlphanumericCode();
+                    const command = new PutCommand({
+                        TableName: "gunthz-chatTokens",
+                        Item: {
+                            token: token,
+                            id: id
+                        }
+                    })
+                    docClient.send(command).then(result => {
+                        res(token)
+                    }).catch(error => {console.log(error), rej(error)})
                 }).catch(error => {console.log(error), rej(error)})
             }).catch(error => {console.log(error), rej(error)})
         })
@@ -178,6 +188,27 @@ function getUser (id) {
             })
             docClient.send(command).then(result => {
                 res(result.Item)
+            }).catch(error => {
+                console.log(error)
+                rej(error)
+            })
+        })
+    )
+}
+
+function getToken(id){
+    return(
+        new Promise (async (res, rej) => {
+            const command = new ScanCommand({TableName: "gunthz-chatTokens"})
+            docClient.send(command).then(result => {
+                const tokens = result.Items;
+                let token;
+                tokens.map(token => {
+                    if(token.id.S === id){
+                        token = token.token.S;
+                    }
+                })
+                res(token);
             }).catch(error => {
                 console.log(error)
                 rej(error)
@@ -761,6 +792,7 @@ module.exports = {
     unLikeTwitt,
     getUserTwitts,
     getFollowsTwitts,
-    getAllTwitts
+    getAllTwitts,
+    getToken
 
 }
