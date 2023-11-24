@@ -209,5 +209,17 @@ router.post("/resetPass", async (req, res) => {
     }
 })
 
+router.post("/getKey", async (req, res) => {
+    const id = req.body.id;
+    const key = req.body.key;
+    if(id && key){
+        getKey(id).then(key => {
+            res.status(200).send({status:true, message: "ok", data: {key: key}})
+        }).catch(error => {res.status(400).send({error, status: false})})
+    }else{
+        res.status(401).send({message: "Missing data in the body", status: false})
+    }
+})
+
 
 module.exports = router;
