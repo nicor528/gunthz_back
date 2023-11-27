@@ -50,12 +50,15 @@ router.post("/singInEmail", async (req, res) => {
         SingInPass(email, pass).then(user => {
             getID(user.uid).then(id => {
                 getKey(id).then(key => {
-                    getUser(id).then(async (user) => {
-                        const data = await {
-                            user,
-                            key
-                        }
-                        res.status(200).send({data, status: true, message: "succefull singIn"})
+                    getUser(id).then((user) => {
+                        getToken(id).then(async (token) => {
+                            const data = await {
+                                user,
+                                key,
+                                chatToken: token
+                            }
+                            res.status(200).send({data, status: true, message: "succesfull singIn"})
+                        }).catch(error => {res.status(400).send({error, status:false})})
                     }).catch(error => {res.status(400).send({error, status: false})})
                 }).catch(error => {res.status(400).send({error, status: false})})
             }).catch(error => {res.status(400).send({error, status: false})})
