@@ -204,7 +204,6 @@ function getToken(id){
                 const tokens = result.Items;
                 let token;
                 tokens.map(user => {
-                    console.log(token)
                     if(user.id.S === id){
                         token = user.token.S;
                         console.log(user.token.S)

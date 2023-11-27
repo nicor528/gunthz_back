@@ -307,7 +307,7 @@ function verifyToken(token) {
     )
 }
 
-function getThread(id) {
+function getThread(messageID) {
     return(
         new Promise(async (res, rej) => {
             const command = new GetCommand({
