@@ -1,5 +1,5 @@
 const express = require('express');
-const { setNewKey, verifyKey } = require('../apis/apiDynamoDB');
+const { setNewKey, verifyKey, getUser } = require('../apis/apiDynamoDB');
 const { addMessage, addThread, getLast50LiveChat, getLiveChat, likeMessage, likeThread, unLikeThread, unLikeMessage, verifyToken, getThread } = require('../apis/apiDynamoDB2');
 const router = express.Router();
 
@@ -9,8 +9,10 @@ router.post("/addMessagge", async (req, res) => {
     const token = req.body.token;
     if(message && token){
         verifyToken(token).then(id => {
-            addMessage(id, message).then(async (messages) => {
-                res.status(200).send({data: messages, status: true, message: "succefull"})
+            getUser(id).then(user => {
+                addMessage(id, message, user.name + " " + user.lastName).then(async (messages) => {
+                    res.status(200).send({data: messages, status: true, message: "succefull"})
+                }).catch(error => {res.status(400).send({error, status: false})})
             }).catch(error => {res.status(400).send({error, status: false})})
         }).catch(error => {res.status(400).send({error, status: false})})
     }else{
@@ -97,8 +99,10 @@ router.post("/threadMessage", async (req, res) => {
     const message = req.body.message;
     if(token && message && messageID){
         verifyToken(token).then(id => {
-            addThread(id, messageID, message).then(async (messages) => {
-                res.status(200).send({data: messages, status: true, message: "succefull"})
+            getUser(id).then(user => {
+                addThread(id, messageID, message, user.name + " " + user.lastName).then(async (messages) => {
+                    res.status(200).send({data: messages, status: true, message: "succefull"})
+                }).catch(error => {res.status(400).send({error, status: false})})
             }).catch(error => {res.status(400).send({error, status: false})})
         }).catch(error => {res.status(400).send({error, status: false})})
     }else{

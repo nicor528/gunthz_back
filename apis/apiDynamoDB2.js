@@ -1,7 +1,7 @@
 const { PutCommand, GetCommand } = require("@aws-sdk/lib-dynamodb");
 const { docClient } = require("./apiDynamoDB");
 
-function addMessage(id, message){
+function addMessage(id, message, name){
     let localDate = new Date();
     let localDay = localDate.getDate();
     let localMonth = localDate.getMonth() + 1; 
@@ -21,6 +21,7 @@ function addMessage(id, message){
                 const newID = newChat.chat.length + 1;
                 const newMessage = {
                     id: newID,
+                    name: name,
                     userID : id,
                     message: message,
                     thread: [],
@@ -49,7 +50,7 @@ function addMessage(id, message){
     )
 }
 
-function addThread(id, messageID, message){
+function addThread(id, messageID, message, name){
     let localDate = new Date();
     let localDay = localDate.getDate();
     let localMonth = localDate.getMonth() + 1; 
@@ -68,6 +69,7 @@ function addThread(id, messageID, message){
                 const newID = newChat.chat[messageID - 1].thread.length + 1
                 const newMessage = {
                     id: newID,
+                    name: name,
                     userID: id,
                     message: message,
                     serverDate: localDate,

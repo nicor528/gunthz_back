@@ -156,7 +156,8 @@ function createUser (id, name, email, pass, lastName, country, city, state, zip)
                         country: country,
                         city: city,
                         state: state,
-                        zip: zip
+                        zip: zip,
+                        profilePicture: "",
                     }
                 })
                 docClient.send(command).then(async (result) => {
