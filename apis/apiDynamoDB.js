@@ -203,10 +203,11 @@ function getToken(id){
             docClient.send(command).then(async (result) => {
                 const tokens = result.Items;
                 let token;
-                tokens.map(token => {
+                tokens.map(user => {
                     console.log(token)
-                    if(token.id.S === id){
-                        token = token.token.S;
+                    if(user.id.S === id){
+                        token = user.token.S;
+                        console.log(user.token.S)
                     }
                 })
                 console.log(token)
