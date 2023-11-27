@@ -208,6 +208,7 @@ function getToken(id){
                         token = token.token.S;
                     }
                 })
+                console.log(token)
                 res(token);
             }).catch(error => {
                 console.log(error)
