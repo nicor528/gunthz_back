@@ -200,10 +200,11 @@ function getToken(id){
     return(
         new Promise (async (res, rej) => {
             const command = new ScanCommand({TableName: "gunthz-chatTokens"})
-            docClient.send(command).then(result => {
+            docClient.send(command).then(async (result) => {
                 const tokens = result.Items;
                 let token;
                 tokens.map(token => {
+                    console.log(token)
                     if(token.id.S === id){
                         token = token.token.S;
                     }
