@@ -1,7 +1,10 @@
 const { getAllTwitts } = require("./apis/apiDynamoDB");
+const { getAllTwitts2, trendingTwitts } = require("./apis/apiDynamoDB2");
 
 getAllTwitts().then(twitts=> {
-    console.log(twitts)
-    console.log(twitts[7])
-    console.log(twitts[7].twitts.L[0].M.serverDate)
+    trendingTwitts(twitts).then(newTwitts => {
+        getAllTwitts2(newTwitts).then(twitts2 => {
+            console.log(twitts2)
+        }).catch(error => {console.log(error)})
+    }).catch(error => {console.log(error)})
 })

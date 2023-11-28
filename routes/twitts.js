@@ -2,7 +2,7 @@
 const express = require('express');
 const { addTwitt, verifyKey, setNewKey, likeTwitt, commentTwitt, deleteTwitt, followUser, addFollower, unfollowUser, removeFollower, reportTwitt, unLikeTwitt, getUserTwitts, getFollowsTwitts, getAllTwitts } = require('../apis/apiDynamoDB');
 const { saveTwittFile, updateTwittsLinks } = require('../apis/apiS3');
-const { trendingTwitts, cleanObject } = require('../apis/apiDynamoDB2');
+const { trendingTwitts, cleanObject, getAllTwitts2 } = require('../apis/apiDynamoDB2');
 const router = express.Router();
 
 router.post("/postTwitt", async (req, res) => {
@@ -213,10 +213,9 @@ router.post("/tredingTwitts", async (req, res) => {
             setNewKey(id, newKey).then(() => {
                 getAllTwitts().then(twitts => {
                     trendingTwitts(twitts).then(newTwitts => {
-                        //cleanObject(newTwitts).then(cleanTwitts => {
-                          //  console.log(cleanTwitts)
-                            res.status(200).send({status: true, message: "ok", key: newKey, data: newTwitts})
-                        //}).catch(error => {res.status(400).send({error, status: false})})
+                        getAllTwitts2(newTwitts).then(cleanTwitts => {
+                            res.status(200).send({status: true, message: "ok", key: newKey, data: cleanTwitts})
+                        }).catch(error => {res.status(400).send({error, status: false})})
                     }).catch(error => {res.status(400).send({error, status: false})})
                 }).catch(error => {res.status(400).send({error, status: false})})
             }).catch(error => {res.status(400).send({error, status: false})})

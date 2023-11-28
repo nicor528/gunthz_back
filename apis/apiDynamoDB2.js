@@ -380,40 +380,72 @@ function trendingTwitts(twittsArray) {
     )
 }
 
+// Función para limpiar objetos eliminando los prefijos .M, .A, .S, .N, etc.
 function cleanObject(obj) {
-    return (
-        new Promise ((res, rej) => {
-            if (Array.isArray(obj)) {
-                // Si es un array, limpiar cada elemento del array
-                return obj.map(cleanObject);
-            }
-        
-            if (typeof obj === 'object' && obj !== null) {
-                const cleanedObject = {};
-        
-                for (const key in obj) {
-                    if (obj.hasOwnProperty(key)) {
-                        const value = obj[key];
-        
-                        // Si el valor es un objeto, llamar recursivamente a cleanObject
-                        if (value && typeof value === 'object' && !Array.isArray(value)) {
-                            cleanedObject[key] = cleanObject(value);
-                        } else {
-                            // Eliminar los prefijos .M, .A, .S, .N, etc.
-                            const cleanedKey = key.replace(/\.([MASN])\b/g, '');
-                            cleanedObject[cleanedKey] = value;
-                        }
+    return new Promise((res, rej) => {
+        if (Array.isArray(obj)) {
+            // Si es un array, limpiar cada elemento del array
+            Promise.all(obj.map(cleanObject))
+                .then(cleanedArray => res(cleanedArray))
+                .catch(error => rej(error));
+        } else if (typeof obj === 'object' && obj !== null) {
+            const cleanedObject = {};
+
+            for (const key in obj) {
+                if (obj.hasOwnProperty(key)) {
+                    const value = obj[key];
+
+                    // Si el valor es un objeto, llamar recursivamente a cleanObject
+                    if (value && typeof value === 'object' && !Array.isArray(value)) {
+                        cleanedObject[key] = cleanObject(value);
+                    } else {
+                        // Eliminar los prefijos .M, .A, .S, .N, etc.
+                        const cleanedKey = key.replace(/\.([MASN])\b/g, '');
+                        cleanedObject[cleanedKey] = value;
                     }
                 }
-        
-                return cleanedObject;
             }
-        
-            res(obj) ;
-        })
-    )
-    
+
+            res(cleanedObject);
+        } else {
+            res(obj);
+        }
+    });
 }
+
+// Función para extraer solo los twitts de una estructura de datos
+function extractTwitts(obj) {
+    return new Promise(async (res, rej) => {
+        try {
+            const cleanedObj = await cleanObject(obj);
+            const twitts = await cleanedObj.twitts;  // Esperar la resolución de la promesa
+            res(twitts.L);
+        } catch (error) {
+            rej(error);
+        }
+    });
+}
+
+// Función para generar un array con todos los twitts
+function getAllTwitts2(data) {
+    return new Promise(async (res, rej) => {
+        const allTwitts = [];
+
+        try {
+            // Iterar sobre la estructura de datos y extraer los twitts
+            await Promise.all(data.map(async (item) => {
+                const twitts = await extractTwitts(item);
+
+                allTwitts.push(...twitts);
+            }));
+
+            res(allTwitts);
+        } catch (error) {
+            rej(error);
+        }
+    });
+}
+
 
 module.exports = {
     addMessage,
@@ -428,7 +460,8 @@ module.exports = {
     getThread,
     getAllTwitts,
     trendingTwitts,
-    cleanObject
+    cleanObject,
+    getAllTwitts2,
     
 
 }
