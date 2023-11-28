@@ -345,6 +345,41 @@ function getAllTwitts () {
     )
 }
 
+function trendingTwitts(twittsArray) {
+    return(
+        new Promise ((res, rej) => {
+            try {
+                const now = new Date(); // Obtener la fecha actual
+    
+                // Filtrar y seleccionar los twitts con serverDate
+                const twittsWithDate = twittsArray.filter(item => item.twitts.L.length > 0 && item.twitts.L[0].M.serverDate);
+    
+                // Filtrar los twitts que ocurrieron en las últimas 24 horas
+                const recentTwitts = twittsWithDate.filter(item => {
+                    const serverDate = item.twitts.L[0].M.serverDate.M;
+                    const twittDate = new Date(`${serverDate.year.N}-${serverDate.month.N}-${serverDate.day.N} ${serverDate.hour.N}:00:00`);
+                    const timeDiff = now - twittDate;
+                    const hoursDiff = timeDiff / (1000 * 60 * 60);
+    
+                    return hoursDiff <= 24;
+                });
+    
+                // Ordenar los twitts por la cantidad de likes, de mayor a menor
+                const sortedTwitts = recentTwitts.sort((a, b) => {
+                    const likesA = a.twitts.L[0].M.likes.L.length;
+                    const likesB = b.twitts.L[0].M.likes.L.length;
+    
+                    return likesB - likesA;
+                });
+    
+                res(sortedTwitts);
+            } catch (error) {
+                rej(error);
+            }
+        })
+    )
+}
+
 module.exports = {
     addMessage,
     addThread,
@@ -356,7 +391,8 @@ module.exports = {
     unLikeMessage,
     verifyToken,
     getThread,
-    getAllTwitts
+    getAllTwitts,
+    trendingTwitts
     
 
 }
