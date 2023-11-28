@@ -42,7 +42,7 @@ router.post("/updateProfilePicture", async (req, res) => {
     }
 })
 
-router.post("/generateURL", async (res, rej) => {
+router.post("/generateURL", async (req, res) => {
     const path = req.body.path;
     generarEnlaceDeDescarga(path).then(url => {
         res.status(200).send({status: true, message: "ok", key: newKey})
