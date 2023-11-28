@@ -19,7 +19,7 @@ router.post("/postTwitt", async (req, res) => {
                         }).catch(error => {res.status(400).send({error, status: false})})
                     }).catch(error => {res.status(400).send({error, status: false})})
                 }else{
-                    addTwitt(id, twitt, undefined).then(() => {
+                    addTwitt(id, twitt, false).then(() => {
                         res.status(200).send({status: true, message: "ok", key: newKey})
                     }).catch(error => {res.status(400).send({error, status: false})})
                 }
