@@ -86,7 +86,7 @@ router.post("/getUserData", async (req, res) => {
                             newUser.profilePicture = url;
                             const data = await {
                                 newUser,
-                                key,
+                                newKey,
                                 chatToken: token
                             }
                             res.status(200).send({data, status: true, message: "succesfull singIn"})

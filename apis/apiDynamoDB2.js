@@ -1,5 +1,6 @@
 const { PutCommand, GetCommand } = require("@aws-sdk/lib-dynamodb");
 const { docClient } = require("./apiDynamoDB");
+const { ScanCommand } = require("@aws-sdk/client-dynamodb");
 
 function addMessage(id, message, name){
     let localDate = new Date();
@@ -330,6 +331,20 @@ function getThread(messageID) {
     )
 }
 
+function getAllTwitts () {
+    return(
+        new Promise (async (res, rej) => {
+            const command = new ScanCommand({ TableName: "gunthz-twitts" });
+            docClient.send(command).then(result => {
+                res(result.Items)
+            }).catch(error => {
+                console.log(error);
+                rej(error)
+            })
+        })
+    )
+}
+
 module.exports = {
     addMessage,
     addThread,
@@ -341,6 +356,7 @@ module.exports = {
     unLikeMessage,
     verifyToken,
     getThread,
+    getAllTwitts
     
 
 }
