@@ -25,7 +25,8 @@ async function generarEnlaceDeDescarga(objectKey) {
             // Genera el enlace prefirmado
             presigner.presign(new HttpRequest(url)).then(async (result) => {
                 console.log(result)
-                res(formatUrl(result))
+                const url = await formatUrl(result)
+                res(url)
             }).catch(error => {
                 console.log(error)
                 rej(error)

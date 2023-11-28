@@ -45,6 +45,7 @@ router.post("/updateProfilePicture", async (req, res) => {
 router.post("/generateURL", async (req, res) => {
     const path = req.body.path;
     generarEnlaceDeDescarga(path).then(url => {
+        console.log(url)
         res.status(200).send({status: true, message: "ok", key: newKey})
     }).catch(error => {res.status(400).send({error, status: false})})
 })
