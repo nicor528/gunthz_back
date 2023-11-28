@@ -380,6 +380,41 @@ function trendingTwitts(twittsArray) {
     )
 }
 
+function cleanObject(obj) {
+    return (
+        new Promise ((res, rej) => {
+            if (Array.isArray(obj)) {
+                // Si es un array, limpiar cada elemento del array
+                return obj.map(cleanObject);
+            }
+        
+            if (typeof obj === 'object' && obj !== null) {
+                const cleanedObject = {};
+        
+                for (const key in obj) {
+                    if (obj.hasOwnProperty(key)) {
+                        const value = obj[key];
+        
+                        // Si el valor es un objeto, llamar recursivamente a cleanObject
+                        if (value && typeof value === 'object' && !Array.isArray(value)) {
+                            cleanedObject[key] = cleanObject(value);
+                        } else {
+                            // Eliminar los prefijos .M, .A, .S, .N, etc.
+                            const cleanedKey = key.replace(/\.([MASN])\b/g, '');
+                            cleanedObject[cleanedKey] = value;
+                        }
+                    }
+                }
+        
+                return cleanedObject;
+            }
+        
+            res(obj) ;
+        })
+    )
+    
+}
+
 module.exports = {
     addMessage,
     addThread,
@@ -392,7 +427,8 @@ module.exports = {
     verifyToken,
     getThread,
     getAllTwitts,
-    trendingTwitts
+    trendingTwitts,
+    cleanObject
     
 
 }
