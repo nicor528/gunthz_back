@@ -254,6 +254,39 @@ function editInfoUser(id, name, lastName) {
     )
 }
 
+function updateProfilePicture (id, path) {
+    return(
+        new Promise (async (res, rej) => {
+            const command = new GetCommand({
+                TableName: "gunthz-users",
+                Key: {
+                    id: id
+                }
+            })
+            docClient.send(command).then(result => {
+                let user = result.Item;
+                user.profilePicture = path;
+                const command = new PutCommand({
+                    TableName: "gunthz-users",
+                    Item: {
+                        id: id,
+                        ...user
+                    }
+                })
+                docClient.send(command).then(result => {
+                    res()
+                }).catch(error => {
+                    console.log(error)
+                    rej(error)
+                })
+            }).catch(error => {
+                console.log(error)
+                rej(error)
+            })
+        })
+    )
+}
+
 function addTwitt(id, twitt) {
     return (
         new Promise (async (res, rej) => {
@@ -796,6 +829,7 @@ module.exports = {
     getUserTwitts,
     getFollowsTwitts,
     getAllTwitts,
-    getToken
+    getToken,
+    updateProfilePicture
 
 }
