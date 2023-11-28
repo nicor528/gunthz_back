@@ -9,21 +9,13 @@ router.post("/postTwitt", async (req, res) => {
     const id = req.body.id;
     const twitt = req.body.twitt;
     const key = req.body.key;
-    const fileBase64 = req.body.fileBase64;
+    const fielLink = req.body.fielLink;
     if(id && twitt && key){
         verifyKey(id, key).then(newKey => {
             setNewKey(id, newKey).then(data => {
-                if(fileBase64){
-                    saveTwittFile(id, fileBase64, key).then(path => {
-                        addTwitt(id, twitt, path).then(() => {
-                            res.status(200).send({status: true, message: "ok", key: newKey})
-                        }).catch(error => {res.status(400).send({error, status: false})})
-                    }).catch(error => {res.status(400).send({error, status: false})})
-                }else{
-                    addTwitt(id, twitt, false).then(() => {
-                        res.status(200).send({status: true, message: "ok", key: newKey})
-                    }).catch(error => {res.status(400).send({error, status: false})})
-                }
+                addTwitt(id, twitt, fielLink ? fielLink : false).then(() => {
+                    res.status(200).send({status: true, message: "ok", key: newKey})
+                }).catch(error => {res.status(400).send({error, status: false})})
             }).catch(error => {res.status(400).send({error, status: false})})
         }).catch(error => {res.status(400).send({error, status: false})})
     }else{
@@ -136,9 +128,9 @@ router.post("/getUserTwitts", async (req, res) => {
         verifyKey(id, key).then(newKey => {
             setNewKey(id, newKey).then(() => {
                 getUserTwitts(idOfUser).then(twitts => {
-                    updateTwittsLinks(twitts).then(newTwitts => {
-                        res.status(200).send({status: true, message: "ok", key: newKey, data: newTwitts})
-                    }).catch(error => {res.status(400).send({error, status: false})})
+                    //updateTwittsLinks(twitts).then(newTwitts => {
+                        res.status(200).send({status: true, message: "ok", key: newKey, data: twitts})
+                    //}).catch(error => {res.status(400).send({error, status: false})})
                 }).catch(error => {res.status(400).send({error, status: false})})
             }).catch(error => {res.status(400).send({error, status: false})})
         }).catch(error => {res.status(400).send({error, status: false})})
@@ -194,9 +186,9 @@ router.post("/getFollowsTwitts", async (req, res) => {
         verifyKey(id, key).then(newKey => {
             setNewKey(id, newKey).then(() => {
                 getFollowsTwitts(id).then(twitts => {
-                    updateTwittsLinks(twitts).then(newTwitts => {
-                        res.status(200).send({status: true, message: "ok", key: newKey, data: newTwitts})
-                    }).catch(error => {res.status(400).send({error, status: false})})
+                    //updateTwittsLinks(twitts).then(newTwitts => {
+                        res.status(200).send({status: true, message: "ok", key: newKey, data: twitts})
+                    //}).catch(error => {res.status(400).send({error, status: false})})
                 }).catch(error => {res.status(400).send({error, status: false})})
             }).catch(error => {res.status(400).send({error, status: false})})
         }).catch(error => {res.status(400).send({error, status: false})})
