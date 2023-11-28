@@ -829,7 +829,6 @@ module.exports = {
     removeFollower,
     reportTwitt,
     checkPermisions,
-    createLiveSpace,
     unLikeTwitt,
     getUserTwitts,
     getFollowsTwitts,
