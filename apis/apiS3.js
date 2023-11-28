@@ -43,8 +43,7 @@ function uploadProfilePicture (id, image) {
                 Bucket: "gunthz-profile-pictures",
                 Key: key,
                 Body: imageBuffer,
-                ContentType: "image/jpeg",
-                ACL: "public-read"
+                ContentType: "image/jpeg"
             };
             s3Client.send(new PutObjectCommand(params)).then(result => {
                 console.log(result);
