@@ -1,18 +1,28 @@
 
 const express = require('express');
 const { addTwitt, verifyKey, setNewKey, likeTwitt, commentTwitt, deleteTwitt, followUser, addFollower, unfollowUser, removeFollower, reportTwitt, unLikeTwitt, getUserTwitts, getFollowsTwitts, getAllTwitts } = require('../apis/apiDynamoDB');
+const { saveTwittFile } = require('../apis/apiS3');
 const router = express.Router();
 
 router.post("/postTwitt", async (req, res) => {
     const id = req.body.id;
     const twitt = req.body.twitt;
     const key = req.body.key;
+    const fileBase64 = req.body.fileBase64;
     if(id && twitt && key){
         verifyKey(id, key).then(newKey => {
             setNewKey(id, newKey).then(data => {
-                addTwitt(id, twitt).then(() => {
-                    res.status(200).send({status: true, message: "ok", key: newKey})
-                }).catch(error => {res.status(400).send({error, status: false})})
+                if(fileBase64){
+                    saveTwittFile(id, fileBase64, key).then(path => {
+                        addTwitt(id, twitt, path).then(() => {
+                            res.status(200).send({status: true, message: "ok", key: newKey})
+                        }).catch(error => {res.status(400).send({error, status: false})})
+                    }).catch(error => {res.status(400).send({error, status: false})})
+                }else{
+                    addTwitt(id, twitt, undefined).then(() => {
+                        res.status(200).send({status: true, message: "ok", key: newKey})
+                    }).catch(error => {res.status(400).send({error, status: false})})
+                }
             }).catch(error => {res.status(400).send({error, status: false})})
         }).catch(error => {res.status(400).send({error, status: false})})
     }else{

@@ -60,10 +60,36 @@ function uploadProfilePicture (id, image) {
     )
 }
 
+function saveTwittFile (id, gif, name) {
+    return(
+        new Promise (async (res, rej) => {
+            const imageBuffer = Buffer.from(gif, "base64");
+            const fileName = name;
+            const key = `${id}/twittsFiles/${fileName}`;
+            const params = {
+                Bucket: "gunthz-profile-pictures",
+                Key: key,
+                Body: imageBuffer,
+                ContentType: "image/gif"
+            };
+            s3Client.send(new PutObjectCommand(params)).then(result => {
+                console.log(result);
+                console.log(result.Location);
+                const path = key;
+                res(path)
+            }).catch(error => {
+                console.log(error)
+                rej(error)
+            })
+        })
+    )
+}
+
 //s3://gunthz-profile-pictures/MMK0PmorM24Y4xjU/profilePicture
 //https://gunthz-profile-pictures.s3.eu-central-1.amazonaws.com/MMK0PmorM24Y4xjU/profilePicture
 module.exports = {
     uploadProfilePicture,
-    generarEnlaceDeDescarga
+    generarEnlaceDeDescarga,
+    saveTwittFile,
     
 }

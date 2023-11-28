@@ -287,7 +287,13 @@ function updateProfilePicture (id, path) {
     )
 }
 
-function addTwitt(id, twitt) {
+async function addTwitt(id, twitt, file) {
+    let localDate = new Date();
+    let localDay = await localDate.getDate();
+    let localMonth = await localDate.getMonth() + 1; 
+    let localYear = await localDate.getFullYear();
+    let localHour = await localDate.getHours();
+    localDate = await localDay + '/' + localMonth + '/' + localYear;
     return (
         new Promise (async (res, rej) => {
             const command = new GetCommand({
@@ -307,6 +313,13 @@ function addTwitt(id, twitt) {
                             likes: [],
                             coments : [],
                             ownerID: id,
+                            file: file,
+                            serverDate: {
+                                day: localDay,
+                                month: localMonth,
+                                year: localYear,
+                                hour: localHour
+                            }
                         }
                     ]
                 }
@@ -793,14 +806,6 @@ function getAllTwitts(){
         })
     )
 }
-
-function createLiveSpace(){
-
-}
-
-
-
-
 
 
 module.exports = {
