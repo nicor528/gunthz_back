@@ -24,7 +24,7 @@ async function generarEnlaceDeDescarga(objectKey) {
 
             // Genera el enlace prefirmado
             presigner.presign(new HttpRequest(url)).then(async (result) => {
-                console.log(result)
+                //console.log(result)
                 const url = await formatUrl(result)
                 res(url)
             }).catch(error => {
@@ -51,7 +51,7 @@ function uploadProfilePicture (id, image) {
                 console.log(result);
                 console.log(result.Location);
                 const path = id + "/" + fileName;
-                res(result.Location)
+                res(path)
             }).catch(error => {
                 console.log(error)
                 rej(error)
