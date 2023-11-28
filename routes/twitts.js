@@ -213,10 +213,10 @@ router.post("/tredingTwitts", async (req, res) => {
             setNewKey(id, newKey).then(() => {
                 getAllTwitts().then(twitts => {
                     trendingTwitts(twitts).then(newTwitts => {
-                        cleanObject(newTwitts).then(cleanTwitts => {
-                            console.log(cleanTwitts)
+                        //cleanObject(newTwitts).then(cleanTwitts => {
+                          //  console.log(cleanTwitts)
                             res.status(200).send({status: true, message: "ok", key: newKey, data: newTwitts})
-                        }).catch(error => {res.status(400).send({error, status: false})})
+                        //}).catch(error => {res.status(400).send({error, status: false})})
                     }).catch(error => {res.status(400).send({error, status: false})})
                 }).catch(error => {res.status(400).send({error, status: false})})
             }).catch(error => {res.status(400).send({error, status: false})})
