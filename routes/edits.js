@@ -1,7 +1,7 @@
 
 const express = require('express');
 const { verifyKey, setNewKey, editInfoUser, updateProfilePicture } = require('../apis/apiDynamoDB');
-const { uploadProfilePicture } = require('../apis/apiS3');
+const { uploadProfilePicture, generarEnlaceDeDescarga } = require('../apis/apiS3');
 const router = express.Router();
 
 router.post("/editInfoUser", async (req, res) => {
@@ -40,6 +40,13 @@ router.post("/updateProfilePicture", async (req, res) => {
     }else{
         res.status(401).send({message: "Missing data in the body", status: false})
     }
+})
+
+router.post("/generateURL", async (res, rej) => {
+    const path = req.body.path;
+    generarEnlaceDeDescarga(path).then(url => {
+        res.status(200).send({status: true, message: "ok", key: newKey})
+    }).catch(error => {res.status(400).send({error, status: false})})
 })
 
 

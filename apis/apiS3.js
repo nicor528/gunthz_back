@@ -20,7 +20,7 @@ const presigner = new S3RequestPresigner({
 async function generarEnlaceDeDescarga(objectKey) {
     return (
         new Promise (async (res, rej) => {
-            const url = parseUrl(`https://zing-zang-vc.s3.eu-central-1.amazonaws.com/${objectKey}`);
+            const url = parseUrl(`https://gunthz-profile-pictures.s3.eu-central-1.amazonaws.com/${objectKey}`);
 
             // Genera el enlace prefirmado
             presigner.presign(new HttpRequest(url)).then(async (result) => {
@@ -48,6 +48,7 @@ function uploadProfilePicture (id, image) {
             s3Client.send(new PutObjectCommand(params)).then(result => {
                 console.log(result);
                 console.log(result.Location);
+                const path = id + "/" + fileName;
                 res(result.Location)
             }).catch(error => {
                 console.log(error)
@@ -57,7 +58,10 @@ function uploadProfilePicture (id, image) {
     )
 }
 
+//s3://gunthz-profile-pictures/MMK0PmorM24Y4xjU/profilePicture
+//https://gunthz-profile-pictures.s3.eu-central-1.amazonaws.com/MMK0PmorM24Y4xjU/profilePicture
 module.exports = {
     uploadProfilePicture,
+    generarEnlaceDeDescarga
     
 }
