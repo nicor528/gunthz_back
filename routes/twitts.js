@@ -1,7 +1,7 @@
 
 const express = require('express');
 const { addTwitt, verifyKey, setNewKey, likeTwitt, commentTwitt, deleteTwitt, followUser, addFollower, unfollowUser, removeFollower, reportTwitt, unLikeTwitt, getUserTwitts, getFollowsTwitts, getAllTwitts } = require('../apis/apiDynamoDB');
-const { saveTwittFile } = require('../apis/apiS3');
+const { saveTwittFile, updateTwittsLinks } = require('../apis/apiS3');
 const router = express.Router();
 
 router.post("/postTwitt", async (req, res) => {
@@ -135,7 +135,9 @@ router.post("/getUserTwitts", async (req, res) => {
         verifyKey(id, key).then(newKey => {
             setNewKey(id, newKey).then(() => {
                 getUserTwitts(idOfUser).then(twitts => {
-                    res.status(200).send({status: true, message: "ok", key: newKey, data: twitts})
+                    updateTwittsLinks(twitts).then(newTwitts => {
+                        res.status(200).send({status: true, message: "ok", key: newKey, data: newTwitts})
+                    }).catch(error => {res.status(400).send({error, status: false})})
                 }).catch(error => {res.status(400).send({error, status: false})})
             }).catch(error => {res.status(400).send({error, status: false})})
         }).catch(error => {res.status(400).send({error, status: false})})
@@ -191,7 +193,9 @@ router.post("/getFollowsTwitts", async (req, res) => {
         verifyKey(id, key).then(newKey => {
             setNewKey(id, newKey).then(() => {
                 getFollowsTwitts(id).then(twitts => {
-                    res.status(200).send({status: true, message: "ok", key: newKey, data: twitts})
+                    updateTwittsLinks(twitts).then(newTwitts => {
+                        res.status(200).send({status: true, message: "ok", key: newKey, data: newTwitts})
+                    }).catch(error => {res.status(400).send({error, status: false})})
                 }).catch(error => {res.status(400).send({error, status: false})})
             }).catch(error => {res.status(400).send({error, status: false})})
         }).catch(error => {res.status(400).send({error, status: false})})

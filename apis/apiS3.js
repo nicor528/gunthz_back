@@ -85,11 +85,31 @@ function saveTwittFile (id, gif, name) {
     )
 }
 
+async function updateTwittsLinks (twitts) {
+    const newTwitts = await Promise.all(twitts.map(async (twitt) => {
+        const path = twitt.file;
+        if(twitt.file){
+            try {
+                const result = await generarEnlaceDeDescarga(path);
+                twitt.file = result;
+            } catch(error){
+                console.log(error)
+                throw error;
+            }
+        }else{
+            return twitt;
+        }
+        return twitt;
+    }));
+    return newTwitts;
+}
+
 //s3://gunthz-profile-pictures/MMK0PmorM24Y4xjU/profilePicture
 //https://gunthz-profile-pictures.s3.eu-central-1.amazonaws.com/MMK0PmorM24Y4xjU/profilePicture
 module.exports = {
     uploadProfilePicture,
     generarEnlaceDeDescarga,
     saveTwittFile,
+    updateTwittsLinks,
     
 }
