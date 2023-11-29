@@ -109,8 +109,8 @@ async function updateTwittsLinks2(twitts) {
     const newTwitts = await Promise.all(
         twitts.map(async (twitt) => {
             console.log(twitt);
-            if (twitt.M.profilePicture.S) {
-                const path = twitt.M.profilePicture.S;
+            if (twitt.M.profilePicture && twitt.M.profilePicture.S) {
+                const path = twitt.M.profilePicture && twitt.M.profilePicture.S;
                 try {
                     console.log('Before generating link');
                     const result = await generarEnlaceDeDescarga(path);
