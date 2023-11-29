@@ -105,8 +105,8 @@ async function updateTwittsLinks (twitts) {
 }
 
 async function updateTwittsLinks2 (twitts) {
-    console.log(twitts[0])
-    const newTwitts = await Promise.all(twitts.map(async (twitt) => {
+    console.log(twitts)
+    const newTwitts = await twitts.map(async (twitt) => {
         console.log(twitt)
         const path = twitt.M.profilePicture.S;
         if(twitt.M.profilePicture.S){
@@ -121,7 +121,7 @@ async function updateTwittsLinks2 (twitts) {
             return twitt;
         }
         return twitt;
-    }));
+    });
     return newTwitts;
 }
 
