@@ -87,11 +87,18 @@ function saveTwittFile (id, gif, name) {
 
 async function updateTwittsLinks (twitts) {
     const newTwitts = await Promise.all(twitts.map(async (twitt) => {
-        const path = twitt.file;
         if(twitt.file){
+            const path = twitt.file;
             try {
                 const result = await generarEnlaceDeDescarga(path);
                 twitt.file = result;
+                if(twitt.profilePicture){
+                    const path = twitt.profilePicture;
+                    const result = await generarEnlaceDeDescarga(path);
+                    twitt.profilePicture = result;
+                }else{
+                    return twitt;
+                }
             } catch(error){
                 console.log(error)
                 throw error;
