@@ -107,7 +107,7 @@ async function updateTwittsLinks (twitts) {
 async function updateTwittsLinks2 (twitts) {
     console.log(twitts)
     const newTwitts = await Promise.all(twitts.map(async (twitt) => {
-        //console.log(twitt)
+        console.log(twitt)
         const path = twitt.M.profilePicture.S;
         if(twitt.M.profilePicture.S){
             try {
