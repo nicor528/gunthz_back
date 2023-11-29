@@ -232,7 +232,7 @@ router.post("/tredingTwitts", async (req, res) => {
                         //console.log(newTwitts)
                         getAllTwitts2(newTwitts).then(cleanTwitts => {
                             console.log(cleanTwitts)
-                            updateTwittsLinks2(newTwitts.twitts).then(twitts => {
+                            updateTwittsLinks2(cleanTwitts).then(twitts => {
                                 res.status(200).send({status: true, message: "ok", key: newKey, data: twitts})
                             }).catch(error => {res.status(400).send({error, status: false})})
                         }).catch(error => {res.status(400).send({error, status: false})})
