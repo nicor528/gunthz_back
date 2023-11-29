@@ -325,7 +325,7 @@ function getThread(messageID) {
                 const chat = result.Item;
                 let thread = []
                 thread.push(chat.chat[messageID - 1])
-                thread.push(chat.chat[messageID - 1].thread)
+                thread.push(...chat.chat[messageID - 1].thread)
                 res(thread)
             }).catch(error => {
                 console.log(error);
