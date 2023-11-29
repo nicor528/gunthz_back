@@ -221,40 +221,31 @@ router.post("/getComments", async (req, res) => {
     }
 })
 
-router.post("/trendingTwitts", async (req, res) => {
+router.post("/tredingTwitts", async (req, res) => {
     const id = req.body.id;
     const key = req.body.key;
-
-    if (id && key) {
-        try {
-            // Verificar la clave
-            const newKey = await verifyKey(id, key);
-
-            // Actualizar la clave
-            await setNewKey(id, newKey);
-
-            // Obtener todos los twitts
-            const twitts = await getAllTwitts();
-
-            // Filtrar y ordenar los twitts
-            const newTwitts = await trendingTwitts(twitts);
-
-            // Limpiar los twitts
-            const cleanTwitts = await getAllTwitts2(newTwitts);
-
-            // Actualizar los enlaces de los twitts
-            const updatedTwitts = await updateTwittsLinks2(cleanTwitts);
-
-            console.log("Twitts after update:", updatedTwitts);
-
-            res.status(200).send({ status: true, message: "OK", key: newKey, data: updatedTwitts });
-        } catch (error) {
-            console.error("Error:", error);
-            res.status(400).send({ error, status: false, message: "Error processing request" });
-        }
-    } else {
-        res.status(401).send({ message: "Missing data in the body", status: false });
+    if(id && key){
+        verifyKey(id, key).then(newKey => {
+            setNewKey(id, newKey).then(() => {
+                getAllTwitts().then(twitts => {
+                    trendingTwitts(twitts).then(newTwitts => {
+                        //console.log(newTwitts)
+                        getAllTwitts2(newTwitts).then(cleanTwitts => {
+                            //console.log(cleanTwitts)
+                            updateTwittsLinks2(cleanTwitts).then(twitts => {
+                                //console.log(...twitts)
+                                console.log("testasdasdasd")
+                                console.log(twitts)
+                                res.status(200).send({status: true, message: "ok", key: newKey, data: twitts})
+                            }).catch(error => {res.status(400).send({error, status: false, message: "error"})})
+                        }).catch(error => {res.status(400).send({error, status: false})})
+                    }).catch(error => {res.status(400).send({error, status: false})})
+                }).catch(error => {res.status(400).send({error, status: false})})
+            }).catch(error => {res.status(400).send({error, status: false})})
+        }).catch(error => {res.status(400).send({error, status: false})})
+    }else{
+        res.status(401).send({message: "Missing data in the body", status: false}) 
     }
-});
+})
 
 module.exports = router;
