@@ -9,7 +9,7 @@ router.post("/postTwitt", async (req, res) => {
     const id = req.body.id;
     const twitt = req.body.twitt;
     const key = req.body.key;
-    const fileLink = req.body.fielLink;
+    const fileLink = req.body.fileLink;
     if(id && twitt && key){
         verifyKey(id, key).then(newKey => {
             setNewKey(id, newKey).then(data => {
