@@ -104,6 +104,25 @@ async function updateTwittsLinks (twitts) {
     return newTwitts;
 }
 
+async function updateLiveChatLinks (chat) {
+    const newChats = await Promise.all(chat.map(async (chat) => {
+        const path = chat.profilePicture;
+        if(chat.profilePicture){
+            try {
+                const result = await generarEnlaceDeDescarga(path);
+                chat.profilePicture = result;
+            } catch(error){
+                console.log(error)
+                throw error;
+            }
+        }else{
+            return chat;
+        }
+        return chat;
+    }));
+    return newChats;
+}
+
 //s3://gunthz-profile-pictures/MMK0PmorM24Y4xjU/profilePicture
 //https://gunthz-profile-pictures.s3.eu-central-1.amazonaws.com/MMK0PmorM24Y4xjU/profilePicture
 module.exports = {
@@ -111,5 +130,6 @@ module.exports = {
     generarEnlaceDeDescarga,
     saveTwittFile,
     updateTwittsLinks,
+    updateLiveChatLinks
     
 }

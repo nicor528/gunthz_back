@@ -2,7 +2,7 @@ const { PutCommand, GetCommand } = require("@aws-sdk/lib-dynamodb");
 const { docClient } = require("./apiDynamoDB");
 const { ScanCommand } = require("@aws-sdk/client-dynamodb");
 
-function addMessage(id, message, name){
+function addMessage(id, message, name, profilePicture){
     let localDate = new Date();
     let localDay = localDate.getDate();
     let localMonth = localDate.getMonth() + 1; 
@@ -23,6 +23,7 @@ function addMessage(id, message, name){
                 const newMessage = {
                     id: newID,
                     name: name,
+                    profilePicture: profilePicture,
                     userID : id,
                     message: message,
                     thread: [],
@@ -51,7 +52,7 @@ function addMessage(id, message, name){
     )
 }
 
-function addThread(id, messageID, message, name){
+function addThread(id, messageID, message, name, profilePicture){
     let localDate = new Date();
     let localDay = localDate.getDate();
     let localMonth = localDate.getMonth() + 1; 
@@ -71,6 +72,7 @@ function addThread(id, messageID, message, name){
                 const newMessage = {
                     id: newID,
                     name: name,
+                    profilePicture: profilePicture,
                     userID: id,
                     message: message,
                     serverDate: localDate,
@@ -321,7 +323,9 @@ function getThread(messageID) {
             })
             docClient.send(command).then(result => {
                 const chat = result.Item;
-                const thread = chat.chat[messageID - 1]
+                let thread = []
+                thread.push(chat.chat[messageID - 1])
+                thread.push(chat.chat[messageID - 1].thread)
                 res(thread)
             }).catch(error => {
                 console.log(error);

@@ -1,6 +1,7 @@
 const express = require('express');
 const { setNewKey, verifyKey, getUser } = require('../apis/apiDynamoDB');
 const { addMessage, addThread, getLast50LiveChat, getLiveChat, likeMessage, likeThread, unLikeThread, unLikeMessage, verifyToken, getThread } = require('../apis/apiDynamoDB2');
+const { updateLiveChatLinks } = require('../apis/apiS3');
 const router = express.Router();
 
 router.post("/addMessagge", async (req, res) => {
@@ -10,7 +11,7 @@ router.post("/addMessagge", async (req, res) => {
     if(message && token){
         verifyToken(token).then(id => {
             getUser(id).then(user => {
-                addMessage(id, message, user.name + " " + user.lastName).then(async (messages) => {
+                addMessage(id, message, user.name + " " + user.lastName, user.profilePicture).then(async (messages) => {
                     res.status(200).send({data: messages, status: true, message: "succefull"})
                 }).catch(error => {res.status(400).send({error, status: false})})
             }).catch(error => {res.status(400).send({error, status: false})})
@@ -41,7 +42,9 @@ router.get("/getLiveChat", async (req, res) => {
     if(token){
         verifyToken(token).then(id => {
             getLiveChat().then(chat => {
-                res.status(200).send({data: chat, status: true, message: "succefull"})
+                updateLiveChatLinks(chat).then(chat => {
+                    res.status(200).send({data: chat, status: true, message: "succefull"})
+                }).catch(error => {res.status(400).send({error, status: false})})
             }).catch(error => {res.status(400).send({error, status: false})})
         }).catch(error => {res.status(400).send({error, status: false})})
     }else{
@@ -55,7 +58,9 @@ router.post("/getThread", async (req, res) => {
     if(token && messageID){
         verifyToken(token).then(id => {
             getThread(messageID).then(thread => {
-                res.status(200).send({data: thread, status: true, message: "succefull"})
+                updateLiveChatLinks(thread).then(chat => {
+                    res.status(200).send({data: chat, status: true, message: "succefull"})
+                }).catch(error => {res.status(400).send({error, status: false})})
             }).catch(error => {res.status(400).send({error, status: false})})
         }).catch(error => {res.status(400).send({error, status: false})})
     }else{
@@ -100,7 +105,7 @@ router.post("/threadMessage", async (req, res) => {
     if(token && message && messageID){
         verifyToken(token).then(id => {
             getUser(id).then(user => {
-                addThread(id, messageID, message, user.name + " " + user.lastName).then(async (messages) => {
+                addThread(id, messageID, message, user.name + " " + user.lastName, user.profilePicture).then(async (messages) => {
                     res.status(200).send({data: messages, status: true, message: "succefull"})
                 }).catch(error => {res.status(400).send({error, status: false})})
             }).catch(error => {res.status(400).send({error, status: false})})
