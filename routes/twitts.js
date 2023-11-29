@@ -201,7 +201,7 @@ router.post("/getFollowsTwitts", async (req, res) => {
     }
 })
 
-router.post("/getComents", async (req, res) => {
+router.post("/getComments", async (req, res) => {
     const id = req.body.id;
     const key = req.body.key;
     const ownerID = req.body.ownerID;
