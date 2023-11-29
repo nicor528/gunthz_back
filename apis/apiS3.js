@@ -92,14 +92,17 @@ async function updateTwittsLinks (twitts) {
             try {
                 const result = await generarEnlaceDeDescarga(path);
                 twitt.file = result;
-                if(twitt.profilePicture){
-                    const path = twitt.profilePicture;
-                    const result = await generarEnlaceDeDescarga(path);
-                    twitt.profilePicture = result;
-                }else{
-                    return twitt;
-                }
             } catch(error){
+                console.log(error)
+                throw error;
+            }
+        }
+        if(twitt.profilePicture){
+            const path = twitt.profilePicture;
+            try{
+                const result = await generarEnlaceDeDescarga(path);
+                twitt.profilePicture = result;
+            }catch(error){
                 console.log(error)
                 throw error;
             }
