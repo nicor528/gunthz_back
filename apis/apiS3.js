@@ -112,8 +112,10 @@ async function updateTwittsLinks2(twitts) {
             if (twitt.M.profilePicture.S) {
                 const path = twitt.M.profilePicture.S;
                 try {
+                    console.log('Before generating link');
                     const result = await generarEnlaceDeDescarga(path);
                     // Crear un nuevo objeto para no modificar el original
+                    console.log(result)
                     const newTwitt = { ...twitt };
                     // Modificar la propiedad en el nuevo objeto
                     newTwitt.M.profilePicture.S = result;
@@ -126,7 +128,10 @@ async function updateTwittsLinks2(twitts) {
                 return twitt;
             }
         })
-    );
+    ).catch((error) => {
+        console.log('Error in Promise.all:', error);
+        throw error;
+    });
     return newTwitts;
 }
 
