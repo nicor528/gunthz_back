@@ -287,7 +287,7 @@ function updateProfilePicture (id, path) {
     )
 }
 
-async function addTwitt(id, twitt, file) {
+async function addTwitt(id, twitt, file, profilePicture, name) {
     let localDate = new Date();
     let localDay = await localDate.getDate();
     let localMonth = await localDate.getMonth() + 1; 
@@ -314,6 +314,8 @@ async function addTwitt(id, twitt, file) {
                             coments : [],
                             ownerID: id,
                             file: file,
+                            name: name,
+                            profilePicture: profilePicture,
                             serverDate: {
                                 day: localDay,
                                 month: localMonth,
@@ -423,7 +425,7 @@ function unLikeTwitt (id, ownerID, twittID){
     )
 }
 
-function commentTwitt (id, ownerID, twittID, comment) {
+function commentTwitt (id, ownerID, twittID, comment, profilePicture, name) {
     return(
         new Promise (async (res, rej) => {
             const command = new GetCommand({
@@ -438,7 +440,9 @@ function commentTwitt (id, ownerID, twittID, comment) {
                 if(twittIndex !== -1){
                     const newComment = {
                         id: id,
-                        comment: comment
+                        comment: comment,
+                        profilePicture: profilePicture,
+                        name: name
                     }
                     newUser.twitts[twittIndex].coments.push(newComment);
                     const command = new PutCommand({
@@ -792,6 +796,8 @@ function getFollowsTwitts(id) {
         }
     });
 }
+
+
 
 function getAllTwitts(){
     return(

@@ -1,6 +1,6 @@
 
 const express = require('express');
-const { addTwitt, verifyKey, setNewKey, likeTwitt, commentTwitt, deleteTwitt, followUser, addFollower, unfollowUser, removeFollower, reportTwitt, unLikeTwitt, getUserTwitts, getFollowsTwitts, getAllTwitts } = require('../apis/apiDynamoDB');
+const { addTwitt, verifyKey, setNewKey, likeTwitt, commentTwitt, deleteTwitt, followUser, addFollower, unfollowUser, removeFollower, reportTwitt, unLikeTwitt, getUserTwitts, getFollowsTwitts, getAllTwitts, getUser } = require('../apis/apiDynamoDB');
 const { saveTwittFile, updateTwittsLinks } = require('../apis/apiS3');
 const { trendingTwitts, cleanObject, getAllTwitts2 } = require('../apis/apiDynamoDB2');
 const router = express.Router();
@@ -13,8 +13,10 @@ router.post("/postTwitt", async (req, res) => {
     if(id && twitt && key){
         verifyKey(id, key).then(newKey => {
             setNewKey(id, newKey).then(data => {
-                addTwitt(id, twitt, fielLink ? fielLink : false).then(() => {
-                    res.status(200).send({status: true, message: "ok", key: newKey})
+                getUser(id).then(user => {
+                    addTwitt(id, twitt, fielLink ? fielLink : false, user.profilePicture, user.name + " " + user.lastName).then(() => {
+                        res.status(200).send({status: true, message: "ok", key: newKey})
+                    }).catch(error => {res.status(400).send({error, status: false})})
                 }).catch(error => {res.status(400).send({error, status: false})})
             }).catch(error => {res.status(400).send({error, status: false})})
         }).catch(error => {res.status(400).send({error, status: false})})
@@ -68,8 +70,10 @@ router.post("/commentTwitt", async (req, res) => {
     if(id && ownerID && twittID && comment && key){
         verifyKey(id, key).then(newKey => {
             setNewKey(id, newKey).then(() => {
-                commentTwitt(id, ownerID, twittID, comment).then(() => {
-                    res.status(200).send({status: true, message: "ok", key: newKey})
+                getUser(id).then(user => {
+                    commentTwitt(id, ownerID, twittID, comment, user.profilePicture, user.name + " " + user.lastName).then(() => {
+                        res.status(200).send({status: true, message: "ok", key: newKey})
+                    }).catch(error => {res.status(400).send({error, status: false})})
                 }).catch(error => {res.status(400).send({error, status: false})})
             }).catch(error => {res.status(400).send({error, status: false})})
         }).catch(error => {res.status(400).send({error, status: false})})
