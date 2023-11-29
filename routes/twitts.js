@@ -234,9 +234,10 @@ router.post("/tredingTwitts", async (req, res) => {
                             //console.log(cleanTwitts)
                             updateTwittsLinks2(cleanTwitts).then(twitts => {
                                 //console.log(...twitts)
+                                console.log("testasdasdasd")
                                 console.log(twitts)
                                 res.status(200).send({status: true, message: "ok", key: newKey, data: twitts})
-                            }).catch(error => {res.status(400).send({error, status: false})})
+                            }).catch(error => {res.status(400).send({error, status: false, message: "error"})})
                         }).catch(error => {res.status(400).send({error, status: false})})
                     }).catch(error => {res.status(400).send({error, status: false})})
                 }).catch(error => {res.status(400).send({error, status: false})})
