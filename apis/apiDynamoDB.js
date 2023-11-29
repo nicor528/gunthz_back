@@ -130,7 +130,7 @@ function getID (uid) {
     )
 }
 
-function createUser (id, name, email, pass, lastName, country, city, state, zip) {
+function createUser (id, name, email, pass, lastName, country, city, state, zip, description) {
     return(
         new Promise (async (res, rej) => {
             const command = await new PutCommand({
@@ -147,6 +147,7 @@ function createUser (id, name, email, pass, lastName, country, city, state, zip)
                         id: id,
                         name: name,
                         email: email,
+                        description: description,
                         pass: pass,
                         lastName: lastName,
                         followers: [],
@@ -220,7 +221,7 @@ function getToken(id){
     )
 }
 
-function editInfoUser(id, name, lastName) {
+function editInfoUser(id, name, lastName, description) {
     return (
         new Promise (async (res, rej) => {
             const command = new GetCommand({
@@ -233,6 +234,7 @@ function editInfoUser(id, name, lastName) {
                 let newUser = result.Item;
                 newUser.name = name;
                 newUser.lastName = lastName;
+                newUser.description = description
                 const command = new PutCommand({
                     TableName: "gunthz-users",
                     Item: {
