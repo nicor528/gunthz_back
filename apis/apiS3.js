@@ -104,24 +104,29 @@ async function updateTwittsLinks (twitts) {
     return newTwitts;
 }
 
-async function updateTwittsLinks2 (twitts) {
-    console.log(twitts)
-    const newTwitts = await Promise.all(twitts.map(async (twitt) => {
-        console.log(twitt)
-        if(twitt.M.profilePicture.S){
-            const path = twitt.M.profilePicture.S;
-            try {
-                const result = await generarEnlaceDeDescarga(path);
-                twitt.M.profilePicture.S = result;
-            } catch(error){
-                console.log(error)
-                throw error;
+async function updateTwittsLinks2(twitts) {
+    console.log(twitts);
+    const newTwitts = await Promise.all(
+        twitts.map(async (twitt) => {
+            console.log(twitt);
+            if (twitt.M.profilePicture.S) {
+                const path = twitt.M.profilePicture.S;
+                try {
+                    const result = await generarEnlaceDeDescarga(path);
+                    // Crear un nuevo objeto para no modificar el original
+                    const newTwitt = { ...twitt };
+                    // Modificar la propiedad en el nuevo objeto
+                    newTwitt.M.profilePicture.S = result;
+                    return newTwitt;
+                } catch (error) {
+                    console.log(error);
+                    throw error;
+                }
+            } else {
+                return twitt;
             }
-        }else{
-            return twitt;
-        }
-        return twitt;
-    }));
+        })
+    );
     return newTwitts;
 }
 
