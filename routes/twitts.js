@@ -2,19 +2,19 @@
 const express = require('express');
 const { addTwitt, verifyKey, setNewKey, likeTwitt, commentTwitt, deleteTwitt, followUser, addFollower, unfollowUser, removeFollower, reportTwitt, unLikeTwitt, getUserTwitts, getFollowsTwitts, getAllTwitts, getUser } = require('../apis/apiDynamoDB');
 const { saveTwittFile, updateTwittsLinks } = require('../apis/apiS3');
-const { trendingTwitts, cleanObject, getAllTwitts2 } = require('../apis/apiDynamoDB2');
+const { trendingTwitts, cleanObject, getAllTwitts2, getComments } = require('../apis/apiDynamoDB2');
 const router = express.Router();
 
 router.post("/postTwitt", async (req, res) => {
     const id = req.body.id;
     const twitt = req.body.twitt;
     const key = req.body.key;
-    const fielLink = req.body.fielLink;
+    const fileLink = req.body.fielLink;
     if(id && twitt && key){
         verifyKey(id, key).then(newKey => {
             setNewKey(id, newKey).then(data => {
                 getUser(id).then(user => {
-                    addTwitt(id, twitt, fielLink ? fielLink : false, user.profilePicture, user.name + " " + user.lastName).then(() => {
+                    addTwitt(id, twitt, fileLink ? fileLink : false, user.profilePicture, user.name + " " + user.lastName).then(() => {
                         res.status(200).send({status: true, message: "ok", key: newKey})
                     }).catch(error => {res.status(400).send({error, status: false})})
                 }).catch(error => {res.status(400).send({error, status: false})})
@@ -193,6 +193,26 @@ router.post("/getFollowsTwitts", async (req, res) => {
                     //updateTwittsLinks(twitts).then(newTwitts => {
                         res.status(200).send({status: true, message: "ok", key: newKey, data: twitts})
                     //}).catch(error => {res.status(400).send({error, status: false})})
+                }).catch(error => {res.status(400).send({error, status: false})})
+            }).catch(error => {res.status(400).send({error, status: false})})
+        }).catch(error => {res.status(400).send({error, status: false})})
+    }else{
+        res.status(401).send({message: "Missing data in the body", status: false}) 
+    }
+})
+
+router.post("/getComents", async (req, res) => {
+    const id = req.body.id;
+    const key = req.body.key;
+    const ownerID = req.body.ownerID;
+    const twittID = req.body.twittID;
+    if(id && key && ownerID && twittID){
+        verifyKey(id, key).then(newKey => {
+            setNewKey(id, newKey).then(() => {
+                getComments("MUVi01eDUNpHQhBJ", 2).then(twitts => {
+                    updateTwittsLinks(twitts).then(twitts => {
+                        res.status(200).send({status: true, message: "ok", key: newKey, data: twitts})
+                    }).catch(error => {res.status(400).send({error, status: false})})
                 }).catch(error => {res.status(400).send({error, status: false})})
             }).catch(error => {res.status(400).send({error, status: false})})
         }).catch(error => {res.status(400).send({error, status: false})})

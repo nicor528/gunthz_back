@@ -446,6 +446,29 @@ function getAllTwitts2(data) {
     });
 }
 
+function getComments(ownerID, twittID) {
+    return(
+        new Promise (async (res, rej) => {
+            const command = new GetCommand({
+                TableName: "gunthz-twitts",
+                Key: {
+                    id: ownerID
+                }
+            })
+            docClient.send(command).then(result => {
+                const twitts = result.Item;
+                let data = []
+                data.push(twitts.twitts[twittID - 1]);
+                data.push(...twitts.twitts[twittID - 1].coments)
+                res(data)
+            }).catch(error => {
+                console.log(error);
+                rej(error)
+            })
+        })
+    )
+}
+
 
 module.exports = {
     addMessage,
@@ -462,6 +485,7 @@ module.exports = {
     trendingTwitts,
     cleanObject,
     getAllTwitts2,
+    getComments
     
 
 }
