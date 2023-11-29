@@ -104,6 +104,25 @@ async function updateTwittsLinks (twitts) {
     return newTwitts;
 }
 
+async function updateTwittsLinks2 (twitts) {
+    const newTwitts = await Promise.all(twitts.map(async (twitt) => {
+        const path = twitt.M.profilePicture.S;
+        if(twitt.M.profilePicture.S){
+            try {
+                const result = await generarEnlaceDeDescarga(path);
+                twitt.M.profilePicture.S = result;
+            } catch(error){
+                console.log(error)
+                throw error;
+            }
+        }else{
+            return twitt;
+        }
+        return twitt;
+    }));
+    return newTwitts;
+}
+
 async function updateLiveChatLinks (chat) {
     const newChats = await Promise.all(chat.map(async (chat) => {
         const path = chat.profilePicture;
@@ -130,6 +149,7 @@ module.exports = {
     generarEnlaceDeDescarga,
     saveTwittFile,
     updateTwittsLinks,
-    updateLiveChatLinks
+    updateLiveChatLinks,
+    updateTwittsLinks2
     
 }
