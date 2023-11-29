@@ -132,9 +132,9 @@ router.post("/getUserTwitts", async (req, res) => {
         verifyKey(id, key).then(newKey => {
             setNewKey(id, newKey).then(() => {
                 getUserTwitts(idOfUser).then(twitts => {
-                    //updateTwittsLinks(twitts).then(newTwitts => {
-                        res.status(200).send({status: true, message: "ok", key: newKey, data: twitts})
-                    //}).catch(error => {res.status(400).send({error, status: false})})
+                    updateTwittsLinks(twitts).then(newTwitts => {
+                        res.status(200).send({status: true, message: "ok", key: newKey, data: newTwitts})
+                    }).catch(error => {res.status(400).send({error, status: false})})
                 }).catch(error => {res.status(400).send({error, status: false})})
             }).catch(error => {res.status(400).send({error, status: false})})
         }).catch(error => {res.status(400).send({error, status: false})})
@@ -190,9 +190,9 @@ router.post("/getFollowsTwitts", async (req, res) => {
         verifyKey(id, key).then(newKey => {
             setNewKey(id, newKey).then(() => {
                 getFollowsTwitts(id).then(twitts => {
-                    //updateTwittsLinks(twitts).then(newTwitts => {
-                        res.status(200).send({status: true, message: "ok", key: newKey, data: twitts})
-                    //}).catch(error => {res.status(400).send({error, status: false})})
+                    updateTwittsLinks(twitts).then(newTwitts => {
+                        res.status(200).send({status: true, message: "ok", key: newKey, data: newTwitts})
+                    }).catch(error => {res.status(400).send({error, status: false})})
                 }).catch(error => {res.status(400).send({error, status: false})})
             }).catch(error => {res.status(400).send({error, status: false})})
         }).catch(error => {res.status(400).send({error, status: false})})
@@ -209,7 +209,7 @@ router.post("/getComments", async (req, res) => {
     if(id && key && ownerID && twittID){
         verifyKey(id, key).then(newKey => {
             setNewKey(id, newKey).then(() => {
-                getComments("MUVi01eDUNpHQhBJ", 2).then(twitts => {
+                getComments(ownerID, twittID).then(twitts => {
                     updateTwittsLinks(twitts).then(twitts => {
                         res.status(200).send({status: true, message: "ok", key: newKey, data: twitts})
                     }).catch(error => {res.status(400).send({error, status: false})})
@@ -230,7 +230,9 @@ router.post("/tredingTwitts", async (req, res) => {
                 getAllTwitts().then(twitts => {
                     trendingTwitts(twitts).then(newTwitts => {
                         getAllTwitts2(newTwitts).then(cleanTwitts => {
-                            res.status(200).send({status: true, message: "ok", key: newKey, data: cleanTwitts})
+                            updateTwittsLinks(cleanTwitts).then(twittis => {
+                                res.status(200).send({status: true, message: "ok", key: newKey, data: twittis})
+                            }).catch(error => {res.status(400).send({error, status: false})})
                         }).catch(error => {res.status(400).send({error, status: false})})
                     }).catch(error => {res.status(400).send({error, status: false})})
                 }).catch(error => {res.status(400).send({error, status: false})})

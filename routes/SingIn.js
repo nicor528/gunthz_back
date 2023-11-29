@@ -83,7 +83,7 @@ router.post("/getUserData", async (req, res) => {
                     getToken(id).then(async (token) => {
                         generarEnlaceDeDescarga(user.profilePicture).then(async (url) => {
                             let newUser = user;
-                            newUser.profilePicture = url;
+                            newUser.profilePicture = await url;
                             const data = await {
                                 newUser,
                                 newKey,
