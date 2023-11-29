@@ -108,8 +108,8 @@ async function updateTwittsLinks2 (twitts) {
     console.log(twitts)
     const newTwitts = await twitts.map(async (twitt) => {
         console.log(twitt)
-        const path = twitt.M.profilePicture.S;
         if(twitt.M.profilePicture.S){
+            const path = twitt.M.profilePicture.S;
             try {
                 const result = await generarEnlaceDeDescarga(path);
                 twitt.M.profilePicture.S = result;
