@@ -105,34 +105,39 @@ async function updateTwittsLinks (twitts) {
 }
 
 async function updateTwittsLinks2(twitts) {
-    //console.log(twitts);
-    const newTwitts = await Promise.all(
-        twitts.map(async (twitt) => {
-            console.log(twitt);
-            if (twitt.M.profilePicture && twitt.M.profilePicture.S) {
-                const path = twitt.M.profilePicture && twitt.M.profilePicture.S;
-                try {
+    try {
+        const newTwitts = await Promise.all(
+            twitts.map(async (twitt) => {
+                // Clonar el objeto twitt para no modificar el original
+                const newTwitt = { ...twitt };
+
+                if (newTwitt.M.profilePicture && newTwitt.M.profilePicture.S) {
+                    const path = newTwitt.M.profilePicture.S;
                     console.log('Before generating link');
-                    const result = await generarEnlaceDeDescarga(path);
-                    // Crear un nuevo objeto para no modificar el original
-                    console.log(result)
-                    const newTwitt = { ...twitt };
-                    // Modificar la propiedad en el nuevo objeto
-                    newTwitt.M.profilePicture.S = result;
+                    console.log(newTwitt);
+
+                    try {
+                        const result = await generarEnlaceDeDescarga(path);
+                        // Modificar la propiedad en el nuevo objeto
+                        newTwitt.M.profilePicture.S = result;
+                        console.log('After generating link');
+                        console.log(newTwitt);
+                        return newTwitt;
+                    } catch (error) {
+                        console.log('Error generating link:', error);
+                        throw error;
+                    }
+                } else {
                     return newTwitt;
-                } catch (error) {
-                    console.log(error);
-                    throw error;
                 }
-            } else {
-                return twitt;
-            }
-        })
-    ).catch((error) => {
-        console.log('Error in Promise.all:', error);
+            })
+        );
+
+        return newTwitts;
+    } catch (error) {
+        console.log('Error in updateTwittsLinks2:', error);
         throw error;
-    });
-    return newTwitts;
+    }
 }
 
 async function updateLiveChatLinks (chat) {
