@@ -105,7 +105,7 @@ async function updateTwittsLinks (twitts) {
 }
 
 async function updateTwittsLinks2(twitts) {
-    console.log(twitts);
+    //console.log(twitts);
     const newTwitts = await Promise.all(
         twitts.map(async (twitt) => {
             console.log(twitt);
