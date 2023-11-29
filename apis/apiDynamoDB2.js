@@ -321,7 +321,7 @@ function getThread(messageID) {
             })
             docClient.send(command).then(result => {
                 const chat = result.Item;
-                const thread = chat.chat[messageID - 1].thread
+                const thread = chat.chat[messageID - 1]
                 res(thread)
             }).catch(error => {
                 console.log(error);
