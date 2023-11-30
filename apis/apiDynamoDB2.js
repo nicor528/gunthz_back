@@ -463,7 +463,7 @@ function getComments(ownerID, twittID) {
                 const twitts = result.Item;
                 let data = []
                 data.push(twitts.twitts[twittID - 1]);
-                if(twitts.twitts[twittID - 1].coments){
+                if(twitts.twitts[twittID - 1].coments.length > 0){
                     data.push(...twitts.twitts[twittID - 1].coments)
                 }
                 res(data)
