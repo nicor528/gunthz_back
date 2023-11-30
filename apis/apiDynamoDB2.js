@@ -470,6 +470,7 @@ function getComments(ownerID, twittID) {
                     comments.push(...twitts.twitts[twittID - 1].coments)
                 }
                 const data = await {twitt: twitt, comments: comments}
+                console.log(data)
                 res(data)
             }).catch(error => {
                 console.log(error);
