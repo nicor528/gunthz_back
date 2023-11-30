@@ -355,14 +355,18 @@ function trendingTwitts(twittsArray) {
         try {
             const now = new Date(); // Obtener la fecha y hora actuales
 
-            // Filtrar y seleccionar los twitts con serverDate
-            const twittsWithDate = twittsArray.filter(
-                item => item.twitts.L.length > 0
-            );
+            const filteredTwitts = twittsArray
+                .filter(item => item.twitts.L.length > 0 )
+            let newTwitts = filteredTwitts.map(item => {
+                console.log(item)
+                return item.twitts.L
+            })
 
-            // Filtrar los twitts que ocurrieron en las últimas 24 horas
-            const recentTwitts = twittsWithDate.filter(item => {
-                const serverDate = item.twitts.L[0].M.serverDate.M;
+            const flat = newTwitts.flat()
+
+            const lastTwitts = flat.map(item => {
+                const serverDate = item.M.serverDate.M;
+                console.log(serverDate)
 
                 // Obtener los componentes de la fecha del twitt
                 const twittYear = parseInt(serverDate.year.N);
@@ -370,23 +374,63 @@ function trendingTwitts(twittsArray) {
                 const twittDay = parseInt(serverDate.day.N);
                 const twittHour = parseInt(serverDate.hour.N);
 
+
+
                 // Verificar si el twitt es de hoy o de ayer y si han pasado 24 horas
-                return (
-                    (now.getFullYear() === twittYear &&
+                if (now.getFullYear() === twittYear &&
                         now.getMonth() === twittMonth &&
-                        now.getDate() === twittDay &&
-                        now.getHours() >= twittHour) ||
-                    (now.getDate() - twittDay === 1 && now.getHours() < twittHour)
-                );
-            });
+                        now.getDate() === twittDay) 
+                {
+                    return item;
+                }
+                if(now.getDate() - twittDay === 1 && now.getHours() < twittHour){
+                    return item;
+                }
+                else{
+                    return null;
+                }
+            })
+            .filter(Boolean);
+
+            const sortedTwitts = lastTwitts.sort((a, b) => {
+                const likesA = a.M.likes.L.length;
+                const likesB = b.M.likes.L.length;
+
+                return likesB - likesA;
+            })
+
+
+
+               /* .map(item => {
+                    const serverDate = item.twitts.L[0].M.serverDate.M;
+
+                    // Obtener los componentes de la fecha del twitt
+                    const twittYear = parseInt(serverDate.year.N);
+                    const twittMonth = parseInt(serverDate.month.N) - 1; // Date considera enero como 0
+                    const twittDay = parseInt(serverDate.day.N);
+                    const twittHour = parseInt(serverDate.hour.N);
+
+                    // Verificar si el twitt es de hoy o de ayer y si han pasado 24 horas
+                    if (
+                        (now.getFullYear() === twittYear &&
+                            now.getMonth() === twittMonth &&
+                            now.getDate() === twittDay &&
+                            now.getHours() >= twittHour) ||
+                        (now.getDate() - twittDay === 1 && now.getHours() < twittHour)
+                    ) {
+                        return item;
+                    }
+                    return null;
+                })
+                .filter(Boolean); // Eliminar elementos nulos del array
 
             // Ordenar los twitts por la cantidad de likes, de mayor a menor
-            const sortedTwitts = recentTwitts.sort((a, b) => {
+            const sortedTwitts = filteredTwitts.sort((a, b) => {
                 const likesA = a.twitts.L[0].M.likes.L.length;
                 const likesB = b.twitts.L[0].M.likes.L.length;
 
                 return likesB - likesA;
-            });
+            });*/
 
             res(sortedTwitts);
         } catch (error) {

@@ -21,6 +21,9 @@ getAllTwitts().then(twitts => {
     console.log(twitts)
     trendingTwitts(twitts).then(twitts => {
         console.log(twitts)
+        twitts.map(item => {
+            console.log(item.M.likes.L.length)
+        })
         //console.log(twitts[0].twitts)
         //console.log(twitts[1].twitts)
     })
