@@ -198,7 +198,8 @@ router.get("/getFollowsTwitts", async (req, res) => {
                 }
                 else{
                     console.log("asd")
-                    res.status(200).send({status: true, message: "ok", key: newKey, data: []})
+                    const data = []
+                    res.status(200).send({status: true, message: "ok", key: newKey, data: data})
                 }
             }).catch(error => {res.status(400).send({error, status: false})})
         }).catch(error => {res.status(400).send({error, status: false})})
