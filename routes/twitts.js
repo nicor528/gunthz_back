@@ -190,6 +190,7 @@ router.get("/getFollowsTwitts", async (req, res) => {
     if(token){
         verifyToken(token).then(id => {
             getFollowsTwitts(id).then(async (twitts) => {
+                console.log(twitts)
                 if(twitts.lenght > 0){
                     console.log("test")
                     updateTwittsLinks(twitts).then(newTwitts => {
