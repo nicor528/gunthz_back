@@ -2,7 +2,7 @@
 const express = require('express');
 const { addTwitt, verifyKey, setNewKey, likeTwitt, commentTwitt, deleteTwitt, followUser, addFollower, unfollowUser, removeFollower, reportTwitt, unLikeTwitt, getUserTwitts, getFollowsTwitts, getAllTwitts, getUser } = require('../apis/apiDynamoDB');
 const { saveTwittFile, updateTwittsLinks, updateTwittsLinks2 } = require('../apis/apiS3');
-const { trendingTwitts, cleanObject, getAllTwitts2, getComments } = require('../apis/apiDynamoDB2');
+const { trendingTwitts, cleanObject, getAllTwitts2, getComments, verifyToken } = require('../apis/apiDynamoDB2');
 const router = express.Router();
 
 router.post("/postTwitt", async (req, res) => {
