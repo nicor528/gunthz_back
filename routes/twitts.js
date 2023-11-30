@@ -209,9 +209,15 @@ router.post("/getComments", async (req, res) => {
     if(id && key && ownerID && twittID){
         verifyKey(id, key).then(newKey => {
             setNewKey(id, newKey).then(() => {
-                getComments(ownerID, twittID).then(twitts => {
-                    updateTwittsLinks(twitts).then(twitts => {
-                        res.status(200).send({status: true, message: "ok", key: newKey, data: twitts})
+                getComments(ownerID, twittID).then(twitts1 => {
+                    updateTwittsLinks(twitts1.twitt).then(twitts => {
+                        updateTwittsLinks(twitts1.comments).then(async (commentTwitt) => {
+                            const data = await {
+                                twitts : twitts,
+                                comments : commentTwitt
+                            }
+                            res.status(200).send({status: true, message: "ok", key: newKey, data: data})
+                        }).catch(error => {res.status(400).send({error, status: false})})
                     }).catch(error => {res.status(400).send({error, status: false})})
                 }).catch(error => {res.status(400).send({error, status: false})})
             }).catch(error => {res.status(400).send({error, status: false})})
@@ -231,7 +237,7 @@ router.post("/tredingTwitts", async (req, res) => {
                     trendingTwitts(twitts).then(newTwitts => {
                         //console.log(newTwitts)
                         getAllTwitts2(newTwitts).then(cleanTwitts => {
-                            //console.log(cleanTwitts)
+                            console.log(cleanTwitts)
                             updateTwittsLinks2(cleanTwitts).then(twitts => {
                                 //console.log(...twitts)
                                 console.log("testasdasdasd")
