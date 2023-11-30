@@ -465,8 +465,8 @@ function getComments(ownerID, twittID) {
                 console.log(twitts.twitts[twittID - 1])
                 data.push(twitts.twitts[twittID - 1]);
                 if(twitts.twitts[twittID - 1].coments.length > 0){
-                    console.log(twitts.twitts[twittID - 1].coments)
-                    data.push(twitts.twitts[twittID - 1].coments)
+                    console.log(...twitts.twitts[twittID - 1].coments)
+                    data.push(...twitts.twitts[twittID - 1].coments)
                 }
                 res(data)
             }).catch(error => {
