@@ -189,17 +189,16 @@ router.get("/getFollowsTwitts", async (req, res) => {
     const token = req.query.token;
     if(token){
         verifyToken(token).then(id => {
-            getFollowsTwitts(id).then(twitts => {
+            getFollowsTwitts(id).then(async (twitts) => {
                 if(twitts.lenght > 0){
                     console.log("test")
                     updateTwittsLinks(twitts).then(newTwitts => {
-                        res.status(200).send({status: true, message: "ok", key: newKey, data: newTwitts})
+                        res.status(200).send({status: true, message: "ok", data: newTwitts})
                     }).catch(error => {res.status(400).send({error, status: false})})
                 }
                 else{
                     console.log("asd")
-                    const data = []
-                    res.status(200).send({status: true, message: "ok", key: newKey, data: data})
+                    res.status(200).send({status: true, message: "ok", data: []})
                 }
             }).catch(error => {res.status(400).send({error, status: false})})
         }).catch(error => {res.status(400).send({error, status: false})})
