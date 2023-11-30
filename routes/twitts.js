@@ -183,21 +183,20 @@ router.post("/unfollowUser", async (req, res) => {
     }
 })
 
-router.post("/getFollowsTwitts", async (req, res) => {
-    const id = req.body.id;
-    const key = req.body.key;
-    if(id && key){
-        verifyKey(id, key).then(newKey => {
-            setNewKey(id, newKey).then(() => {
-                getFollowsTwitts(id).then(twitts => {
-                    updateTwittsLinks(twitts).then(newTwitts => {
-                        res.status(200).send({status: true, message: "ok", key: newKey, data: newTwitts})
-                    }).catch(error => {res.status(400).send({error, status: false})})
+router.get("/getFollowsTwitts", async (req, res) => {
+    //const id = req.body.id;
+    //const key = req.body.key;
+    const token = req.query.token;
+    if(token){
+        verifyToken(token).then(id => {
+            getFollowsTwitts(id).then(twitts => {
+                updateTwittsLinks(twitts).then(newTwitts => {
+                    res.status(200).send({status: true, message: "ok", key: newKey, data: newTwitts})
                 }).catch(error => {res.status(400).send({error, status: false})})
             }).catch(error => {res.status(400).send({error, status: false})})
         }).catch(error => {res.status(400).send({error, status: false})})
     }else{
-        res.status(401).send({message: "Missing data in the body", status: false}) 
+        res.status(401).send({message: "Missing data", status: false}) 
     }
 })
 

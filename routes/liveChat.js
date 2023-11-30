@@ -52,9 +52,9 @@ router.get("/getLiveChat", async (req, res) => {
     }
 })
 
-router.post("/getThread", async (req, res) => {
-    const token = req.body.token;
-    const messageID = req.body.messageID;
+router.get("/getThread", async (req, res) => {
+    const token = req.query.token;
+    const messageID = req.query.messageID;
     if(token && messageID){
         verifyToken(token).then(id => {
             getThread(messageID).then(thread => {
