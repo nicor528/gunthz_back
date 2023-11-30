@@ -795,7 +795,7 @@ function getFollowsTwitts(id) {
             });
             // Esperamos a que todas las promesas se resuelvan
             const resolvedTwitts = await Promise.all(promises);
-            res(resolvedTwitts);
+            res(...resolvedTwitts);
         } catch (error) {
             console.log(error);
             rej(error);
