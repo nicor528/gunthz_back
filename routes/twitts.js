@@ -213,7 +213,7 @@ router.post("/getComments", async (req, res) => {
                     updateTwittsLinks(twitts1.twitt).then(twitts => {
                         updateTwittsLinks(twitts1.comments).then(async (commentTwitt) => {
                             const data = await {
-                                twitts : twitts,
+                                twitt : twitts,
                                 comments : commentTwitt
                             }
                             res.status(200).send({status: true, message: "ok", key: newKey, data: data})
