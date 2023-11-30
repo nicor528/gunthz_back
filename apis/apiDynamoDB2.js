@@ -462,6 +462,7 @@ function getComments(ownerID, twittID) {
             docClient.send(command).then(result => {
                 const twitts = result.Item;
                 let data = []
+                console.log(twitts.twitts[twittID - 1])
                 data.push(twitts.twitts[twittID - 1]);
                 if(twitts.twitts[twittID - 1].coments.length > 0){
                     data.push(...twitts.twitts[twittID - 1].coments)
