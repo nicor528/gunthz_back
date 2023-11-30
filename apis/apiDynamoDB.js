@@ -410,7 +410,7 @@ function unLikeTwitt (id, ownerID, twittID){
                     TableName: "gunthz-twitts",
                     Item: {
                         id: id,
-                        ...twitts
+                        twitts: [...twitts]
                     }
                 })
                 docClient.send(command).then(result => {

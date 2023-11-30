@@ -9,10 +9,19 @@ const { updateTwittsLinks } = require("./apis/apiS3");
         }).catch(error => {console.log(error)})
     }).catch(error => {console.log(error)})
 })*/
-
+/*
 getComments("MUVi01eDUNpHQhBJ", 2).then(twitts => {
     console.log(twitts)
     updateTwittsLinks(twitts).then(twitts => {
         console.log(twitts)
+    })
+})*/
+
+getAllTwitts().then(twitts => {
+    console.log(twitts)
+    trendingTwitts(twitts).then(twitts => {
+        console.log(twitts)
+        //console.log(twitts[0].twitts)
+        //console.log(twitts[1].twitts)
     })
 })
