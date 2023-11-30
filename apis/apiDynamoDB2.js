@@ -461,13 +461,15 @@ function getComments(ownerID, twittID) {
             })
             docClient.send(command).then(async (result) => {
                 const twitts = result.Item;
-                let data = await {twitt : [], comments: []}
+                let twitt = [];
+                let comments = [];
                 console.log(twitts.twitts[twittID - 1])
-                data.twitt.push(twitts.twitts[twittID - 1]);
+                twitt.push(twitts.twitts[twittID - 1]);
                 if(twitts.twitts[twittID - 1].coments.length > 0){
                     console.log(...twitts.twitts[twittID - 1].coments)
-                    data.comments.push(...twitts.twitts[twittID - 1].coments)
+                    comments.push(...twitts.twitts[twittID - 1].coments)
                 }
+                const data = await {twitt: twitt, comments: comments}
                 res(data)
             }).catch(error => {
                 console.log(error);
