@@ -459,9 +459,9 @@ function getComments(ownerID, twittID) {
                     id: ownerID
                 }
             })
-            docClient.send(command).then(result => {
+            docClient.send(command).then(async (result) => {
                 const twitts = result.Item;
-                let data = {twitt : [], comments: []}
+                let data = await {twitt : [], comments: []}
                 console.log(twitts.twitts[twittID - 1])
                 data.twitt.push(twitts.twitts[twittID - 1]);
                 if(twitts.twitts[twittID - 1].coments.length > 0){
