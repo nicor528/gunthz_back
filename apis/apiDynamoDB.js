@@ -778,27 +778,31 @@ function getFollowsTwitts(id) {
             });
             const result = await docClient.send(command);
             const follows = result.Item.following;
-            // Usamos map para obtener un array de promesas
-            let data1 = [];
-            const promises = follows.map(async (followId) => {
-                const twittCommand = new GetCommand({
-                    TableName: "gunthz-twitts",
-                    Key: {
-                        id: followId
+            if(follows.length > 0){
+                let data1 = [];
+                const promises = follows.map(async (followId) => {
+                    const twittCommand = new GetCommand({
+                        TableName: "gunthz-twitts",
+                        Key: {
+                            id: followId
+                        }
+                    });
+                    const twittResult = await docClient.send(twittCommand);
+                    //console.log(twittResult)
+                    if(twittResult.Item.twitts){
+                        const data = twittResult.Item.twitts
+                        data1.push(...data)
+                        return data
                     }
                 });
-                const twittResult = await docClient.send(twittCommand);
-                //console.log(twittResult)
-                if(twittResult.Item.twitts){
-                    const data = twittResult.Item.twitts
-                    data1.push(...data)
-                    return data
-                }
-            });
-            // Esperamos a que todas las promesas se resuelvan
-            const resolvedTwitts = await Promise.all(promises);
-            console.log(data1)
-            res(data1);
+                // Esperamos a que todas las promesas se resuelvan
+                const resolvedTwitts = await Promise.all(promises);
+                console.log(data1)
+                res(data1);
+            }else{
+                res([])
+            }
+            
         } catch (error) {
             console.log(error);
             rej(error);
