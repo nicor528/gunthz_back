@@ -787,10 +787,11 @@ function getFollowsTwitts(id) {
                     }
                 });
                 const twittResult = await docClient.send(twittCommand);
-                return twittResult.Item.twitts;
+                const data = {...twittResult.Item.twitts}
+                return data
             });
             // Esperamos a que todas las promesas se resuelvan
-            const resolvedTwitts = await Promise.all(promises);
+            const resolvedTwitts = await Promise.all(...promises);
             res(resolvedTwitts);
         } catch (error) {
             console.log(error);
