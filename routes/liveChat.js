@@ -54,7 +54,7 @@ router.get("/getLiveChat", async (req, res) => {
 
 router.get("/getThread", async (req, res) => {
     const token = req.query.token;
-    const messageID = req.query.messageID;
+    const messageID = parseInt(req.query.messageID);
     if(token && messageID){
         verifyToken(token).then(id => {
             getThread(messageID).then(thread => {
