@@ -787,8 +787,9 @@ function getFollowsTwitts(id) {
                     }
                 });
                 const twittResult = await docClient.send(twittCommand);
+                console.log(twittResult)
                 if(twittResult.Item.twitts){
-                    const data = {...twittResult.Item.twitts}
+                    const data = twittResult.Item.twitts
                     return data
                 }
             });
