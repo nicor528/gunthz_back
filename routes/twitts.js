@@ -124,17 +124,14 @@ router.get("/getAllTwitts", async (req, res) => {
     }).catch(error => {res.status(400).send({error, status: false})})
 })
 
-router.post("/getUserTwitts", async (req, res) => {
-    const id = req.body.id;
-    const key = req.body.key;
-    const idOfUser = req.body.idOfUser;
-    if(id && key && idOfUser){
-        verifyKey(id, key).then(newKey => {
-            setNewKey(id, newKey).then(() => {
-                getUserTwitts(idOfUser).then(twitts => {
-                    updateTwittsLinks(twitts).then(newTwitts => {
-                        res.status(200).send({status: true, message: "ok", key: newKey, data: newTwitts})
-                    }).catch(error => {res.status(400).send({error, status: false})})
+router.get("/getUserTwitts", async (req, res) => {
+    const token = req.query.token;
+    const idOfUser = req.query.idOfUser;
+    if(token && idOfUser){
+        verifyToken(token).then(id => {
+            getUserTwitts(idOfUser).then(twitts => {
+                updateTwittsLinks(twitts).then(newTwitts => {
+                    res.status(200).send({status: true, message: "ok", data: newTwitts})
                 }).catch(error => {res.status(400).send({error, status: false})})
             }).catch(error => {res.status(400).send({error, status: false})})
         }).catch(error => {res.status(400).send({error, status: false})})
@@ -207,23 +204,20 @@ router.get("/getFollowsTwitts", async (req, res) => {
     }
 })
 
-router.post("/getComments", async (req, res) => {
-    const id = req.body.id;
-    const key = req.body.key;
-    const ownerID = req.body.ownerID;
-    const twittID = req.body.twittID;
-    if(id && key && ownerID && twittID){
-        verifyKey(id, key).then(newKey => {
-            setNewKey(id, newKey).then(() => {
-                getComments(ownerID, twittID).then(twitts1 => {
-                    updateTwittsLinks(twitts1.twitt).then(twitts => {
-                        updateTwittsLinks(twitts1.comments).then(async (commentTwitt) => {
-                            const data = await {
-                                twitt : twitts,
-                                comments : commentTwitt
-                            }
-                            res.status(200).send({status: true, message: "ok", key: newKey, data: data})
-                        }).catch(error => {res.status(400).send({error, status: false})})
+router.get("/getComments", async (req, res) => {
+    const token = req.query.token;
+    const ownerID = req.query.ownerID;
+    const twittID = req.query.twittID;
+    if(token && ownerID && twittID){
+        verifyToken(token).then(id => {
+            getComments(ownerID, twittID).then(twitts1 => {
+                updateTwittsLinks(twitts1.twitt).then(twitts => {
+                    updateTwittsLinks(twitts1.comments).then(async (commentTwitt) => {
+                        const data = await {
+                            twitt : twitts,
+                            comments : commentTwitt
+                        }
+                        res.status(200).send({status: true, message: "ok", data: data})
                     }).catch(error => {res.status(400).send({error, status: false})})
                 }).catch(error => {res.status(400).send({error, status: false})})
             }).catch(error => {res.status(400).send({error, status: false})})

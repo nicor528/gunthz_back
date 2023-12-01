@@ -295,7 +295,9 @@ async function addTwitt(id, twitt, file, profilePicture, name) {
     let localMonth = await localDate.getMonth() + 1; 
     let localYear = await localDate.getFullYear();
     let localHour = await localDate.getHours();
-    localDate = await localDay + '/' + localMonth + '/' + localYear;
+    let localMinuts = await localDate.getMinutes();
+    let localMili = await localDate.getMilliseconds();
+    //localDate = await localDay + '/' + localMonth + '/' + localYear;
     return (
         new Promise (async (res, rej) => {
             const command = new GetCommand({
@@ -322,7 +324,10 @@ async function addTwitt(id, twitt, file, profilePicture, name) {
                                 day: localDay,
                                 month: localMonth,
                                 year: localYear,
-                                hour: localHour
+                                hour: localHour,
+                                minuts: localMinuts,
+                                miliSeconds: localMili,
+                                date: localDate
                             }
                         }
                     ]
