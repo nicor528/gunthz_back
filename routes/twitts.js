@@ -207,7 +207,7 @@ router.get("/getFollowsTwitts", async (req, res) => {
 router.get("/getComments", async (req, res) => {
     const token = req.query.token;
     const ownerID = req.query.ownerID;
-    const twittID = req.query.twittID;
+    const twittID = parseInt(req.query.twittID);
     if(token && ownerID && twittID){
         verifyToken(token).then(id => {
             getComments(ownerID, twittID).then(twitts1 => {
