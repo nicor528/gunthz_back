@@ -239,7 +239,9 @@ router.get("/tredingTwitts", async (req, res) => {
         verifyToken(token).then(id => {
                 getAllTwitts().then(twitts => {
                     trendingTwitts(twitts).then(twitts => {
-                        res.status(200).send({status: true, message: "ok", data: twitts})
+                        updateTwittsLinks2(twitts).then(twitts => {
+                            res.status(200).send({status: true, message: "ok", data: twitts})
+                        }).catch(error => {res.status(400).send({error, status: false})})
                     }).catch(error => {res.status(400).send({error, status: false})})
                 }).catch(error => {res.status(400).send({error, status: false})})
         }).catch(error => {res.status(400).send({error, status: false})})
