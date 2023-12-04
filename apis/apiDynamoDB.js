@@ -513,7 +513,7 @@ function deleteTwitt (id, twittID) {
     )
 }
 
-function followUser(id, followID) {
+function followUser(id, followID, profilePicture, name) {
     return(
         new Promise (async (res, rej) => {
             const command = new GetCommand({
@@ -525,8 +525,14 @@ function followUser(id, followID) {
             docClient.send(command).then(result => {
                 let newUser = result.Item;
                 const follows = newUser.following;
-                if(!follows.includes(followID)){
-                    newUser.following.push(followID);
+                const followerIndex = newUser.followers.findIndex((follower) => follower.id === followerID);
+                if(followerIndex === -1){
+                    const newFollow = {
+                        id: followID,
+                        profilePicture: profilePicture,
+                        name: name
+                    }
+                    newUser.following.push(newFollow);
                     const command = new PutCommand({
                         TableName: "gunthz-users",
                         Item: {
@@ -552,7 +558,7 @@ function followUser(id, followID) {
     )
 }
 
-function addFollower (id, followerID) {
+function addFollower (id, followerID, profilePicture, name) {
     return(
         new Promise (async (res, rej) => {
             const command = new GetCommand({
@@ -563,8 +569,14 @@ function addFollower (id, followerID) {
             })
             docClient.send(command).then(result => {
                 let newUser = result.Item;
-                if(!newUser.followers.includes(followerID)){
-                    newUser.followers.push(followerID);
+                const followerIndex = newUser.followers.findIndex((follower) => follower.id === followerID);
+                if(followerIndex === -1){
+                    const newFollower = {
+                        id: followerID,
+                        profilePicture: profilePicture,
+                        name: name
+                    }
+                    newUser.followers.push(newFollower);
                     const command = new PutCommand({
                         TableName: "gunthz-users",
                         Item: {
@@ -601,7 +613,7 @@ function unfollowUser (id, unfollowID) {
             })
             docClient.send(command).then(result => {
                 let newUser = result.Item;
-                const followingIndex = newUser.following.indexOf(unfollowID);
+                const followingIndex = newUser.following.findIndex((following) => following.id === unfollowID);
                 if(followingIndex !== -1){
                     newUser.following.splice(followingIndex, 1);
                     const command = new PutCommand({
@@ -640,7 +652,7 @@ function removeFollower(id, followerID) {
             })
             docClient.send(command).then(result => {
                 let newUser = result.Item;
-                const followerIdex = newUser.followers.indexOf(followerID);
+                const followerIdex = newUser.followers.findIndex((follower) => follower.id === followerID);
                 if(followerIdex !== -1){
                     newUser.followers.splice(followerIdex, 1);
                     const command = new PutCommand({
@@ -660,6 +672,46 @@ function removeFollower(id, followerID) {
                     rej("Not following this user");
                     console.log("Not following this user");
                 }
+            }).catch(error => {
+                console.log(error)
+                rej(error)
+            })
+        })
+    )
+}
+
+function getFollowings (id) {
+    return(
+        new Promise ( (res, rej) => {
+            const command = new GetCommand({
+                TableName: "gunthz-users",
+                Key: {
+                    id: id
+                }
+            })
+            docClient.send(command).then(result => {
+                const user = result.Item;
+                res(user.following)
+            }).catch(error => {
+                console.log(error)
+                rej(error)
+            })
+        })
+    )
+}
+
+function getFollowers(id) {
+    return(
+        new Promise ((res, rej) => {
+            const command = new GetCommand({
+                TableName: "gunthz-users",
+                Key: {
+                    id: id
+                }
+            })
+            docClient.send(command).then(result => {
+                const user = result.Item;
+                res(user.followers)
             }).catch(error => {
                 console.log(error)
                 rej(error)
@@ -858,6 +910,8 @@ module.exports = {
     getFollowsTwitts,
     getAllTwitts,
     getToken,
-    updateProfilePicture
+    updateProfilePicture,
+    getFollowings,
+    getFollowers
 
 }

@@ -23,7 +23,8 @@ async function generarEnlaceDeDescarga(objectKey) {
             const url = parseUrl(`https://gunthz-profile-pictures.s3.eu-central-1.amazonaws.com/${objectKey}`);
 
             // Genera el enlace prefirmado
-            presigner.presign(new HttpRequest(url)).then(async (result) => {
+            const expiracionEnSegundos = 3600 * 6;
+            presigner.presign(new HttpRequest(url), { expiresIn: expiracionEnSegundos }).then(async (result) => {
                 //console.log(result)
                 const url = await formatUrl(result)
                 res(url)

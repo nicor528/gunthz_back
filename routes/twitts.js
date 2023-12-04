@@ -1,6 +1,6 @@
 
 const express = require('express');
-const { addTwitt, verifyKey, setNewKey, likeTwitt, commentTwitt, deleteTwitt, followUser, addFollower, unfollowUser, removeFollower, reportTwitt, unLikeTwitt, getUserTwitts, getFollowsTwitts, getAllTwitts, getUser } = require('../apis/apiDynamoDB');
+const { addTwitt, verifyKey, setNewKey, likeTwitt, commentTwitt, deleteTwitt, followUser, addFollower, unfollowUser, removeFollower, reportTwitt, unLikeTwitt, getUserTwitts, getFollowsTwitts, getAllTwitts, getUser, getFollowings, getFollowers } = require('../apis/apiDynamoDB');
 const { saveTwittFile, updateTwittsLinks, updateTwittsLinks2 } = require('../apis/apiS3');
 const { trendingTwitts, cleanObject, getAllTwitts2, getComments, verifyToken } = require('../apis/apiDynamoDB2');
 const router = express.Router();
@@ -147,9 +147,13 @@ router.post("/followUser", async (req, res) => {
     if(id && followID && key){
         verifyKey(id, key).then(newKey => {
             setNewKey(id, newKey).then(() => {
-                followUser(id, followID).then(() => {
-                    addFollower(followID, id).then(() => {
-                        res.status(200).send({status: true, message: "ok", key: newKey})
+                getUser(followID).then(followedUser => {
+                    followUser(id, followID, followedUser.profilePicture, followedUser.name + " " + followedUser.lastName).then(() => {
+                        getUser(id).then(user => {
+                            addFollower(followID, id, user.profilePicture, user.name + " " + user.lastName).then(() => {
+                                res.status(200).send({status: true, message: "ok", key: newKey})
+                            }).catch(error => {res.status(400).send({error, status: false})})
+                        }).catch(error => {res.status(400).send({error, status: false})})
                     }).catch(error => {res.status(400).send({error, status: false})})
                 }).catch(error => {res.status(400).send({error, status: false})})
             }).catch(error => {res.status(400).send({error, status: false})})
@@ -173,6 +177,46 @@ router.post("/unfollowUser", async (req, res) => {
                         res.status(200).send({status: true, message: "ok", key: newKey})
                     }).catch(error => {res.status(400).send({error, status: false})})
                 }).catch(error => {res.status(400).send({error, status: false})})
+            }).catch(error => {res.status(400).send({error, status: false})})
+        }).catch(error => {res.status(400).send({error, status: false})})
+    }else{
+        res.status(401).send({message: "Missing data in the body", status: false}) 
+    }
+})
+
+router.get("/getFollowings", (req, res) => {
+    const token = req.query.token;
+    if(token){
+        verifyToken(token).then(id => {
+            getFollowings(id).then(follows => {
+                if(follows.length > 1){
+                    updateTwittsLinks(follows).then(data => {
+                        res.status(200).send({status: true, message: "ok", data: data})
+                    }).catch(error => {res.status(400).send({error, status: false})})
+                }else{
+                    console.log("asd")
+                    res.status(200).send({status: true, message: "ok", data: []})
+                }
+            }).catch(error => {res.status(400).send({error, status: false})})
+        }).catch(error => {res.status(400).send({error, status: false})})
+    }else{
+        res.status(401).send({message: "Missing data in the body", status: false}) 
+    }
+})
+
+router.get("/getFollowers", (req, res) => {
+    const token = req.query.token;
+    if(token){
+        verifyToken(token).then(id => {
+            getFollowers(id).then(followers => {
+                if(followers.length > 1){
+                    updateTwittsLinks(followers).then(data => {
+                        res.status(200).send({status: true, message: "ok", data: data})
+                    }).catch(error => {res.status(400).send({error, status: false})})
+                }else{
+                    console.log("asd")
+                    res.status(200).send({status: true, message: "ok", data: []})
+                }
             }).catch(error => {res.status(400).send({error, status: false})})
         }).catch(error => {res.status(400).send({error, status: false})})
     }else{
