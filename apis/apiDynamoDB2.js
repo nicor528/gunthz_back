@@ -535,6 +535,47 @@ function getComments(ownerID, twittID) {
     )
 }
 
+function saveNewLiveSpace (id, title, month, day, hour, minut) {
+    return(
+        new Promise(async (res, rej) => {
+            const command = new GetCommand({
+                TableName: "gunthz-liveSpaces",
+                Key: {
+                    id: id
+                }
+            })
+            docClient.send(command).then(result => {
+                let spaces = result.Item;
+                const newSpace = {
+                    title: title,
+                    month: month,
+                    day: day,
+                    hour: hour,
+                    minut: minut
+                }
+                spaces.spaces.push(newSpace);
+                const command = new PutCommand({
+                    TableName: "gunthz-liveSpaces",
+                    Item: {
+                        id: id,
+                        ...spaces
+                    }
+                })
+                docClient.send(command).then(result => {
+                    res()
+                }).catch(error => {
+                    console.log(error);
+                    rej(error)
+                })
+            }).catch(error => {
+                console.log(error);
+                rej(error)
+            })
+
+        })
+    )
+}
+
 function getLastDayTwitts (twitts) {
 
 }
@@ -555,7 +596,8 @@ module.exports = {
     trendingTwitts,
     cleanObject,
     getAllTwitts2,
-    getComments
+    getComments,
+    saveNewLiveSpace
     
 
 }
