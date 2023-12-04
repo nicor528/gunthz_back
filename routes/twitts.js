@@ -2,7 +2,7 @@
 const express = require('express');
 const { addTwitt, verifyKey, setNewKey, likeTwitt, commentTwitt, deleteTwitt, followUser, addFollower, unfollowUser, removeFollower, reportTwitt, unLikeTwitt, getUserTwitts, getFollowsTwitts, getAllTwitts, getUser, getFollowings, getFollowers } = require('../apis/apiDynamoDB');
 const { saveTwittFile, updateTwittsLinks, updateTwittsLinks2 } = require('../apis/apiS3');
-const { trendingTwitts, cleanObject, getAllTwitts2, getComments, verifyToken } = require('../apis/apiDynamoDB2');
+const { trendingTwitts, cleanObject, getAllTwitts2, getComments, verifyToken, orderTwittsForDate } = require('../apis/apiDynamoDB2');
 const router = express.Router();
 
 router.post("/postTwitt", async (req, res) => {
@@ -131,7 +131,9 @@ router.get("/getUserTwitts", async (req, res) => {
         verifyToken(token).then(id => {
             getUserTwitts(idOfUser).then(twitts => {
                 updateTwittsLinks(twitts).then(newTwitts => {
-                    res.status(200).send({status: true, message: "ok", data: newTwitts})
+                    orderTwittsForDate(newTwitts).then(newTwitts => {
+                        res.status(200).send({status: true, message: "ok", data: newTwitts})
+                    }).catch(error => {res.status(400).send({error, status: false})})
                 }).catch(error => {res.status(400).send({error, status: false})})
             }).catch(error => {res.status(400).send({error, status: false})})
         }).catch(error => {res.status(400).send({error, status: false})})
@@ -234,7 +236,9 @@ router.get("/getFollowsTwitts", async (req, res) => {
                 if(twitts.length > 0){
                     console.log("test")
                     updateTwittsLinks(twitts).then(newTwitts => {
-                        res.status(200).send({status: true, message: "ok", data: newTwitts})
+                        orderTwittsForDate(newTwitts).then(newTwitts => {
+                            res.status(200).send({status: true, message: "ok", data: newTwitts})
+                        }).catch(error => {res.status(400).send({error, status: false})})
                     }).catch(error => {res.status(400).send({error, status: false})})
                 }
                 else{

@@ -576,6 +576,35 @@ function saveNewLiveSpace (id, title, month, day, hour, minut) {
     )
 }
 
+function compararFechas(postA, postB) {
+    // Compara los años
+    if (postA.serverDate.year !== postB.serverDate.year) {
+        return postA.serverDate.year - postB.serverDate.year;
+    }
+
+    // Compara los meses si los años son iguales
+    if (postA.serverDate.month !== postB.serverDate.month) {
+        return postA.serverDate.month - postB.serverDate.month;
+    }
+
+    // Compara los días si los años y meses son iguales
+    return postA.serverDate.day - postB.serverDate.day;
+}
+
+function orderTwittsForDate (twitts) {
+    return(
+        new Promise( async (res, rej) => {
+            try{
+                await twitts.sort(compararFechas)
+                res(twitts)
+            }catch(error){
+                console.log(error)
+                rej(error)
+            }
+        })
+    )
+}
+
 function getLastDayTwitts (twitts) {
 
 }
@@ -597,7 +626,8 @@ module.exports = {
     cleanObject,
     getAllTwitts2,
     getComments,
-    saveNewLiveSpace
+    saveNewLiveSpace,
+    orderTwittsForDate
     
 
 }
