@@ -231,6 +231,7 @@ router.get("/getFollowsTwitts", async (req, res) => {
     //const key = req.body.key;
     const token = req.query.token;
     if(token){
+        console.log(token)
         verifyToken(token).then(id => {
             console.log("test000")
             getFollowsTwitts(id).then(async (twitts) => {

@@ -841,7 +841,7 @@ function getFollowsTwitts(id) {
                     const twittCommand = new GetCommand({
                         TableName: "gunthz-twitts",
                         Key: {
-                            id: followId
+                            id: followId.id
                         }
                     });
                     const twittResult = await docClient.send(twittCommand);
