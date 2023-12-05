@@ -669,7 +669,7 @@ function flatSpaces(spaces) {
         new Promise (async (res, rej) => {
             try{
                 const filteredSpaces = spaces.filter(item => {
-                    console.log(item)
+                    console.log(item.spaces.L)
                     item.spaces.L.length > 0
                 })
                 console.log(filteredSpaces)
