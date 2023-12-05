@@ -674,6 +674,7 @@ function flatSpaces(spaces) {
                 const justSpaces = filteredSpaces.map(item => {
                     return item.spaces.L
                 })
+                console.log(justSpaces)
                 await justSpaces.sort(compararFechasSpaces)
                 res(justSpaces)
             }catch(error){
