@@ -53,6 +53,7 @@ router.get("/getAllSpaces", async (req, res) => {
     if(token){
         verifyToken(token).then(id => {
             getAllSpaces().then(spaces => {
+                console.log(spaces)
                 flatSpaces(spaces).then(spaces => {
                     res.status(200).send({status: true, message: "ok", data: spaces})
                 }).catch(error => {res.status(400).send({error, status: false})})
