@@ -580,16 +580,22 @@ function saveNewLiveSpace (id, title, month, day, hour, minut, year) {
 function compararFechas(postA, postB) {
     // Compara los años
     if (postA.serverDate.year !== postB.serverDate.year) {
-        return postA.serverDate.year - postB.serverDate.year;
+        return postB.serverDate.year - postA.serverDate.year;
     }
 
     // Compara los meses si los años son iguales
     if (postA.serverDate.month !== postB.serverDate.month) {
-        return postA.serverDate.month - postB.serverDate.month;
+        return postB.serverDate.month - postA.serverDate.month;
+    }   
+    if (postA.serverDate.day !== postB.serverDate.day) {
+        return postB.serverDate.day - postA.serverDate.day;
     }
-
-    // Compara los días si los años y meses son iguales
-    return postA.serverDate.day - postB.serverDate.day;
+    if (postA.serverDate.minuts !== postB.serverDate.minuts) {
+        return postB.serverDate.minuts - postA.serverDate.minuts;
+    }
+    if (postA.serverDate.miliSeconds !== postB.serverDate.miliSeconds) {
+        return postB.serverDate.miliSeconds - postA.serverDate.miliSeconds;
+    }
 }
 
 function orderTwittsForDate (twitts) {
