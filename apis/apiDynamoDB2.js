@@ -671,6 +671,7 @@ function flatSpaces(spaces) {
                 const filteredSpaces = spaces.filter(item => {
                     item.spaces.L.length > 0
                 })
+                console.log(filteredSpaces)
                 const justSpaces = filteredSpaces.map(item => {
                     return item.spaces.L
                 })
