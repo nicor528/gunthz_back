@@ -1,7 +1,7 @@
 const express = require('express');
 const { verifyKey, setNewKey, checkPermisions, createLiveSpace } = require('../apis/apiDynamoDB');
 const { createOradorToken, createUserToken } = require('../apis/apiAgora');
-const { saveNewLiveSpace } = require('../apis/apiDynamoDB2');
+const { saveNewLiveSpace, verifyToken, getUserSpaces, getAllSpaces, flatSpaces } = require('../apis/apiDynamoDB2');
 const router = express.Router();
 
 router.post("/createSpace", async (req, res) => {
@@ -28,6 +28,34 @@ router.post("/createSpace", async (req, res) => {
                         res.status(400).send({error, status: false})
                     }
                 })
+            }).catch(error => {res.status(400).send({error, status: false})})
+        }).catch(error => {res.status(400).send({error, status: false})})
+    }else{
+        res.status(401).send({message: "Missing data in the body", status: false})
+    }
+})
+
+router.get("/getUserSpaces", (req, res) => {
+    const token = req.query.token;
+    if(token){
+        verifyToken(token).then(id => {
+            getUserSpaces(id).then(spaces => {
+                res.status(200).send({status: true, message: "ok", data: spaces})
+            }).catch(error => {res.status(400).send({error, status: false})})
+        }).catch(error => {res.status(400).send({error, status: false})})
+    }else{
+        res.status(401).send({message: "Missing data in the body", status: false})
+    }
+})
+
+router.get("/getAllSpaces", async (req, res) => {
+    const token = req.query.token;
+    if(token){
+        verifyToken(token).then(id => {
+            getAllSpaces().then(spaces => {
+                flatSpaces(spaces).then(spaces => {
+                    res.status(200).send({status: true, message: "ok", data: spaces})
+                }).catch(error => {res.status(400).send({error, status: false})})
             }).catch(error => {res.status(400).send({error, status: false})})
         }).catch(error => {res.status(400).send({error, status: false})})
     }else{

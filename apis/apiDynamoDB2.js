@@ -612,8 +612,76 @@ function orderTwittsForDate (twitts) {
     )
 }
 
-function getLastDayTwitts (twitts) {
+function getUserSpaces(id) {
+    return (
+        new Promise ( (res, rej) => {
+            const command = new GetCommand({
+                TableName: "gunthz-liveSpaces",
+                Key: {
+                    id: id
+                }
+            })
+            docClient.send(command).then(result => {
+                const spaces = result.Item.spaces;
+                res(spaces)
+            }).catch(error => {
+                console.log(error);
+                rej(error)
+            })
+        })
+    )
+}
 
+function getAllSpaces () {
+    return(
+        new Promise ((res, rej) => {
+            const command = new ScanCommand({ TableName: "gunthz-liveSpaces" });
+            docClient.send(command).then(result => {
+                res(result.Items)
+            }).catch(error => {
+                console.log(error);
+                rej(error)
+            })
+        })
+    )
+}
+
+function compararFechasSpaces(postA, postB) {
+    // Compara los añosD
+    if (postA.M.year.N !== postB.M.year.N) {
+        return postB.M.year.N - postA.M.year.N;
+    }
+
+    // Compara los meses si los años son iguales
+    if (postA.M.month.N !== postB.M.month.N) {
+        return postB.M.month.N - postA.M.month.N;
+    }   
+    if (postA.M.day.N !== postB.M.day.N) {
+        return postB.M.day.N - postA.M.day.N;
+    }
+    if (postA.M.minut.N !== postB.M.minut.N) {
+        return postB.M.minut.N - postA.M.minut.N;
+    }
+}
+
+function flatSpaces(spaces) {
+    return (
+        new Promise (async (res, rej) => {
+            try{
+                const filteredSpaces = spaces.filter(item => {
+                    item.spaces.L.length > 0
+                })
+                const justSpaces = filteredSpaces.map(item => {
+                    return item.spaces.L
+                })
+                await justSpaces.sort(compararFechasSpaces)
+                res(justSpaces)
+            }catch(error){
+                console.log(error)
+                rej(error)
+            }
+        })
+    )
 }
 
 
@@ -634,7 +702,10 @@ module.exports = {
     getAllTwitts2,
     getComments,
     saveNewLiveSpace,
-    orderTwittsForDate
+    orderTwittsForDate,
+    getUserSpaces,
+    getAllSpaces,
+    flatSpaces
     
 
 }
