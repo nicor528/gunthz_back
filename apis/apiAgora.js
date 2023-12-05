@@ -45,6 +45,7 @@ function createUserToken(channel, id) {
     )
 }
 
+
 module.exports = {
     createOradorToken,
     createUserToken,

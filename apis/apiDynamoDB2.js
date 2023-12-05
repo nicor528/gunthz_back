@@ -535,7 +535,7 @@ function getComments(ownerID, twittID) {
     )
 }
 
-function saveNewLiveSpace (id, title, month, day, hour, minut) {
+function saveNewLiveSpace (id, title, month, day, hour, minut, year) {
     return(
         new Promise(async (res, rej) => {
             const command = new GetCommand({
@@ -551,7 +551,8 @@ function saveNewLiveSpace (id, title, month, day, hour, minut) {
                     month: month,
                     day: day,
                     hour: hour,
-                    minut: minut
+                    minut: minut,
+                    year: year
                 }
                 spaces.spaces.push(newSpace);
                 const command = new PutCommand({

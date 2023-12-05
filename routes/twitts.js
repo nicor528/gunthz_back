@@ -233,9 +233,11 @@ router.get("/getFollowsTwitts", async (req, res) => {
     if(token){
         verifyToken(token).then(id => {
             getFollowsTwitts(id).then(async (twitts) => {
+                console.log("test0")
                 if(twitts.length > 0){
-                    console.log("test")
+                    console.log("test1")
                     updateTwittsLinks(twitts).then(newTwitts => {
+                        console.log("test2")
                         orderTwittsForDate(newTwitts).then(newTwitts => {
                             res.status(200).send({status: true, message: "ok", data: newTwitts})
                         }).catch(error => {res.status(400).send({error, status: false})})

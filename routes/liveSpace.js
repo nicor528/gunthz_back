@@ -12,12 +12,13 @@ router.post("/createSpace", async (req, res) => {
     const minuts = req.body.minuts;
     const day = req.body.day;
     const month = req.body.day;
+    const year = req.body.year;
     //const timeLeftToStremInMilliSeconds = parseInt(req.body.timeLeftToStremInMilliSeconds);
-    if(id && key && title && hour && minuts && day && month){
+    if(id && key && title &&year&& hour && minuts && day && month){
         verifyKey(id, key).then(newKey => {
             setNewKey(id, newKey).then(data => {
                 checkPermisions(id).then(() => {
-                    saveNewLiveSpace(id, title, month, day, hour, minuts).then(() => { // creates
+                    saveNewLiveSpace(id, title, month, day, hour, minuts, year).then(() => { // creates
                         res.status(200).send({status: true, message: "ok", key: newKey})
                     }).catch(error => {res.status(400).send({error, status: false})})
                 }).catch(error => {
@@ -64,7 +65,7 @@ router.post("/requestListenerToken", async (req, res) => {
     const key = req.body.key;
     const title = req.body.title;
     const ownerID = req.body.ownerID;
-    if(id && key && channel){
+    if(id && key && title){
         verifyKey(id, key).then(newKey => {
             setNewKey(id, newKey).then(data => {
                 createUserToken(title, id).then(token => {

@@ -28,3 +28,4 @@ getAllTwitts().then(twitts => {
         //console.log(twitts[1].twitts)
     })
 })
+
