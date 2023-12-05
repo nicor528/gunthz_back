@@ -9,6 +9,7 @@ const express = require('express');
 const { SingInPass, resetPass } = require('../apis/apiAuth');
 const { getID, getKey, getUser, verifyKey, setNewKey, getToken } = require('../apis/apiDynamoDB');
 const { generarEnlaceDeDescarga } = require('../apis/apiS3');
+const { verifyToken } = require('../apis/apiDynamoDB2');
 const router = express.Router();
 
 /**
@@ -73,27 +74,23 @@ router.post("/singInEmail", async (req, res) => {
     }
 })
 
-router.post("/getUserData", async (req, res) => {
-    const id = req.body.id;
-    const key = req.body.key;
-    if(id && key){
-        verifyKey(id, key).then(newKey => {
-            setNewKey(id, newKey).then(() => {
+router.get("/getUserData", async (req, res) => {
+    const token = req.query.token;
+    if(token){
+        verifyToken(token).then(id => {
                 getUser(id).then(async (user) => {
                     getToken(id).then(async (token) => {
                         generarEnlaceDeDescarga(user.profilePicture).then(async (url) => {
                             let newUser = user;
-                            newUser.profilePicture = await url;
-                            const data = await {
+                            newUser.profilePicture = url;
+                            const data = {
                                 newUser,
-                                newKey,
                                 chatToken: token
                             }
                             res.status(200).send({data, status: true, message: "succesfull singIn"})
                         }).catch(error => {res.status(400).send({error, status:false})})
                     }).catch(error => {res.status(400).send({error, status:false})})
                 }).catch(error => {res.status(400).send({error, status:false})})
-            }).catch(error => {res.status(400).send({error, status: false})})
         }).catch(error => {res.status(400).send({error, status: false})})
     }else{
         res.status(401).send({message: "Missing data in the body", status: false}) 
