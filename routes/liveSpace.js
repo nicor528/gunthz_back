@@ -1,7 +1,8 @@
 const express = require('express');
-const { verifyKey, setNewKey, checkPermisions, createLiveSpace } = require('../apis/apiDynamoDB');
+const { verifyKey, setNewKey, checkPermisions, createLiveSpace, getUser } = require('../apis/apiDynamoDB');
 const { createOradorToken, createUserToken } = require('../apis/apiAgora');
 const { saveNewLiveSpace, verifyToken, getUserSpaces, getAllSpaces, flatSpaces } = require('../apis/apiDynamoDB2');
+const { updateTwittsLinks } = require('../apis/apiS3');
 const router = express.Router();
 
 router.post("/createSpace", async (req, res) => {
@@ -17,17 +18,19 @@ router.post("/createSpace", async (req, res) => {
     if(id && key && title &&year&& hour && minuts && day && month){
         verifyKey(id, key).then(newKey => {
             setNewKey(id, newKey).then(data => {
-                checkPermisions(id).then(() => {
-                    saveNewLiveSpace(id, title, month, day, hour, minuts, year).then(() => { // creates
-                        res.status(200).send({status: true, message: "ok", key: newKey})
-                    }).catch(error => {res.status(400).send({error, status: false})})
-                }).catch(error => {
-                    if(error == 1){
-                        res.status(400).send({message: "user not have the permisions", status: false})
-                    }else{
-                        res.status(400).send({error, status: false})
-                    }
-                })
+                getUser(id).then(user => {
+                    checkPermisions(id).then(() => {
+                        saveNewLiveSpace(id, title, month, day, hour, minuts, year, user.name + " " + user.lastName, user.profilePicture).then(() => { // creates
+                            res.status(200).send({status: true, message: "ok", key: newKey})
+                        }).catch(error => {res.status(400).send({error, status: false})})
+                    }).catch(error => {
+                        if(error == 1){
+                            res.status(400).send({message: "user not have the permisions", status: false})
+                        }else{
+                            res.status(400).send({error, status: false})
+                        }
+                    })
+                }).catch(error => {res.status(400).send({error, status: false})})
             }).catch(error => {res.status(400).send({error, status: false})})
         }).catch(error => {res.status(400).send({error, status: false})})
     }else{
@@ -40,7 +43,9 @@ router.get("/getUserSpaces", (req, res) => {
     if(token){
         verifyToken(token).then(id => {
             getUserSpaces(id).then(spaces => {
-                res.status(200).send({status: true, message: "ok", data: spaces})
+                updateTwittsLinks(spaces).then(spaces => {
+                    res.status(200).send({status: true, message: "ok", data: spaces})
+                }).catch(error => {res.status(400).send({error, status: false})})
             }).catch(error => {res.status(400).send({error, status: false})})
         }).catch(error => {res.status(400).send({error, status: false})})
     }else{

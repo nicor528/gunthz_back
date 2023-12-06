@@ -711,6 +711,7 @@ function getFollowers(id) {
             })
             docClient.send(command).then(result => {
                 const user = result.Item;
+                console.log(user.followers)
                 res(user.followers)
             }).catch(error => {
                 console.log(error)
