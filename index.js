@@ -22,6 +22,10 @@ const options = {
         "./routes/twitts.js",
         "./routes/liveChat.js",
         "./routes/liveSpace.js",
+        "./routes/mubert.js",
+        "./routes/image.js",
+        "./routes/games.js",
+        "./routes/lyrics.js"
     ],
 };
 const specs = swaggerJsdoc(options);
@@ -38,6 +42,10 @@ app.use('/api/edits', require('./routes/edits'));
 app.use("/api/twitts", require("./routes/twitts"));
 app.use("/api/liveChat", require("./routes/liveChat"));
 app.use("/api/liveSpace", require("./routes/liveSpace"));
+app.use("/api/song-generation", require("./routes/mubert"));
+app.use("/api/image-generation", require("./routes/image"));
+app.use("/api/games", require("./routes/games"));
+app.use("/api/lyrics-generation", require("./routes/lyrics"));
 
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');

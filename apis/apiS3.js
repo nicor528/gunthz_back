@@ -61,6 +61,32 @@ function uploadProfilePicture (id, image) {
     )
 }
 
+function saveImage (id, image, title) {
+    return(
+        new Promise ((res, rej) => {
+            const imageBuffer = Buffer.from(image, "base64");
+            const fileName = title;
+            const key = `${id}/generated-images/${fileName}`;
+            const params = {
+                Bucket: "gunthz-profile-pictures",
+                Key: key,
+                Body: imageBuffer,
+                ContentType: "image/jpeg"
+            };
+            s3Client.send(new PutObjectCommand(params)).then(result => {
+                console.log(result);
+                console.log(result.Location);
+                //const path = id + "/" + fileName;
+                res(key)
+            }).catch(error => {
+                console.log(error)
+                rej(error)
+            })
+        })
+    )
+}
+
+
 function saveTwittFile (id, gif, name) {
     return(
         new Promise (async (res, rej) => {
@@ -98,6 +124,15 @@ async function updateTwittsLinks (twitts) {
                 throw error;
             }
         }*/
+        if(twitt.type === "ia" || twitt.type === "song"){
+            try{
+                const resultFile = await generarEnlaceDeDescarga(twitt.file);
+                twitt.file = resultFile;
+            }catch(error){
+                console.log(error)
+                throw error;
+            }
+        }
         if(twitt.profilePicture){
             const path = twitt.profilePicture;
             try{
@@ -115,6 +150,35 @@ async function updateTwittsLinks (twitts) {
     return newTwitts;
 }
 
+async function updateImagesLink(images) {
+    try {
+        const newImages = await Promise.all(
+            images.map(async (image) => {
+                // Clonar el objeto twitt para no modificar el original
+                const newImage = { ...image };
+
+                    try {
+                        const result = await generarEnlaceDeDescarga(image.path);
+                        // Modificar la propiedad en el nuevo objeto
+                        newImage.path = result;
+                        const result2 = await generarEnlaceDeDescarga(image.profilePicture);
+                        console.log('After generating link');
+                        newImage.profilePicture = result2;
+                        return newImage;
+                    } catch (error) {
+                        console.log('Error generating link:', error);
+                        throw error;
+                    }
+            })
+        );
+
+        return newImages;
+    } catch (error) {
+        console.log('Error in updateTwittsLinks2:', error);
+        throw error;
+    }
+}
+
 async function updateTwittsLinks2(twitts) {
     try {
         const newTwitts = await Promise.all(
@@ -122,7 +186,7 @@ async function updateTwittsLinks2(twitts) {
                 // Clonar el objeto twitt para no modificar el original
                 const newTwitt = { ...twitt };
 
-                if (newTwitt.M.profilePicture && newTwitt.M.profilePicture.S) {
+                if (newTwitt.M.profilePicture && newTwitt.M.profilePicture.S && (newTwitt.M.type.S === "ia" || newTwitt.M.type.S === "song")) {
                     const path = newTwitt.M.profilePicture.S;
                     console.log('Before generating link');
                     console.log(newTwitt);
@@ -131,14 +195,28 @@ async function updateTwittsLinks2(twitts) {
                         const result = await generarEnlaceDeDescarga(path);
                         // Modificar la propiedad en el nuevo objeto
                         newTwitt.M.profilePicture.S = result;
-                        console.log('After generating link');
-                        console.log(newTwitt);
+                        const result2 = await generarEnlaceDeDescarga(newTwitt.M.file.S)
+                        newTwitt.M.file.S = result2;
                         return newTwitt;
                     } catch (error) {
                         console.log('Error generating link:', error);
                         throw error;
                     }
-                } else {
+                } if(newTwitt.M.profilePicture && newTwitt.M.profilePicture.S){
+                    const path = newTwitt.M.profilePicture.S;
+                    console.log('Before generating link');
+                    console.log(newTwitt);
+
+                    try {
+                        const result = await generarEnlaceDeDescarga(path);
+                        // Modificar la propiedad en el nuevo objeto
+                        newTwitt.M.profilePicture.S = result;
+                        return newTwitt;
+                    } catch (error) {
+                        console.log('Error generating link:', error);
+                        throw error;
+                    }
+                }else {
                     return newTwitt;
                 }
             })
@@ -170,6 +248,64 @@ async function updateLiveChatLinks (chat) {
     return newChats;
 }
 
+async function saveInS3 (id, nombreArchivo, link) {
+    return(
+      new Promise (async (res, rej) => {
+        descargarArchivoConFetch(link).then(file => {
+          console.log(file)
+          const params = {
+            Bucket: "gunthz-profile-pictures",
+            Key: "textSongs/" + id + "/" + nombreArchivo + ".mp3",
+            Body: file,
+          };
+          s3Client.send(new PutObjectCommand(params)).then(result => {
+            console.log(result)
+            const path = "textSongs/" + id + "/" + nombreArchivo + ".mp3"
+            res(path)
+          }).catch(error => {
+            console.log(error + "test");
+            rej(error)
+          })
+        }).catch(() => {
+          rej()
+        })
+      })
+    )
+}
+
+async function descargarArchivoConFetch(enlace) {
+    return(
+      new Promise(async (res, rej) => {
+        await fetch(enlace).then(async (response) => {
+          console.log(response)
+          if(!response.ok){
+            console.log(response.statusText)
+            rej()
+          }else{
+            const archivoDescargado = await response.buffer();
+            res (archivoDescargado);
+          }
+        })
+      })
+    )
+    try {
+      // Realiza la solicitud HTTP GET para descargar el archivo
+      const response = await fetch(enlace);
+  
+      if (!response.ok) {
+        throw new Error(`Error al descargar el archivo: ${response.statusText}`);
+      }
+  
+      // Lee el contenido de la respuesta como un Buffer
+      const archivoDescargado = await response.buffer();
+  
+      return archivoDescargado;
+    } catch (error) {
+      console.error(`Error al descargar el archivo:`, error);
+      throw error;
+    }
+  }
+
 //s3://gunthz-profile-pictures/MMK0PmorM24Y4xjU/profilePicture
 //https://gunthz-profile-pictures.s3.eu-central-1.amazonaws.com/MMK0PmorM24Y4xjU/profilePicture
 module.exports = {
@@ -178,6 +314,9 @@ module.exports = {
     saveTwittFile,
     updateTwittsLinks,
     updateLiveChatLinks,
-    updateTwittsLinks2
+    updateTwittsLinks2,
+    saveImage,
+    updateImagesLink,
+    saveInS3
     
 }

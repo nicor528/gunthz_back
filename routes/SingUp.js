@@ -8,6 +8,7 @@
 const express = require('express');
 const { getID, createID, createUser, generateAlphanumericCode, setNewKey } = require('../apis/apiDynamoDB');
 const { SingUpEmail1 } = require('../apis/apiAuth');
+const { getRot } = require('../apis/apiSpotify');
 const router = express.Router();
 
 /**
@@ -80,20 +81,22 @@ router.post("/singUpGoogle", async (req, res) => {
         }).catch(error => {
             if(error == 1){
                 createID(uid).then(id => {
-                    createUser(id, name, email, "", lastName, country, city, state, zip, description).then(async (token) => {
-                        const key = await generateAlphanumericCode();
-                        setNewKey(id, key).then(async () => {
-                            const data = await {
-                                id: id,
-                                key: key,
-                                chatToken: token
-                            }
-                            res.status(200).send({data: data, status: true, message: "registration succefull"})
-                        }).catch(error => {res.status(400).send({error, status: false})})
-                    }).catch(error => {
-                        console.log(error)
-                        res.status(400).send({error, status:false})
-                    })
+                    getRot(email).then(rot => {
+                        createUser(id, name, email, "", lastName, country, city, state, zip, description, rot).then(async (token) => {
+                            const key = await generateAlphanumericCode();
+                            setNewKey(id, key).then(async () => {
+                                const data = await {
+                                    id: id,
+                                    key: key,
+                                    chatToken: token
+                                }
+                                res.status(200).send({data: data, status: true, message: "registration succefull"})
+                            }).catch(error => {res.status(400).send({error, status: false})})
+                        }).catch(error => {
+                            console.log(error)
+                            res.status(400).send({error, status:false})
+                        })
+                    }).catch(error => {res.status(400).send({error, status:false})})
                 }).catch(error => {res.status(400).send({error, status:false})})
             }else{
                 res.status(401).send({error, status:false})
@@ -155,19 +158,21 @@ router.post("/singUpEmail", async (req, res) => {
     if(name && email && pass && lastName && country && city && state && zip && description){
         SingUpEmail1(email, pass).then(user1 => {
             createID(user1.uid).then(id => {
-                createUser(id, name, email, pass, lastName, country, city, state, zip, description).then(async (token) => {
-                    const key = await generateAlphanumericCode();
-                    setNewKey(id, key).then(async () => {
-                                const data = await {
-                                    id: id,
-                                    key: key,
-                                    chatToken: token
-                                }
-                                res.status(200).send({data, status: true, message: "Success"})
-                    }).catch(error => {res.status(400).send({error, status: false})})
-                }).catch(error => {
-                    console.log(error)
-                })
+                getRot(email).then(rot => {
+                    createUser(id, name, email, pass, lastName, country, city, state, zip, description, rot).then(async (token) => {
+                        const key = await generateAlphanumericCode();
+                        setNewKey(id, key).then(async () => {
+                                    const data = await {
+                                        id: id,
+                                        key: key,
+                                        chatToken: token
+                                    }
+                                    res.status(200).send({data, status: true, message: "Success"})
+                        }).catch(error => {res.status(400).send({error, status: false})})
+                    }).catch(error => {
+                        console.log(error)
+                    })
+                }).catch(error => {res.status(400).send({error, status: false})})
             }).catch(error => {res.status(400).send({error, status: false})})
         }).catch(async (error) => {
             if(error == 1){

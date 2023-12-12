@@ -1,5 +1,6 @@
 const { getAllTwitts } = require("./apis/apiDynamoDB");
 const { getAllTwitts2, trendingTwitts, getComments } = require("./apis/apiDynamoDB2");
+const { imageGeneration } = require("./apis/apiOpenAI");
 const { updateTwittsLinks } = require("./apis/apiS3");
 
 /*getAllTwitts().then(twitts=> {
@@ -16,7 +17,7 @@ getComments("MUVi01eDUNpHQhBJ", 2).then(twitts => {
         console.log(twitts)
     })
 })*/
-
+/*
 getAllTwitts().then(twitts => {
     console.log(twitts)
     trendingTwitts(twitts).then(twitts => {
@@ -27,5 +28,6 @@ getAllTwitts().then(twitts => {
         //console.log(twitts[0].twitts)
         //console.log(twitts[1].twitts)
     })
-})
+})*/
 
+imageGeneration("an futuristic robot")

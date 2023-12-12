@@ -130,7 +130,7 @@ function getID (uid) {
     )
 }
 
-function createUser (id, name, email, pass, lastName, country, city, state, zip, description) {
+function createUser (id, name, email, pass, lastName, country, city, state, zip, description, rot) {
     return(
         new Promise (async (res, rej) => {
             const command = await new PutCommand({
@@ -158,6 +158,7 @@ function createUser (id, name, email, pass, lastName, country, city, state, zip,
                         city: city,
                         state: state,
                         zip: zip,
+                        rot: rot,
                         profilePicture: "profilePicture.jpg",
                     }
                 })
@@ -171,7 +172,55 @@ function createUser (id, name, email, pass, lastName, country, city, state, zip,
                         }
                     })
                     docClient.send(command).then(result => {
-                        res(token)
+                        const command = new PutCommand({
+                            TableName: "gunthz-generated-images",
+                            Key: {
+                                id: id
+                            }
+                        })
+                        docClient.send(command).then(result => {
+                            const command = new PutCommand({
+                                TableName: "gunthz-liveSpaces",
+                                Key: {
+                                    id: id
+                                }
+                            })
+                            docClient.send(command).then(result => {
+                                const command = new PutCommand({
+                                    TableName: "game",
+                                    Key: {
+                                        id: id
+                                    }
+                                })
+                                docClient.send(command).then(result => {
+                                    const command = new PutCommand({
+                                        TableName: "gunthz-songs",
+                                        Key: {
+                                            id: id
+                                        }
+                                    })
+                                    docClient.send(command).then(result => {
+                                        const command = new PutCommand({
+                                            TableName: "gunthz-lyrics",
+                                            Key: {
+                                                id: id
+                                            }
+                                        })
+                                        docClient.send(command).then(result => {
+                                            const command = new PutCommand({
+                                                TableName: "web3-info",
+                                                Key: {
+                                                    id: id
+                                                }
+                                            })
+                                            docClient.send(command).then(result => {
+                                                res(token)
+                                            }).catch(error => {console.log(error), rej(error)})
+                                        }).catch(error => {console.log(error), rej(error)})
+                                    }).catch(error => {console.log(error), rej(error)})
+                                }).catch(error => {console.log(error), rej(error)})
+                            }).catch(error => {console.log(error), rej(error)})
+                        }).catch(error => {console.log(error), rej(error)})
                     }).catch(error => {console.log(error), rej(error)})
                 }).catch(error => {console.log(error), rej(error)})
             }).catch(error => {console.log(error), rej(error)})
@@ -289,7 +338,7 @@ function updateProfilePicture (id, path) {
     )
 }
 
-async function addTwitt(id, twitt, file, profilePicture, name) {
+async function addTwitt(id, twitt, file, profilePicture, name, type) {
     let localDate = new Date();
     let localDay = await localDate.getDate();
     let localMonth = await localDate.getMonth() + 1; 
@@ -313,6 +362,7 @@ async function addTwitt(id, twitt, file, profilePicture, name) {
                         ...result.Item.twitts,
                         {
                             twitt: twitt,
+                            type: type,
                             twittID: newID,
                             likes: [],
                             coments : [],
@@ -868,12 +918,24 @@ function getFollowsTwitts(id) {
     });
 }
 
-
-
 function getAllTwitts(){
     return(
         new Promise(async (res, rej) => {
             const command = await new ScanCommand({TableName: "gunthz-twitts"})
+            docClient.send(command).then(result => {
+                res(result.Items)
+            }).catch(error => {
+                console.log(error);
+                rej(error)
+            })
+        })
+    )
+}
+
+function getAllGeneratedImages(){
+    return(
+        new Promise(async (res, rej) => {
+            const command = await new ScanCommand({TableName: "gunthz-generated-images"})
             docClient.send(command).then(result => {
                 res(result.Items)
             }).catch(error => {
@@ -913,6 +975,7 @@ module.exports = {
     getToken,
     updateProfilePicture,
     getFollowings,
-    getFollowers
+    getFollowers,
+    getAllGeneratedImages
 
 }

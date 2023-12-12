@@ -1,6 +1,6 @@
 
 const express = require('express');
-const { addTwitt, verifyKey, setNewKey, likeTwitt, commentTwitt, deleteTwitt, followUser, addFollower, unfollowUser, removeFollower, reportTwitt, unLikeTwitt, getUserTwitts, getFollowsTwitts, getAllTwitts, getUser, getFollowings, getFollowers } = require('../apis/apiDynamoDB');
+const { addTwitt, verifyKey, setNewKey, likeTwitt, commentTwitt, deleteTwitt, followUser, addFollower, unfollowUser, removeFollower, reportTwitt, unLikeTwitt, getUserTwitts, getFollowsTwitts, getAllTwitts, getUser, getFollowings, getFollowers, getAllGeneratedImages } = require('../apis/apiDynamoDB');
 const { saveTwittFile, updateTwittsLinks, updateTwittsLinks2 } = require('../apis/apiS3');
 const { trendingTwitts, cleanObject, getAllTwitts2, getComments, verifyToken, orderTwittsForDate } = require('../apis/apiDynamoDB2');
 const router = express.Router();
@@ -14,7 +14,7 @@ router.post("/postTwitt", async (req, res) => {
         verifyKey(id, key).then(newKey => {
             setNewKey(id, newKey).then(data => {
                 getUser(id).then(user => {
-                    addTwitt(id, twitt, fileLink ? fileLink : false, user.profilePicture, user.name + " " + user.lastName).then(() => {
+                    addTwitt(id, twitt, fileLink ? fileLink : false, user.profilePicture, user.name + " " + user.lastName, "text").then(() => {
                         res.status(200).send({status: true, message: "ok", key: newKey})
                     }).catch(error => {res.status(400).send({error, status: false})})
                 }).catch(error => {res.status(400).send({error, status: false})})
@@ -295,5 +295,21 @@ router.get("/tredingTwitts", async (req, res) => {
         res.status(401).send({message: "Missing data in the body", status: false}) 
     }
 })
+
+/*
+router.get("/trending-post", (req, res) => {
+    const token = req.query.token;
+    if(token){
+        verifyKey(token).then(id => {
+            getAllTwitts().then(twitts => {
+                getAllGeneratedImages().then(images => {
+
+                })
+            })
+        })
+    }else{
+        res.status(401).send({message: "Missing data in the body", status: false}) 
+    }
+})*/
 
 module.exports = router;

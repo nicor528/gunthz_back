@@ -379,11 +379,9 @@ function trendingTwitts(twittsArray) {
                 // Verificar si el twitt es de hoy o de ayer y si han pasado 24 horas
                 if (now.getFullYear() === twittYear &&
                         now.getMonth() === twittMonth &&
-                        now.getDate() === twittDay) 
+                        now.getDate() === twittDay &&
+                        now.getHours() - twittHour <= 3) 
                 {
-                    return item;
-                }
-                if(now.getDate() - twittDay === 1 && now.getHours() < twittHour){
                     return item;
                 }
                 else{
@@ -686,6 +684,88 @@ function flatSpaces(spaces) {
     )
 }
 
+function savePathImage(id, path, title, name, profile){
+    let localDate = new Date();
+    let localDay =  localDate.getDate();
+    let localMonth =  localDate.getMonth() + 1; 
+    let localYear =  localDate.getFullYear();
+    let localHour =  localDate.getHours();
+    let localMinuts =  localDate.getMinutes();
+    let localMili =  localDate.getMilliseconds();
+    localDate =  localDay + '/' + localMonth + '/' + localYear;
+    return(
+        new Promise ((res, rej) => {
+            const command = new GetCommand({
+                TableName: "gunthz-generated-images",
+                Key: {
+                    id: id
+                }
+            })
+            docClient.send(command).then(result => {
+                const newID = result.Item.images.length;
+                const newimage = {
+                    images: [
+                        ...result.Item.images,
+                        {
+                            path: path,
+                            title: title,
+                            imageID: newID,
+                            name: name,
+                            profilePicture: profile,
+                            serverDate: {
+                                day: localDay,
+                                month: localMonth,
+                                year: localYear,
+                                hour: localHour,
+                                minuts: localMinuts,
+                                miliSeconds: localMili,
+                                date: localDate
+                            }
+                        }
+                    ]
+
+                }
+                const command = new PutCommand({
+                    TableName: "gunthz-generated-images",
+                    Item: {
+                        id: id,
+                        ...newimage
+                    }
+                })
+                docClient.send(command).then(result => {
+                    res()
+                }).catch(error => {
+                    console.log(error);
+                    rej(error)
+                })
+            }).catch(error => {
+                console.log(error);
+                rej(error)
+            })
+        })
+    )
+}
+
+function getUserImages (id) {
+    return(
+        new Promise ((res, rej) => {
+            const command = new GetCommand({
+                TableName: "gunthz-generated-images",
+                Key: {
+                    id: id
+                }
+            })
+            docClient.send(command).then(result => {
+                res(result.Item.images)
+            }).catch(error => {
+                console.log(error);
+                rej(error)
+            })
+        })
+    )
+}
+
+
 
 module.exports = {
     addMessage,
@@ -707,7 +787,9 @@ module.exports = {
     orderTwittsForDate,
     getUserSpaces,
     getAllSpaces,
-    flatSpaces
-    
+    flatSpaces,
+    savePathImage,
+    getUserImages,
+
 
 }

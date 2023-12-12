@@ -6,6 +6,7 @@ function createOradorToken (id, channel) {
     return(
         new Promise(async (res, rej) => {
             const localDate = new Date();
+            console.log(process.env.agora_app_id)
             try{
                 const oratorToken = RtcTokenBuilder.buildTokenWithUid(
                     process.env.agora_app_id,
