@@ -29,15 +29,15 @@ function lyricsGeneration(description) {
     return(
         new Promise(async (res, rej) => {
             try{
-                const lyrics = await  openai.chat.completions.create(
-                    model="gpt-3.5-turbo",
-                    messages = [
+                const lyrics = await  openai.chat.completions.create({
+                    model: "gpt-3.5-turbo",
+                    messages : [
                         {
                             role: "user",
                             content: 'Can you write a lyrics for me a ' + description,
                         }
                     ]
-                )
+                })
                 res(lyrics.choices[0].message.content)
             }catch(error){
                 console.log(error);
