@@ -1,5 +1,5 @@
 const express = require('express');
-const { verifyKey, setNewKey, getUser } = require('../apis/apiDynamoDB');
+const { verifyKey, setNewKey, getUser, addTwitt } = require('../apis/apiDynamoDB');
 const { imageGeneration } = require('../apis/apiOpenAI');
 const { saveImage, updateImagesLink } = require('../apis/apiS3');
 const { savePathImage, verifyToken } = require('../apis/apiDynamoDB2');
