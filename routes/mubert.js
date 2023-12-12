@@ -7,7 +7,7 @@
 const express = require('express');
 const { createSong, getSongStatus } = require('../apis/apiSpotify');
 const { saveInS3, generarEnlaceDeDescarga } = require('../apis/apiS3');
-const { addTwitt } = require('../apis/apiDynamoDB');
+const { addTwitt, verifyKey, setNewKey } = require('../apis/apiDynamoDB');
 const router = express.Router();
 
 /**
@@ -100,21 +100,27 @@ router.post("/createTextSong", async (req, res) => {
     const text = req.body.text;
     const title = req.body.title;
     const id = req.body.id;
+    const key = req.body.key;
     const albumCover = "https://upload.wikimedia.org/wikipedia/en/3/3e/Basshunter_%E2%80%93_Boten_Anna.jpg";
-    if(mode && duration && bitrate && text && title && id){
-            getUser(id).then(user => {
-                createSong(user.pat, mode, duration, bitrate, text).then(tasks => {
-                    getSongStatus(pat).then(() => {
-                        saveInS3(id, title, tasks[0].download_link).then(path => {
-                            addTwitt(id, title, path, user.profilePicture, user.name + " " + user.lastName, "song").then(data => {
-                                generarEnlaceDeDescarga(path).then(link => {
-                                    res.status(200).send({data: {link: link, path: path}, status: true})
+    if(mode && duration && key && bitrate && text && title && id){
+        verifyKey(id, key).then(newKey => {
+            setNewKey(id, newKey).then(() => {
+                getUser(id).then(user => {
+                    createSong(user.pat, mode, duration, bitrate, text).then(tasks => {
+                        getSongStatus(pat).then(() => {
+                            saveInS3(id, title, tasks[0].download_link).then(path => {
+                                addTwitt(id, title, path, user.profilePicture, user.name + " " + user.lastName, "song").then(data => {
+                                    res.status(200).send({status: true, message: "ok", key: newKey})
+                                    /*generarEnlaceDeDescarga(path).then(link => {
+                                        res.status(200).send({data: {link: link, path: path}, status: true})
+                                    }).catch(error => {res.status(406).send({error, status: false})})*/
                                 }).catch(error => {res.status(406).send({error, status: false})})
-                            }).catch(error => {res.status(406).send({error, status: false})})
-                        }).catch(error => {res.status(405).send({error, status: false})})
-                    }).catch(error => {res.status(408).send({error, status: false})})
-                }).catch(error => {res.status(404).send({error, status: false})})
+                            }).catch(error => {res.status(405).send({error, status: false})})
+                        }).catch(error => {res.status(408).send({error, status: false})})
+                    }).catch(error => {res.status(404).send({error, status: false})})
+                }).catch(error => {res.status(403).send({error, status: false})})
             }).catch(error => {res.status(403).send({error, status: false})})
+        }).catch(error => {res.status(403).send({error, status: false})})
     }else{
         res.status(401).send({message: "Missing data in the body", status: false})
     }
