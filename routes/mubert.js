@@ -7,7 +7,7 @@
 const express = require('express');
 const { createSong, getSongStatus } = require('../apis/apiSpotify');
 const { saveInS3, generarEnlaceDeDescarga } = require('../apis/apiS3');
-const { addTwitt, verifyKey, setNewKey } = require('../apis/apiDynamoDB');
+const { addTwitt, verifyKey, setNewKey, getUser } = require('../apis/apiDynamoDB');
 const router = express.Router();
 
 /**
