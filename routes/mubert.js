@@ -106,10 +106,15 @@ router.post("/createTextSong", async (req, res) => {
         verifyKey(id, key).then(newKey => {
             setNewKey(id, newKey).then(() => {
                 getUser(id).then(user => {
+                    console.log("test0")
                     createSong(user.pat, mode, duration, bitrate, text).then(tasks => {
+                        console.log("test1")
                         getSongStatus(pat).then(() => {
+                            console.log("test2")
                             saveInS3(id, title, tasks[0].download_link).then(path => {
+                                console.log("test3")
                                 addTwitt(id, title, path, user.profilePicture, user.name + " " + user.lastName, "song").then(data => {
+                                    console.log("test4")
                                     res.status(200).send({status: true, message: "ok", key: newKey})
                                     /*generarEnlaceDeDescarga(path).then(link => {
                                         res.status(200).send({data: {link: link, path: path}, status: true})
