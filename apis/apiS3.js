@@ -75,7 +75,7 @@ function saveImage (id, image, title) {
             };
             s3Client.send(new PutObjectCommand(params)).then(result => {
                 console.log(result);
-                console.log(result.Location);
+                //console.log(result.Location);
                 //const path = id + "/" + fileName;
                 res(key)
             }).catch(error => {

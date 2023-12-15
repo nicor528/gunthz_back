@@ -31,7 +31,7 @@ function getCompanyStatus() {
 function getRot (email) {
     return (
         new Promise (async (res, rej) => {
-            console.log("asdasd")
+            //console.log("asdasd")
             fetch('https://api-b2b.mubert.com/v2/GetServiceAccess', {
                 method: 'POST', // Cambiar a 'GET' si es necesario
                 headers: {

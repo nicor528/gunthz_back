@@ -2,6 +2,7 @@ const { getAllTwitts } = require("./apis/apiDynamoDB");
 const { getAllTwitts2, trendingTwitts, getComments } = require("./apis/apiDynamoDB2");
 const { imageGeneration } = require("./apis/apiOpenAI");
 const { updateTwittsLinks } = require("./apis/apiS3");
+const { getRot } = require("./apis/apiSpotify");
 
 /*getAllTwitts().then(twitts=> {
     trendingTwitts(twitts).then(newTwitts => {
@@ -30,4 +31,9 @@ getAllTwitts().then(twitts => {
     })
 })*/
 
-imageGeneration("an futuristic robot")
+//imageGeneration("an futuristic robot")
+getRot("test004@gmail.com").then(rot => {
+    console.log(rot);
+}).catch(error => {
+    console.log(error)
+})

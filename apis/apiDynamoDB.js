@@ -193,27 +193,7 @@ function createUser (id, name, email, pass, lastName, country, city, state, zip,
                                     }
                                 })
                                 docClient.send(command).then(result => {
-                                    const command = new PutCommand({
-                                        TableName: "gunthz-songs",
-                                        Key: {
-                                            id: id
-                                        }
-                                    })
-                                    docClient.send(command).then(result => {
-                                        const command = new PutCommand({
-                                            TableName: "gunthz-lyrics",
-                                            Key: {
-                                                id: id
-                                            }
-                                        })
-                                        docClient.send(command).then(result => {
-                                            const command = new PutCommand({
-                                                TableName: "web3-info",
-                                                Key: {
-                                                    id: id
-                                                }
-                                            })
-                                            docClient.send(command).then(result => {
+                                    
                                                 res(token)
                                             }).catch(error => {console.log(error), rej(error)})
                                         }).catch(error => {console.log(error), rej(error)})
@@ -222,9 +202,6 @@ function createUser (id, name, email, pass, lastName, country, city, state, zip,
                             }).catch(error => {console.log(error), rej(error)})
                         }).catch(error => {console.log(error), rej(error)})
                     }).catch(error => {console.log(error), rej(error)})
-                }).catch(error => {console.log(error), rej(error)})
-            }).catch(error => {console.log(error), rej(error)})
-        })
     )
 }
 
