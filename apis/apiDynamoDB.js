@@ -201,8 +201,7 @@ function createUser (id, name, email, pass, lastName, country, city, state, zip,
                                 }).catch(error => {console.log(error), rej(error)})
                             }).catch(error => {console.log(error), rej(error)})
                         }).catch(error => {console.log(error), rej(error)})
-                    }).catch(error => {console.log(error), rej(error)})
-    )
+        }))
 }
 
 function getUser (id) {
