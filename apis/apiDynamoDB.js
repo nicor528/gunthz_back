@@ -174,21 +174,21 @@ function createUser (id, name, email, pass, lastName, country, city, state, zip,
                     docClient.send(command).then(result => {
                         const command = new PutCommand({
                             TableName: "gunthz-generated-images",
-                            Key: {
+                            Item: {
                                 id: id
                             }
                         })
                         docClient.send(command).then(result => {
                             const command = new PutCommand({
                                 TableName: "gunthz-liveSpaces",
-                                Key: {
+                                Item: {
                                     id: id
                                 }
                             })
                             docClient.send(command).then(result => {
                                 const command = new PutCommand({
                                     TableName: "game",
-                                    Key: {
+                                    Item: {
                                         id: id
                                     }
                                 })
