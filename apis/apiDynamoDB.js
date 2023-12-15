@@ -130,7 +130,7 @@ function getID (uid) {
     )
 }
 
-function createUser (id, name, email, pass, lastName, country, city, state, zip, description, rot) {
+function createUser (id, name, email, pass, lastName, country, city, state, zip, description) {
     return(
         new Promise (async (res, rej) => {
             const command = await new PutCommand({
@@ -158,7 +158,7 @@ function createUser (id, name, email, pass, lastName, country, city, state, zip,
                         city: city,
                         state: state,
                         zip: zip,
-                        rot: rot,
+                        //rot: rot,
                         profilePicture: "profilePicture.jpg",
                     }
                 })

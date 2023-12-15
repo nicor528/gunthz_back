@@ -158,8 +158,8 @@ router.post("/singUpEmail", async (req, res) => {
     if(name && email && pass && lastName && country && city && state && zip && description){
         SingUpEmail1(email, pass).then(user1 => {
             createID(user1.uid).then(id => {
-                getRot(email).then(rot => {
-                    createUser(id, name, email, pass, lastName, country, city, state, zip, description, rot).then(async (token) => {
+                //getRot(email).then(rot => {
+                    createUser(id, name, email, pass, lastName, country, city, state, zip, description).then(async (token) => {
                         const key = await generateAlphanumericCode();
                         setNewKey(id, key).then(async () => {
                                     const data = await {
@@ -172,7 +172,7 @@ router.post("/singUpEmail", async (req, res) => {
                     }).catch(error => {
                         console.log(error)
                     })
-                }).catch(error => {res.status(400).send({error, status: false})})
+                //}).catch(error => {res.status(400).send({error, status: false})})
             }).catch(error => {res.status(400).send({error, status: false})})
         }).catch(async (error) => {
             if(error == 1){
