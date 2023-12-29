@@ -1,7 +1,7 @@
 const express = require('express');
 const { verifyKey, setNewKey, getUser, addTwitt } = require('../apis/apiDynamoDB');
 const { imageGeneration } = require('../apis/apiOpenAI');
-const { saveImage, updateImagesLink } = require('../apis/apiS3');
+const { saveImage, updateImagesLink, generarEnlaceDeDescarga } = require('../apis/apiS3');
 const { savePathImage, verifyToken } = require('../apis/apiDynamoDB2');
 const router = express.Router();
 
@@ -17,7 +17,9 @@ router.post("/createImage", (req, res) => {
                     imageGeneration(prompt).then(image => {
                         saveImage(id, image, title).then(path => {
                             addTwitt(id, title, path, user.name + " " + user.lastName, user.profilePicture, "ia").then(() => {
-                                res.status(200).send({status: true, message: "ok", key: newKey})
+                                generarEnlaceDeDescarga(path).then(link => {
+                                    res.status(200).send({status: true, message: "ok", key: newKey, data: link})
+                                }).catch(error => {res.status(400).send({error, status: false})})
                             }).catch(error => {res.status(400).send({error, status: false})})
                         }).catch(error => {res.status(400).send({error, status: false})})
                     }).catch(error => {res.status(400).send({error, status: false})})

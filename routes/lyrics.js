@@ -14,7 +14,7 @@ router.post("/generate-lyrics", (req, res) => {
                 getUser(id).then(user => {
                     lyricsGeneration(prompt).then(data => {
                         addTwitt(id, title + " " + data, false, user.profilePicture, user.name + " " + user.lastName, "text").then(() => {
-                            res.status(200).send({status: true, message: "ok", key: newKey})
+                            res.status(200).send({status: true, message: "ok", key: newKey, data: data})
                         }).catch(error => {res.status(400).send({error, status: false})})         
                     }).catch(error => {res.status(400).send({error, status: false})})
                 }).catch(error => {res.status(400).send({error, status: false})})
