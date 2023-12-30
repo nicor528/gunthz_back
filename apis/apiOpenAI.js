@@ -8,8 +8,8 @@ function imageGeneration(prompt) {
             try{
                 const image = await openai.images.generate({ 
                     prompt: prompt,
-                    model: "dall-e-2",
-                    size: "256x256",
+                    model: "dall-e-3",
+                    size: "1024x1024",
                     quality:"standard",
                     response_format: "b64_json",
                     n:1
