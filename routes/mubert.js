@@ -5,7 +5,6 @@
  *   description: Spotify operations
  */
 const express = require('express');
-const { createSong, getSongStatus } = require('../apis/apiSpotify');
 const { saveInS3, generarEnlaceDeDescarga } = require('../apis/apiS3');
 const { addTwitt, verifyKey, setNewKey, getUser } = require('../apis/apiDynamoDB');
 const router = express.Router();
@@ -93,6 +92,30 @@ router.post("/createPat", async (req, res) => {
 *             example:
 *               error: Bad request
 */
+
+router.post("/saveSong", (req, res) => {
+    const song = req.body.song;
+    const id = req.body.id;
+    const key = req.body.key;
+    const title = req.body.title;
+    if(song && id && key && title){
+        verifyKey(id, key).then(newKey => {
+            setNewKey(id, newKey).then(() => {
+                getUser(id).then(user => {
+                    saveInS3(id, title, song).then(path => {
+                        addTwitt(id, title, path, user.name + " " + user.lastName, user.profilePicture, "ia").then(() => {
+                            res.status(200).send({status: true, message: "ok", key: newKey})
+                        }).catch(error => {res.status(400).send({error, status: false})})
+                    }).catch(error => {res.status(400).send({error, status: false})})
+                }).catch(error => {res.status(400).send({error, status: false})})
+            }).catch(error => {res.status(400).send({error, status: false})})
+        }).catch(error => {res.status(400).send({error, status: false})})
+    }else{
+        res.status(401).send({message: "Missing data in the body", status: false})
+    }
+})
+
+/*
 router.post("/createTextSong", async (req, res) => {
     const mode = "track";
     const duration = req.body.duration;
@@ -118,7 +141,7 @@ router.post("/createTextSong", async (req, res) => {
                                     res.status(200).send({status: true, message: "ok", key: newKey})
                                     /*generarEnlaceDeDescarga(path).then(link => {
                                         res.status(200).send({data: {link: link, path: path}, status: true})
-                                    }).catch(error => {res.status(406).send({error, status: false})})*/
+                                    }).catch(error => {res.status(406).send({error, status: false})})
                                 }).catch(error => {res.status(406).send({error, status: false})})
                             }).catch(error => {res.status(405).send({error, status: false})})
                         }).catch(error => {res.status(408).send({error, status: false})})
@@ -130,6 +153,7 @@ router.post("/createTextSong", async (req, res) => {
         res.status(401).send({message: "Missing data in the body", status: false})
     }
 })
+*/
 
 /**
  * @swagger
