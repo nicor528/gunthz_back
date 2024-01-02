@@ -15,7 +15,7 @@ router.post("/createImage", (req, res) => {
             setNewKey(id, newKey).then(data => {
                 getUser(id).then(user => {
                     imageGeneration(prompt).then(image => {
-                        saveImage(id, image, title).then(path => {
+                        saveImage(id, image, prompt).then(path => {
                             addTwitt(id, title, path, user.name + " " + user.lastName, user.profilePicture, "ia").then(() => {
                                 generarEnlaceDeDescarga(path).then(link => {
                                     res.status(200).send({status: true, message: "ok", key: newKey, data: link})
