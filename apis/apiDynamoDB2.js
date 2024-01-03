@@ -777,7 +777,7 @@ function updatePosts (twitts, path, id) {
                     TableName: "gunthz-twitts",
                     Item: {
                         id: id,
-                        posts
+                        twitts: posts
                     }
                 })
                 docClient.send(command)
