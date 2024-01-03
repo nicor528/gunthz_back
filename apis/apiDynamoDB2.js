@@ -389,7 +389,7 @@ function trendingTwitts(twittsArray) {
                 }*/
                 return item;
             })
-            .filter(Boolean);
+            //.filter(Boolean);
 
             const sortedTwitts = lastTwitts.sort((a, b) => {
                 const likesA = a.M.likes.L.length;

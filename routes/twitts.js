@@ -289,10 +289,10 @@ router.get("/tredingTwitts", async (req, res) => {
     if(token && index){
         verifyToken(token).then(id => {
                 getAllTwitts().then(twitts => {
-                    trendingTwitts(twitts).then(twitts => {
-                        updateTwittsLinks2(twitts).then(twitts => {
-                            const finalTwitts = obtenerObjetosPorPagina(twitts, index)
-                            res.status(200).send({status: true, message: "ok", data: finalTwitts})
+                    trendingTwitts(twitts).then(async (twitts) => {
+                        const indexTwitts = await obtenerObjetosPorPagina(twitts, index)
+                        updateTwittsLinks2(indexTwitts).then(twitts => {
+                            res.status(200).send({status: true, message: "ok", data: twitts})
                         }).catch(error => {res.status(400).send({error, status: false})})
                     }).catch(error => {res.status(400).send({error, status: false})})
                 }).catch(error => {res.status(400).send({error, status: false})})
