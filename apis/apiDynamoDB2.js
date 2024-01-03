@@ -822,7 +822,10 @@ function setNewScore (id, score) {
             })
             docClient.send(command).then(response => {
                 res()
-            }).catch(error => console.log(error), rej(error))
+            }).catch(error => {
+                console.log(error)
+                rej(error)
+            })
         })
     )
 }
@@ -838,7 +841,10 @@ function getUserScore(id) {
             })
             docClient.send(command).then(result => {
                 res(result.Item)
-            }).catch(error => console.log(error), rej(error))
+            }).catch(error => {
+                console.log(error)
+                rej(error)
+            })
         })
     )
 }
