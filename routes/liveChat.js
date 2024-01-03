@@ -11,7 +11,7 @@ router.post("/addMessagge", async (req, res) => {
     if(message && token){
         verifyToken(token).then(id => {
             getUser(id).then(user => {
-                addMessage(id, message, user.name + " " + user.lastName, user.profilePicture).then(async (messages) => {
+                addMessage(id, message, user.userName ? user.userName : user.name + " " + user.lastName, user.profilePicture).then(async (messages) => {
                     res.status(200).send({data: messages, status: true, message: "succefull"})
                 }).catch(error => {res.status(400).send({error, status: false})})
             }).catch(error => {res.status(400).send({error, status: false})})
@@ -105,7 +105,7 @@ router.post("/threadMessage", async (req, res) => {
     if(token && message && messageID){
         verifyToken(token).then(id => {
             getUser(id).then(user => {
-                addThread(id, messageID, message, user.name + " " + user.lastName, user.profilePicture).then(async (messages) => {
+                addThread(id, messageID, message, user.userName ? user.userName : user.name + " " + user.lastName, user.profilePicture).then(async (messages) => {
                     res.status(200).send({data: messages, status: true, message: "succefull"})
                 }).catch(error => {res.status(400).send({error, status: false})})
             }).catch(error => {res.status(400).send({error, status: false})})

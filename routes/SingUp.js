@@ -66,6 +66,7 @@ router.get("/test", (req,res) => {
  *               error: Bad connection with DB
  */
 router.post("/singUpGoogle", async (req, res) => {
+    const userName = req.body.userName;
     const uid = req.body.uid;
     const name = req.body.name;
     const email = req.body.email;
@@ -75,14 +76,14 @@ router.post("/singUpGoogle", async (req, res) => {
     const state = req.body.state;
     const zip = req.body.zip;
     const description = req.body.description;
-    if(uid && name && email && lastName && country && city && state && zip && description){
+    if(userName && uid && name && email && lastName && country && city && state && zip && description){
         getID(uid).then(() => {
             res.status(401).send({message: "User already exist", status: false})
         }).catch(error => {
             if(error == 1){
                 createID(uid).then(id => {
                     getRot(email).then(rot => {
-                        createUser(id, name, email, "", lastName, country, city, state, zip, description, rot).then(async (token) => {
+                        createUser(id, userName, name, email, "", lastName, country, city, state, zip, description, rot).then(async (token) => {
                             const key = await generateAlphanumericCode();
                             setNewKey(id, key).then(async () => {
                                 const data = await {
@@ -145,6 +146,7 @@ router.post("/singUpGoogle", async (req, res) => {
  */
 router.post("/singUpEmail", async (req, res) => {
     console.log(req.body)
+    const userName = req.body.userName;
     const name = req.body.name;
     //const uid = req.body.uid;
     const email = req.body.email;
@@ -155,11 +157,11 @@ router.post("/singUpEmail", async (req, res) => {
     const state = req.body.state;
     const zip = req.body.zip;
     const description = req.body.description;
-    if(name && email && pass && lastName && country && city && state && zip && description){
+    if(userName && name && email && pass && lastName && country && city && state && zip && description){
         SingUpEmail1(email, pass).then(user1 => {
             createID(user1.uid).then(id => {
                 //getRot(email).then(rot => {
-                    createUser(id, name, email, pass, lastName, country, city, state, zip, description).then(async (token) => {
+                    createUser(id, userName, name, email, pass, lastName, country, city, state, zip, description).then(async (token) => {
                         const key = await generateAlphanumericCode();
                         setNewKey(id, key).then(async () => {
                                     const data = await {

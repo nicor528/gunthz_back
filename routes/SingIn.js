@@ -97,6 +97,24 @@ router.get("/getUserData", async (req, res) => {
     }
 })
 
+router.get("/get-oneUserData", async (req, res) => {
+    const id = req.query.id;
+    if(id){
+                getUser(id).then(async (user) => {
+                        generarEnlaceDeDescarga(user.profilePicture).then(async (url) => {
+                            let newUser = user;
+                            newUser.profilePicture = url;
+                            const data = {
+                                ...newUser
+                            }
+                            res.status(200).send({data, status: true, message: "succesfull singIn"})
+                        }).catch(error => {res.status(400).send({error, status:false})})
+                }).catch(error => {res.status(400).send({error, status:false})})
+    }else{
+        res.status(401).send({message: "Missing data in the body", status: false}) 
+    }
+})
+
 /**
  * @swagger
  * /api/singin/singInWithId:

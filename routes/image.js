@@ -3,6 +3,7 @@ const { verifyKey, setNewKey, getUser, addTwitt } = require('../apis/apiDynamoDB
 const { imageGeneration } = require('../apis/apiOpenAI');
 const { saveImage, updateImagesLink, generarEnlaceDeDescarga } = require('../apis/apiS3');
 const { savePathImage, verifyToken } = require('../apis/apiDynamoDB2');
+const { reducirTamanioImagen } = require('../apis/apiSharp');
 const router = express.Router();
 
 router.post("/createImage", (req, res) => {
@@ -15,10 +16,12 @@ router.post("/createImage", (req, res) => {
             setNewKey(id, newKey).then(data => {
                 getUser(id).then(user => {
                     imageGeneration(prompt).then(image => {
-                        saveImage(id, image, prompt).then(path => {
-                            addTwitt(id, title, path, user.name + " " + user.lastName, user.profilePicture, "ia").then(() => {
-                                generarEnlaceDeDescarga(path).then(link => {
-                                    res.status(200).send({status: true, message: "ok", key: newKey, data: link})
+                        reducirTamanioImagen(image).then(image => {
+                            saveImage(id, image, prompt).then(path => {
+                                addTwitt(id, title, path, user.userName ? user.userName : user.name + " " + user.lastName, user.profilePicture, "ia").then(() => {
+                                    generarEnlaceDeDescarga(path).then(link => {
+                                        res.status(200).send({status: true, message: "ok", key: newKey, data: link})
+                                    }).catch(error => {res.status(400).send({error, status: false})})
                                 }).catch(error => {res.status(400).send({error, status: false})})
                             }).catch(error => {res.status(400).send({error, status: false})})
                         }).catch(error => {res.status(400).send({error, status: false})})

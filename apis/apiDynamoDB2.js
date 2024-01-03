@@ -765,6 +765,50 @@ function getUserImages (id) {
     )
 }
 
+function updatePosts (twitts, path, id) {
+    return(
+        new Promise( (res, rej) => {
+            try{
+                const posts = twitts.map(post => {
+                    post.profilePicture = path
+                    return post;
+                })
+                const command = new PutCommand({
+                    TableName: "gunthz-twitts",
+                    Item: {
+                        id: id,
+                        posts
+                    }
+                })
+                docClient.send(command)
+                res()
+            }catch(error){
+                rej(error)
+            }
+        })
+    )
+}
+
+function obtenerObjetosPorPagina(array, numeroPagina) {
+    // Determinar el índice de inicio y fin para la página solicitada
+    const itemsPorPagina = 10;
+    const indiceInicio = (numeroPagina - 1) * itemsPorPagina;
+    const indiceFin = indiceInicio + itemsPorPagina;
+  
+    // Extraer los objetos de la página solicitada
+    const objetosPagina = array.slice(indiceInicio, indiceFin);
+  
+    return objetosPagina;
+  }
+  /*
+  // Ejemplo de uso
+  const miArray = [/* tu array de objetos aquí ]*/
+//const numeroPagina = 2; // Cambia esto según la página que desees obtener
+/*
+  const objetosDeLaPagina = obtenerObjetosPorPagina(miArray, numeroPagina);
+  console.log(objetosDeLaPagina);
+*/
+
 
 
 module.exports = {
@@ -790,6 +834,8 @@ module.exports = {
     flatSpaces,
     savePathImage,
     getUserImages,
+    updatePosts,
+    obtenerObjetosPorPagina
 
 
 }

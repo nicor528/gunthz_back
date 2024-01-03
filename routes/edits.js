@@ -1,7 +1,8 @@
 
 const express = require('express');
-const { verifyKey, setNewKey, editInfoUser, updateProfilePicture } = require('../apis/apiDynamoDB');
+const { verifyKey, setNewKey, editInfoUser, updateProfilePicture, getUserTwitts } = require('../apis/apiDynamoDB');
 const { uploadProfilePicture, generarEnlaceDeDescarga } = require('../apis/apiS3');
+const { updatePosts } = require('../apis/apiDynamoDB2');
 const router = express.Router();
 
 router.post("/editInfoUser", async (req, res) => {
@@ -10,11 +11,12 @@ router.post("/editInfoUser", async (req, res) => {
     const name = req.body.name;
     const lastName = req.body.lastName;
     const description = req.body.description;
+    const userName = req.body.userName;
     //const email = req.body.email;
-    if(id && name && key && description){
+    if(id && name && key && description && userName){
         verifyKey(id, key).then(newKey => {
             setNewKey(id, newKey).then(data => {
-                editInfoUser(id, name, lastName, description).then(user => {
+                editInfoUser(id, name, lastName, description, userName).then(user => {
                     res.status(200).send({status: true, message: "ok", key: newKey})
                 }).catch(error => {res.status(400).send({error, status: false})})
             }).catch(error => {res.status(400).send({error, status: false})})
@@ -33,7 +35,13 @@ router.post("/updateProfilePicture", async (req, res) => {
             setNewKey(id, newKey).then(data => {
                 uploadProfilePicture(id, base64Image).then(path => {
                     updateProfilePicture(id, path).then(() => {
-                        res.status(200).send({status: true, message: "ok", key: newKey})
+                        generarEnlaceDeDescarga(path).then(url => {
+                            getUserTwitts(id).then(twitts => {
+                                updatePosts(twitts, path, id).then(() => {
+                                    res.status(200).send({status: true, message: "ok", key: newKey, data: url})
+                                }).catch(error => {res.status(400).send({error, status: false})})
+                            }).catch(error => {res.status(400).send({error, status: false})})
+                        }).catch(error => {res.status(400).send({error, status: false})})
                     }).catch(error => {res.status(400).send({error, status: false})})
                 }).catch(error => {res.status(400).send({error, status: false})})
             }).catch(error => {res.status(400).send({error, status: false})})

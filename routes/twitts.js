@@ -2,7 +2,7 @@
 const express = require('express');
 const { addTwitt, verifyKey, setNewKey, likeTwitt, commentTwitt, deleteTwitt, followUser, addFollower, unfollowUser, removeFollower, reportTwitt, unLikeTwitt, getUserTwitts, getFollowsTwitts, getAllTwitts, getUser, getFollowings, getFollowers, getAllGeneratedImages } = require('../apis/apiDynamoDB');
 const { saveTwittFile, updateTwittsLinks, updateTwittsLinks2 } = require('../apis/apiS3');
-const { trendingTwitts, cleanObject, getAllTwitts2, getComments, verifyToken, orderTwittsForDate } = require('../apis/apiDynamoDB2');
+const { trendingTwitts, cleanObject, getAllTwitts2, getComments, verifyToken, orderTwittsForDate, obtenerObjetosPorPagina } = require('../apis/apiDynamoDB2');
 const router = express.Router();
 
 router.post("/postTwitt", async (req, res) => {
@@ -14,7 +14,7 @@ router.post("/postTwitt", async (req, res) => {
         verifyKey(id, key).then(newKey => {
             setNewKey(id, newKey).then(data => {
                 getUser(id).then(user => {
-                    addTwitt(id, twitt, fileLink ? fileLink : false, user.profilePicture, user.name + " " + user.lastName, "text").then(() => {
+                    addTwitt(id, twitt, fileLink ? fileLink : false, user.profilePicture, user.userName ? user.userName : user.name + " " + user.lastName, "text").then(() => {
                         res.status(200).send({status: true, message: "ok", key: newKey})
                     }).catch(error => {res.status(400).send({error, status: false})})
                 }).catch(error => {res.status(400).send({error, status: false})})
@@ -71,7 +71,7 @@ router.post("/commentTwitt", async (req, res) => {
         verifyKey(id, key).then(newKey => {
             setNewKey(id, newKey).then(() => {
                 getUser(id).then(user => {
-                    commentTwitt(id, ownerID, twittID, comment, user.profilePicture, user.name + " " + user.lastName).then(() => {
+                    commentTwitt(id, ownerID, twittID, comment, user.profilePicture, user.userName ? user.userName : user.name + " " + user.lastName).then(() => {
                         res.status(200).send({status: true, message: "ok", key: newKey})
                     }).catch(error => {res.status(400).send({error, status: false})})
                 }).catch(error => {res.status(400).send({error, status: false})})
@@ -127,12 +127,14 @@ router.get("/getAllTwitts", async (req, res) => {
 router.get("/getUserTwitts", async (req, res) => {
     const token = req.query.token;
     const idOfUser = req.query.idOfUser;
-    if(token && idOfUser){
+    const index = parseInt(req.query.index);
+    if(token && idOfUser && index){
         verifyToken(token).then(id => {
             getUserTwitts(idOfUser).then(twitts => {
                 updateTwittsLinks(twitts).then(newTwitts => {
-                    orderTwittsForDate(newTwitts).then(newTwitts => {
-                        res.status(200).send({status: true, message: "ok", data: newTwitts})
+                    orderTwittsForDate(newTwitts).then(async (newTwitts) => {
+                        const finalTwitts = obtenerObjetosPorPagina(newTwitts, index)
+                        res.status(200).send({status: true, message: "ok", data: finalTwitts})
                     }).catch(error => {res.status(400).send({error, status: false})})
                 }).catch(error => {res.status(400).send({error, status: false})})
             }).catch(error => {res.status(400).send({error, status: false})})
@@ -230,7 +232,8 @@ router.get("/getFollowsTwitts", async (req, res) => {
     //const id = req.body.id;
     //const key = req.body.key;
     const token = req.query.token;
-    if(token){
+    const index = parseInt(req.query.index);
+    if(token && index){
         console.log(token)
         verifyToken(token).then(id => {
             console.log("test000")
@@ -241,7 +244,8 @@ router.get("/getFollowsTwitts", async (req, res) => {
                     updateTwittsLinks(twitts).then(newTwitts => {
                         console.log("test2")
                         orderTwittsForDate(newTwitts).then(newTwitts => {
-                            res.status(200).send({status: true, message: "ok", data: newTwitts})
+                            const finalTwitts = obtenerObjetosPorPagina(newTwitts, index)
+                            res.status(200).send({status: true, message: "ok", data: finalTwitts})
                         }).catch(error => {res.status(400).send({error, status: false})})
                     }).catch(error => {res.status(400).send({error, status: false})})
                 }
@@ -281,12 +285,14 @@ router.get("/getComments", async (req, res) => {
 
 router.get("/tredingTwitts", async (req, res) => {
     const token = req.query.token
-    if(token){
+    const index = parseInt(req.query.index);
+    if(token && index){
         verifyToken(token).then(id => {
                 getAllTwitts().then(twitts => {
                     trendingTwitts(twitts).then(twitts => {
                         updateTwittsLinks2(twitts).then(twitts => {
-                            res.status(200).send({status: true, message: "ok", data: twitts})
+                            const finalTwitts = obtenerObjetosPorPagina(twitts, index)
+                            res.status(200).send({status: true, message: "ok", data: finalTwitts})
                         }).catch(error => {res.status(400).send({error, status: false})})
                     }).catch(error => {res.status(400).send({error, status: false})})
                 }).catch(error => {res.status(400).send({error, status: false})})
