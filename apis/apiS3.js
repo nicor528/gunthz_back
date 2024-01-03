@@ -186,7 +186,7 @@ async function updateTwittsLinks2(twitts) {
                 // Clonar el objeto twitt para no modificar el original
                 const newTwitt = { ...twitt };
 
-                if (newTwitt.M.profilePicture && newTwitt.M.profilePicture.S && (newTwitt.M.type.S === "ia" || newTwitt.M.type.S === "song")) {
+                if (newTwitt.M.profilePicture && newTwitt.M.profilePicture.S && newTwitt.M.type && (newTwitt.M.type.S === "ia" || newTwitt.M.type.S === "song") ) {
                     const path = newTwitt.M.profilePicture.S;
                     console.log('Before generating link');
                     console.log(newTwitt);
