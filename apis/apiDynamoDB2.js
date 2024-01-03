@@ -810,6 +810,39 @@ function obtenerObjetosPorPagina(array, numeroPagina) {
   console.log(objetosDeLaPagina);
 */
 
+function setNewScore (id, score) {
+    return(
+        new Promise ((res, rej) => {
+            const command = new PutCommand({
+                TableName: "game",
+                Item: {
+                    id: id,
+                    score: score
+                }
+            })
+            docClient.send(command).then(response => {
+                res()
+            }).catch(error => console.log(error), rej(error))
+        })
+    )
+}
+
+function getUserScore(id) {
+    return(
+        new Promise ((res, rej) => {
+            const command = new GetCommand({
+                TableName: "game",
+                Key: {
+                    id: id
+                }
+            })
+            docClient.send(command).then(result => {
+                res(result.Item)
+            }).catch(error => console.log(error), rej(error))
+        })
+    )
+}
+
 
 
 module.exports = {
@@ -836,7 +869,9 @@ module.exports = {
     savePathImage,
     getUserImages,
     updatePosts,
-    obtenerObjetosPorPagina
+    obtenerObjetosPorPagina,
+    setNewScore,
+    getUserScore
 
 
 }
