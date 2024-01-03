@@ -782,7 +782,7 @@ function getUserTwitts(id){
                 }
             })
             docClient.send(command).then(result => {
-                res(result.Item.posts)
+                res(result.Item.twitts)
             }).catch(error => {
                 console.log(error);
                 rej(error)
