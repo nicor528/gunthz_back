@@ -358,7 +358,7 @@ function trendingTwitts(twittsArray) {
             const filteredTwitts = twittsArray
                 .filter(item => item.twitts.L.length > 0 )
             let newTwitts = filteredTwitts.map(item => {
-                console.log(item)
+                //console.log(item)
                 return item.twitts.L
             })
 
@@ -366,7 +366,7 @@ function trendingTwitts(twittsArray) {
 
             const lastTwitts = flat.map(item => {
                 const serverDate = item.M.serverDate.M;
-                console.log(serverDate)
+                //console.log(serverDate)
 
                 // Obtener los componentes de la fecha del twitt
                 const twittYear = parseInt(serverDate.year.N);
