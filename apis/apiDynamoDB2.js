@@ -377,7 +377,7 @@ function trendingTwitts(twittsArray) {
 
 
                 // Verificar si el twitt es de hoy o de ayer y si han pasado 24 horas
-                if (now.getFullYear() === twittYear &&
+                /*if (now.getFullYear() === twittYear &&
                         now.getMonth() === twittMonth &&
                         now.getDate() === twittDay &&
                         now.getHours() - twittHour <= 3) 
@@ -386,7 +386,8 @@ function trendingTwitts(twittsArray) {
                 }
                 else{
                     return null;
-                }
+                }*/
+                return item;
             })
             .filter(Boolean);
 
