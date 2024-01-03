@@ -23,8 +23,10 @@ router.post("/new-high-score", (req, res) => {
 router.get("/user-score", (req, res) => {
     const id = req.query.id;
     if(id){
+        console.log("test0")
         getUserScore(id).then(score => {
-            res.status(200).send({status: true, message: "ok", key: newKey, data: score})
+            console.log("test")
+            res.status(200).send({status: true, message: "ok", data: score})
         }).catch(error => {res.status(400).send({error, status: false})})
     }else{
         res.status(400).send({message: "Missing data", status: false})
