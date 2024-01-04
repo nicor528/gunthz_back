@@ -49,7 +49,7 @@ router.get("/allScores", (req, res) => {
 router.get("/top-scores", (req, res) => {
     const token = req.query.token;
     if(token){
-        verifyKey(token).then(id => {
+        verifyToken(token).then(id => {
             getAllScores().then(scores => {
                 sortScores(scores).then(scores => {
                     const newScores = divideArray(scores, 10, 10)
