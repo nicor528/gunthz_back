@@ -190,7 +190,8 @@ function createUser (id, userName, name, email, pass, lastName, country, city, s
                                 const command = new PutCommand({
                                     TableName: "game",
                                     Item: {
-                                        id: id
+                                        id: id,
+                                        score: 0
                                     }
                                 })
                                 docClient.send(command).then(result => {

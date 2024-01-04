@@ -849,6 +849,55 @@ function getUserScore(id) {
     )
 }
 
+function getAllScores() {
+    return(
+        new Promise ((res, rej) => {
+            const command = new ScanCommand({
+                TableName: "game"
+            })
+            docClient.send(command).then(result => {
+                res(result.Items)
+            }).catch(error => {
+                console.log(error);
+                rej(error)
+            })
+        })
+    )
+}
+
+function sortScores(scores) {
+    return(
+        new Promise ((res, rej) => {
+            try{
+                const sortedScores = scores.sort((a, b) => {
+                    const scoreA = parseInt(a.score.N);
+                    const scoreB = parseInt(b.score.N);
+    
+                    return scoreB - scoreA;
+                })
+                res(sortedScores)
+            }catch(error){
+                console.log(error)
+                rej()
+            }
+        })
+    )
+}
+
+const divideArray = (arr, goldCount, silverCount) => {
+    try{
+        const goldScores = arr.slice(0, goldCount);
+        const silverScores = arr.slice(goldCount, goldCount + silverCount);
+        const bronzeScores = arr.slice(goldCount + silverCount);
+        
+        return { goldScores, silverScores, bronzeScores };
+    }catch(error){
+        console.log(error)
+        return error
+    }
+};
+  
+
 
 
 module.exports = {
@@ -877,7 +926,10 @@ module.exports = {
     updatePosts,
     obtenerObjetosPorPagina,
     setNewScore,
-    getUserScore
+    getUserScore,
+    getAllScores,
+    sortScores,
+    divideArray
 
 
 }

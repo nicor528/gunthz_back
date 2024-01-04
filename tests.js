@@ -1,5 +1,5 @@
 const { getAllTwitts } = require("./apis/apiDynamoDB");
-const { getAllTwitts2, trendingTwitts, getComments } = require("./apis/apiDynamoDB2");
+const { getAllTwitts2, trendingTwitts, getComments, getAllScores, divideArray, sortScores } = require("./apis/apiDynamoDB2");
 const { imageGeneration } = require("./apis/apiOpenAI");
 const { updateTwittsLinks } = require("./apis/apiS3");
 const { getRot } = require("./apis/apiSpotify");
@@ -30,14 +30,22 @@ getAllTwitts().then(twitts => {
         //console.log(twitts[1].twitts)
     })
 })*/
-
+/*
 imageGeneration("an futuristic robot").then(res => {
     console.log(res)
 }).catch(error => {
     console.log(error)
-})
+})*/
 /*getRot("test004@gmail.com").then(rot => {
     console.log(rot);
 }).catch(error => {
     console.log(error)
 })*/
+
+getAllScores().then(scores => {
+    sortScores(scores).then(scores => {
+        console.log(scores[15].score.N)
+        const newScores = divideArray(scores, 10, 10)
+        console.log(newScores.goldScores[0], newScores.goldScores[1], newScores.silverScores[5])
+    })
+})
