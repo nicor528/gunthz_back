@@ -87,6 +87,31 @@ function saveImage (id, image, title) {
     )
 }
 
+function saveSong (id, image, title) {
+    return(
+        new Promise ((res, rej) => {
+            const imageBuffer = Buffer.from(image, "base64");
+            const fileName = title;
+            const key = `${id}/textSongs/${fileName}`;
+            const params = {
+                Bucket: "gunthz-profile-pictures",
+                Key: key,
+                Body: imageBuffer,
+                ContentType: "audio/wav"
+            };
+            s3Client.send(new PutObjectCommand(params)).then(result => {
+                console.log(result);
+                //console.log(result.Location);
+                //const path = id + "/" + fileName;
+                res(key)
+            }).catch(error => {
+                console.log(error)
+                rej(error)
+            })
+        })
+    )
+}
+
 
 function saveTwittFile (id, gif, name) {
     return(
@@ -364,6 +389,7 @@ module.exports = {
     updateImagesLink,
     saveInS3,
     descargarArchivoconAxios,
-    saveInS3_2
+    saveInS3_2,
+    saveSong
     
 }

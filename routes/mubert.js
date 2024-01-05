@@ -5,8 +5,9 @@
  *   description: Spotify operations
  */
 const express = require('express');
-const { saveInS3, generarEnlaceDeDescarga, saveInS3_2 } = require('../apis/apiS3');
+const { saveInS3, generarEnlaceDeDescarga, saveInS3_2, saveSong } = require('../apis/apiS3');
 const { addTwitt, verifyKey, setNewKey, getUser } = require('../apis/apiDynamoDB');
+const { createSong } = require('../apis/apiSongs');
 const router = express.Router();
 
 /**
@@ -105,6 +106,30 @@ router.post("/saveSong", (req, res) => {
                     saveInS3_2(id, title, song).then(path => {
                         addTwitt(id, title, path, user.name + " " + user.lastName, user.profilePicture, "song").then(() => {
                             res.status(200).send({status: true, message: "ok", key: newKey})
+                        }).catch(error => {res.status(400).send({error, status: false})})
+                    }).catch(error => {res.status(400).send({error, status: false})})
+                }).catch(error => {res.status(400).send({error, status: false})})
+            }).catch(error => {res.status(400).send({error, status: false})})
+        }).catch(error => {res.status(400).send({error, status: false})})
+    }else{
+        res.status(401).send({message: "Missing data in the body", status: false})
+    }
+})
+
+router.post("/create-song", (req, res) => {
+    const prompt = req.body.prompt;
+    const id = req.body.id;
+    const key = req.body.key;
+    //const title = req.body.title;
+    if(prompt && id && key){
+        verifyKey(id, key).then(newKey => {
+            setNewKey(id, newKey).then(() => {
+                getUser(id).then(user => {
+                    createSong(prompt).then(song => {
+                        saveSong(id, song, prompt).then(path => {
+                            addTwitt(id, prompt, path, user.name + " " + user.lastName, user.profilePicture, "song").then(() => {
+                                res.status(200).send({status: true, message: "ok", key: newKey})
+                            }).catch(error => {res.status(400).send({error, status: false})})
                         }).catch(error => {res.status(400).send({error, status: false})})
                     }).catch(error => {res.status(400).send({error, status: false})})
                 }).catch(error => {res.status(400).send({error, status: false})})
