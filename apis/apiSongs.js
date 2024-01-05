@@ -9,7 +9,6 @@ function createSong (input) {
             }).then(async (response) => {
                 console.log(response.body)
                 const data = await response.blob()
-                await writeFileSync()
                 console.log(data)
                 res(data)
             }).catch(error => {
