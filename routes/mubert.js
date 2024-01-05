@@ -5,7 +5,7 @@
  *   description: Spotify operations
  */
 const express = require('express');
-const { saveInS3, generarEnlaceDeDescarga } = require('../apis/apiS3');
+const { saveInS3, generarEnlaceDeDescarga, saveInS3_2 } = require('../apis/apiS3');
 const { addTwitt, verifyKey, setNewKey, getUser } = require('../apis/apiDynamoDB');
 const router = express.Router();
 
@@ -102,8 +102,8 @@ router.post("/saveSong", (req, res) => {
         verifyKey(id, key).then(newKey => {
             setNewKey(id, newKey).then(() => {
                 getUser(id).then(user => {
-                    saveInS3(id, title, song).then(path => {
-                        addTwitt(id, title, path, user.name + " " + user.lastName, user.profilePicture, "ia").then(() => {
+                    saveInS3_2(id, title, song).then(path => {
+                        addTwitt(id, title, path, user.name + " " + user.lastName, user.profilePicture, "song").then(() => {
                             res.status(200).send({status: true, message: "ok", key: newKey})
                         }).catch(error => {res.status(400).send({error, status: false})})
                     }).catch(error => {res.status(400).send({error, status: false})})

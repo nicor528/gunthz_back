@@ -5,6 +5,7 @@ const { Hash } = require("@aws-sdk/hash-node");
 const { parseUrl } = require("@aws-sdk/url-parser");
 const { HttpRequest } = require("@aws-sdk/protocol-http");
 const { formatUrl } = require("@aws-sdk/util-format-url");
+const { default: axios } = require("axios");
 
 const s3Client = new S3Client({
     region: 'eu-central-1', // Reemplaza con tu región deseada
@@ -273,6 +274,50 @@ async function saveInS3 (id, nombreArchivo, link) {
     )
 }
 
+async function saveInS3_2 (id, nombreArchivo, link) {
+    return(
+      new Promise (async (res, rej) => {
+        descargarArchivoconAxios(link).then(file => {
+          console.log(file)
+          const params = {
+            Bucket: "gunthz-profile-pictures",
+            Key: "textSongs/" + id + "/" + nombreArchivo + ".mp3",
+            Body: file,
+          };
+          s3Client.send(new PutObjectCommand(params)).then(result => {
+            console.log(result)
+            const path = "textSongs/" + id + "/" + nombreArchivo + ".mp3"
+            res(path)
+          }).catch(error => {
+            console.log(error + "test");
+            rej(error)
+          })
+        }).catch(() => {
+          rej()
+        })
+      })
+    )
+}
+
+function descargarArchivoconAxios(enlace){
+    return new Promise(async (res, rej) => {
+        try {
+          const response = await axios.get(enlace, { responseType: 'arraybuffer' });
+      
+          if (!response.data || response.data.length === 0) {
+            console.error("El archivo descargado está vacío.");
+            rej();
+            return;
+          }
+      
+          res(response.data);
+        } catch (error) {
+          console.error("Error al descargar el archivo:", error);
+          rej(error);
+        }
+      });
+}
+
 async function descargarArchivoConFetch(enlace) {
     return(
       new Promise(async (res, rej) => {
@@ -317,6 +362,8 @@ module.exports = {
     updateTwittsLinks2,
     saveImage,
     updateImagesLink,
-    saveInS3
+    saveInS3,
+    descargarArchivoconAxios,
+    saveInS3_2
     
 }
