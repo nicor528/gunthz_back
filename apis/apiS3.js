@@ -89,8 +89,8 @@ function saveImage (id, image, title) {
 
 function saveSong (id, image, title) {
     return(
-        new Promise ((res, rej) => {
-            const imageBuffer = Buffer.from(image, "base64");
+        new Promise (async (res, rej) => {
+            const imageBuffer = await Buffer.from(image, "base64");
             const fileName = title;
             const key = `${id}/textSongs/${fileName}`;
             const params = {
