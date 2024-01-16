@@ -193,7 +193,7 @@ router.get("/getFollowings", (req, res) => {
     if(token){
         verifyToken(token).then(id => {
             getFollowings(id).then(follows => {
-                if(follows.length > 1){
+                if(follows.length > 0){
                     updateTwittsLinks(follows).then(data => {
                         res.status(200).send({status: true, message: "ok", data: data})
                     }).catch(error => {res.status(400).send({error, status: false})})
@@ -213,7 +213,7 @@ router.get("/getFollowers", (req, res) => {
     if(token){
         verifyToken(token).then(id => {
             getFollowers(id).then(followers => {
-                if(followers.length > 1){
+                if(followers.length > 0){
                     updateTwittsLinks(followers).then(data => {
                         res.status(200).send({status: true, message: "ok", data: data})
                     }).catch(error => {res.status(400).send({error, status: false})})
