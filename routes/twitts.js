@@ -14,7 +14,7 @@ router.post("/postTwitt", async (req, res) => {
         verifyKey(id, key).then(newKey => {
             setNewKey(id, newKey).then(data => {
                 getUser(id).then(user => {
-                    addTwitt(id, twitt, fileLink ? fileLink : false, user.profilePicture, user.userName ? user.userName : user.name + " " + user.lastName, fileLink? "gift" : "text").then(() => {
+                    addTwitt(id, twitt, fileLink ? fileLink : false, user.profilePicture, user.userName ? user.userName : user.name + " " + user.lastName, fileLink? "gif" : "text").then(() => {
                         res.status(200).send({status: true, message: "ok", key: newKey})
                     }).catch(error => {res.status(400).send({error, status: false})})
                 }).catch(error => {res.status(400).send({error, status: false})})
