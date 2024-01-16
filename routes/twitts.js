@@ -156,9 +156,9 @@ router.post("/followUser", async (req, res) => {
                         getUser(id).then(user => {
                             addFollower(followID, id, user.profilePicture, user.name + " " + user.lastName).then(() => {
                                 res.status(200).send({status: true, message: "ok", key: newKey})
-                            }).catch(error => {res.status(400).send({error, status: false})})
+                            }).catch(error => {res.status(400).send({error, status: false, message: "Already following"})})
                         }).catch(error => {res.status(400).send({error, status: false})})
-                    }).catch(error => {res.status(400).send({error, status: false})})
+                    }).catch(error => {res.status(400).send({error, status: false, message: "Already following"})})
                 }).catch(error => {res.status(400).send({error, status: false})})
             }).catch(error => {res.status(400).send({error, status: false})})
         }).catch(error => {res.status(400).send({error, status: false})})
