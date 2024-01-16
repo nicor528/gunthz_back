@@ -56,4 +56,6 @@ app.use((req, res, next) => {
 });
 
 const PORT = process.env.PORT || 4242;
-app.listen(PORT, () => console.log("server up en", PORT));
+const server = app.listen(PORT, () => console.log("server up en", PORT));
+
+server.timeout = 300000;
