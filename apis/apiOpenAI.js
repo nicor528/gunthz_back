@@ -3,7 +3,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 const openai = new OpenAI({
-    key: process.env.openIA, // Reemplaza con tu clave secreta de OpenAI
+    apiKey: process.env.openIA, // Reemplaza con tu clave secreta de OpenAI
   });
 
 function imageGeneration(prompt) {
