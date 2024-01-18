@@ -130,7 +130,9 @@ router.post("/create-song", (req, res) => {
                         saveSong(id, song, prompt).then(path => {
                             console.log("test2")
                             addTwitt(id, prompt, path, user.name + " " + user.lastName, user.profilePicture, "song").then(() => {
-                                res.status(200).send({status: true, message: "ok", key: newKey})
+                                generarEnlaceDeDescarga(path).then(link => {
+                                    res.status(200).send({status: true, message: "ok", key: newKey, data: link})
+                                }).catch(error => {res.status(400).send({error, status: false})})
                             }).catch(error => {res.status(400).send({error, status: false})})
                         }).catch(error => {console.log("asdasd"),res.status(400).send({error, status: false})})
                     }).catch(error => {console.log("testx"),res.status(400).send({error, status: false})})
