@@ -21,7 +21,7 @@ const presigner = new S3RequestPresigner({
 async function generarEnlaceDeDescarga(objectKey) {
     return (
         new Promise (async (res, rej) => {
-            const url = parseUrl(`https://gunthz-profile-pictures.s3.eu-central-1.amazonaws.com/${objectKey}`);
+            const url = parseUrl(`https://gunthz-profile-pictures-bucket.s3.eu-central-1.amazonaws.com/${objectKey}`);
 
             // Genera el enlace prefirmado
             const expiracionEnSegundos = 3600 * 6;
@@ -44,7 +44,7 @@ function uploadProfilePicture (id, image) {
             const fileName = "profilePicture";
             const key = `${id}/${fileName}`;
             const params = {
-                Bucket: "gunthz-profile-pictures",
+                Bucket: "gunthz-profile-pictures-bucket",
                 Key: key,
                 Body: imageBuffer,
                 ContentType: "image/jpeg"
@@ -69,7 +69,7 @@ function saveImage (id, image, title) {
             const fileName = title;
             const key = `${id}/generated-images/${fileName}`;
             const params = {
-                Bucket: "gunthz-profile-pictures",
+                Bucket: "gunthz-profile-pictures-bucket",
                 Key: key,
                 Body: imageBuffer,
                 ContentType: "image/jpeg"
@@ -95,7 +95,7 @@ function saveSong (id, image, title) {
             const fileName = title;
             const key = `${id}/textSongs/${fileName}`;
             const params = {
-                Bucket: "gunthz-profile-pictures",
+                Bucket: "gunthz-profile-pictures-bucket",
                 Key: key,
                 Body: imageBuffer,
                 ContentType: "audio/wav"
@@ -121,7 +121,7 @@ function saveTwittFile (id, gif, name) {
             const fileName = name;
             const key = `${id}/twittsFiles/${fileName}`;
             const params = {
-                Bucket: "gunthz-profile-pictures",
+                Bucket: "gunthz-profile-pictures-bucket",
                 Key: key,
                 Body: imageBuffer,
                 ContentType: "image/gif"
@@ -281,7 +281,7 @@ async function saveInS3 (id, nombreArchivo, link) {
         descargarArchivoConFetch(link).then(file => {
           console.log(file)
           const params = {
-            Bucket: "gunthz-profile-pictures",
+            Bucket: "gunthz-profile-pictures-bucket",
             Key: "textSongs/" + id + "/" + nombreArchivo + ".mp3",
             Body: file,
           };
@@ -306,7 +306,7 @@ async function saveInS3_2 (id, nombreArchivo, link) {
         descargarArchivoconAxios(link).then(file => {
           console.log(file)
           const params = {
-            Bucket: "gunthz-profile-pictures",
+            Bucket: "gunthz-profile-pictures-bucket",
             Key: "textSongs/" + id + "/" + nombreArchivo + ".mp3",
             Body: file,
           };
@@ -377,8 +377,8 @@ async function descargarArchivoConFetch(enlace) {
     }
   }
 
-//s3://gunthz-profile-pictures/MMK0PmorM24Y4xjU/profilePicture
-//https://gunthz-profile-pictures.s3.eu-central-1.amazonaws.com/MMK0PmorM24Y4xjU/profilePicture
+//s3://gunthz-profile-pictures-bucket/MMK0PmorM24Y4xjU/profilePicture
+//https://gunthz-profile-pictures-bucket.s3.eu-central-1.amazonaws.com/MMK0PmorM24Y4xjU/profilePicture
 module.exports = {
     uploadProfilePicture,
     generarEnlaceDeDescarga,
