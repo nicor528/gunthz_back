@@ -134,7 +134,7 @@ router.get("/getUserTwitts", async (req, res) => {
                 updateTwittsLinks(twitts).then(newTwitts => {
                     orderTwittsForDate(newTwitts).then(async (newTwitts) => {
                         const finalTwitts = obtenerObjetosPorPagina(newTwitts, index)
-                        res.status(200).send({status: true, message: "ok", data: {page: index,index: index,finalTwitts}})
+                        res.status(200).send({status: true, page: index,index: index, message: "ok", data: finalTwitts})
                     }).catch(error => {res.status(400).send({error, status: false})})
                 }).catch(error => {res.status(400).send({error, status: false})})
             }).catch(error => {res.status(400).send({error, status: false})})
@@ -245,7 +245,7 @@ router.get("/getFollowsTwitts", async (req, res) => {
                         console.log("test2")
                         orderTwittsForDate(newTwitts).then(newTwitts => {
                             const finalTwitts = obtenerObjetosPorPagina(newTwitts, index)
-                            res.status(200).send({status: true, message: "ok", data: {page: index, index: index, finalTwitts}})
+                            res.status(200).send({status: true, page: index, index: index,  message: "ok", data: finalTwitts})
                         }).catch(error => {res.status(400).send({error, status: false})})
                     }).catch(error => {res.status(400).send({error, status: false})})
                 }
@@ -292,7 +292,7 @@ router.get("/tredingTwitts", async (req, res) => {
                     trendingTwitts(twitts).then(async (twitts) => {
                         const indexTwitts = await obtenerObjetosPorPagina(twitts, index)
                         updateTwittsLinks2(indexTwitts).then(twitts => {
-                            res.status(200).send({status: true, message: "ok", data: {page: index,index: index, twitts}})
+                            res.status(200).send({status: true, page: index,index: index, message: "ok", data: twitts})
                         }).catch(error => {res.status(400).send({error, status: false})})
                     }).catch(error => {res.status(400).send({error, status: false})})
                 }).catch(error => {res.status(400).send({error, status: false})})
