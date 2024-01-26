@@ -27,7 +27,7 @@ router.get("/getLast50LiveChat", async (req, res) => {
     if(token){
         verifyToken(token).then(id => {
             getLast50LiveChat(index).then(chat => {
-                res.status(200).send({data: chat, status: true, message: "succefull"})
+                res.status(200).send({data: {index: index, chat}, status: true, message: "succefull"})
             }).catch(error => {res.status(400).send({error, status: false})})
         }).catch(error => {res.status(400).send({error, status: false})})
     }else{
