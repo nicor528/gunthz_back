@@ -18,7 +18,7 @@ router.post("/createImage", (req, res) => {
                     imageGeneration(prompt).then(image => {
                         reducirTamanioImagen(image).then(image => {
                             saveImage(id, image, prompt).then(path => {
-                                addTwitt(id, title, path, user.userName ? user.userName : user.name + " " + user.lastName, user.profilePicture, "ia").then(() => {
+                                addTwitt(id, title, path, user.profilePicture, user.userName ? user.userName : user.name + " " + user.lastName, "ia").then(() => {
                                     generarEnlaceDeDescarga(path).then(link => {
                                         res.status(200).send({status: true, message: "ok", key: newKey, data: link})
                                     }).catch(error => {res.status(400).send({error, status: false})})
