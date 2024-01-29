@@ -1,6 +1,6 @@
 const express = require('express');
 const { setNewKey, verifyKey, getUser } = require('../apis/apiDynamoDB');
-const { addMessage, addThread, getLast50LiveChat, getLiveChat, likeMessage, likeThread, unLikeThread, unLikeMessage, verifyToken, getThread } = require('../apis/apiDynamoDB2');
+const { addMessage, addThread, getLast50LiveChat, getLiveChat, likeMessage, likeThread, unLikeThread, unLikeMessage, verifyToken, getThread, newMessageNotification } = require('../apis/apiDynamoDB2');
 const { updateLiveChatLinks } = require('../apis/apiS3');
 const router = express.Router();
 
@@ -12,7 +12,9 @@ router.post("/addMessagge", async (req, res) => {
         verifyToken(token).then(id => {
             getUser(id).then(user => {
                 addMessage(id, message, user.userName ? user.userName : user.name + " " + user.lastName, user.profilePicture).then(async (messages) => {
-                    res.status(200).send({data: messages, status: true, message: "succefull"})
+                    newMessageNotification(user.userName ? user.userName : user.name + " " + user.lastName).then(() => {
+                        res.status(200).send({data: messages, status: true, message: "succefull"})
+                    }).catch(error => {res.status(400).send({error, status: false})})
                 }).catch(error => {res.status(400).send({error, status: false})})
             }).catch(error => {res.status(400).send({error, status: false})})
         }).catch(error => {res.status(400).send({error, status: false})})

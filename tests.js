@@ -1,5 +1,5 @@
 const { getAllTwitts, getUser } = require("./apis/apiDynamoDB");
-const { getAllTwitts2, trendingTwitts, getComments, getAllScores, divideArray, sortScores } = require("./apis/apiDynamoDB2");
+const { getAllTwitts2, trendingTwitts, getComments, getAllScores, divideArray, sortScores, getAllUsersID } = require("./apis/apiDynamoDB2");
 const { imageGeneration } = require("./apis/apiOpenAI");
 const { updateTwittsLinks } = require("./apis/apiS3");
 const { createSong } = require("./apis/apiSongs");
@@ -55,9 +55,15 @@ getAllScores().then(scores => {
 createSong("a great country song").then(song => {
     console.log(song)
 })*/
-
+/*
 getUser("1yB9VcVgigNbfVba").then(user => {
     console.log(user)
+}).catch(error => {
+    console.log(error)
+})*/
+
+getAllUsersID().then(data => {
+    console.log(data)
 }).catch(error => {
     console.log(error)
 })

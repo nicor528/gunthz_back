@@ -195,8 +195,16 @@ function createUser (id, userName, name, email, pass, lastName, country, city, s
                                     }
                                 })
                                 docClient.send(command).then(result => {
-                                    
-                                                res(token)
+                                    const command = new PutCommand({
+                                        TableName: "gunthz_notifications",
+                                        Item: {
+                                            id: id,
+                                            notifications: []
+                                        }
+                                    })
+                                    docClient.send(command).then(result => {
+                                        res(token)
+                                    }).catch(error => {console.log(error), rej(error)})
                                             }).catch(error => {console.log(error), rej(error)})
                                         }).catch(error => {console.log(error), rej(error)})
                                     }).catch(error => {console.log(error), rej(error)})

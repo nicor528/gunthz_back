@@ -1,6 +1,6 @@
 
 const express = require('express');
-const { verifyKey, setNewKey, editInfoUser, updateProfilePicture, getUserTwitts } = require('../apis/apiDynamoDB');
+const { verifyKey, setNewKey, editInfoUser, updateProfilePicture, getUserTwitts, getUser } = require('../apis/apiDynamoDB');
 const { uploadProfilePicture, generarEnlaceDeDescarga } = require('../apis/apiS3');
 const { updatePosts } = require('../apis/apiDynamoDB2');
 const router = express.Router();
@@ -17,7 +17,9 @@ router.post("/editInfoUser", async (req, res) => {
         verifyKey(id, key).then(newKey => {
             setNewKey(id, newKey).then(data => {
                 editInfoUser(id, name, lastName, description, userName).then(user => {
-                    res.status(200).send({status: true, message: "ok", key: newKey})
+                    getUser(id).then(user => {
+                        res.status(200).send({status: true, message: "ok", key: newKey, data: user})
+                    }).catch(error => {res.status(400).send({error, status: false})})
                 }).catch(error => {res.status(400).send({error, status: false})})
             }).catch(error => {res.status(400).send({error, status: false})})
         }).catch(error => {res.status(400).send({error, status: false})})

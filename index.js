@@ -25,7 +25,8 @@ const options = {
         "./routes/mubert.js",
         "./routes/image.js",
         "./routes/games.js",
-        "./routes/lyrics.js"
+        "./routes/lyrics.js",
+        "./routes/notifications.js"
     ],
 };
 const specs = swaggerJsdoc(options);
@@ -46,6 +47,7 @@ app.use("/api/song-generation", require("./routes/mubert"));
 app.use("/api/image-generation", require("./routes/image"));
 app.use("/api/games", require("./routes/games"));
 app.use("/api/lyrics-generation", require("./routes/lyrics"));
+app.use("/api/notifications", require("./routes/notifications"));
 
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');

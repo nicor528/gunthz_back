@@ -17,20 +17,20 @@ router.post("/createSpace", async (req, res) => {
     //const timeLeftToStremInMilliSeconds = parseInt(req.body.timeLeftToStremInMilliSeconds);
     if(id && key && title &&year&& hour && minuts && day && month){
         verifyKey(id, key).then(newKey => {
-            setNewKey(id, newKey).then(data => {
-                getUser(id).then(user => {
-                    checkPermisions(id).then(() => {
-                        saveNewLiveSpace(id, title, month, day, hour, minuts, year, user.name + " " + user.lastName, user.profilePicture).then(() => { // creates
+            getUser(id).then(user => {
+                checkPermisions(id).then(() => {
+                    saveNewLiveSpace(id, title, month, day, hour, minuts, year, user.name + " " + user.lastName, user.profilePicture).then(() => { // creates
+                        setNewKey(id, newKey).then(data => {
                             res.status(200).send({status: true, message: "ok", key: newKey})
                         }).catch(error => {res.status(400).send({error, status: false})})
-                    }).catch(error => {
-                        if(error == 1){
-                            res.status(400).send({message: "user not have the permisions", status: false})
-                        }else{
-                            res.status(400).send({error, status: false})
-                        }
-                    })
-                }).catch(error => {res.status(400).send({error, status: false})})
+                    }).catch(error => {res.status(400).send({error, status: false})})
+                }).catch(error => {
+                    if(error == 1){
+                        res.status(400).send({message: "user not have the permisions", status: false})
+                    }else{
+                        res.status(400).send({error, status: false})
+                    }
+                })
             }).catch(error => {res.status(400).send({error, status: false})})
         }).catch(error => {res.status(400).send({error, status: false})})
     }else{
@@ -75,19 +75,19 @@ router.post("/createOratorToken", async (req, res) => {
     const title = req.body.title;
     if(id && key && title){
         verifyKey(id, key).then(newKey => {
-            setNewKey(id, newKey).then(data => {
-                checkPermisions(id).then(() => {
-                    createOradorToken(id, title).then((token) => { // creates
+            checkPermisions(id).then(() => {
+                createOradorToken(id, title).then((token) => { // creates
+                    setNewKey(id, newKey).then(data => {
                         res.status(200).send({status: true, message: "ok", key: newKey, token: token})
                     }).catch(error => {res.status(400).send({error, status: false})})
-                }).catch(error => {
-                    if(error == 1){
-                        res.status(400).send({message: "user not have the permisions", status: false})
-                    }else{
-                        res.status(400).send({error, status: false})
-                    }
-                })
-            }).catch(error => {res.status(400).send({error, status: false})})
+                }).catch(error => {res.status(400).send({error, status: false})})
+            }).catch(error => {
+                if(error == 1){
+                    res.status(400).send({message: "user not have the permisions", status: false})
+                }else{
+                    res.status(400).send({error, status: false})
+                }
+            })
         }).catch(error => {res.status(400).send({error, status: false})})
     }else{
         res.status(401).send({message: "Missing data in the body", status: false})
@@ -101,14 +101,33 @@ router.post("/requestListenerToken", async (req, res) => {
     const ownerID = req.body.ownerID;
     if(id && key && title){
         verifyKey(id, key).then(newKey => {
-            setNewKey(id, newKey).then(data => {
-                createUserToken(title, id).then(token => {
+            createUserToken(title, id).then(token => {
+                setNewKey(id, newKey).then(data => {
                     res.status(200).send({status: true, message: "ok", key: newKey, token: token})
                 }).catch(error => {res.status(400).send({error, status: false})})
             }).catch(error => {res.status(400).send({error, status: false})})
         }).catch(error => {res.status(400).send({error, status: false})})
     }else{
 
+    }
+})
+
+router.post("/space-started", (req, res) => {
+    const id = req.body.id;
+    const key = req.body.key;
+    const title = req.body.title;
+    if(id && key && title){
+        verifyKey(id, key).then(newKey => {
+            getUser(id).then(user => {
+                spaceStartedNotification(user.userName ? user.nickname : user.name + " " + user.lastName, title, user.followers).then(() => {
+                    setNewKey(id, newKey).then(data => {
+                        res.status(200).send({status: true, message: "ok", key: newKey})
+                    }).catch(error => {res.status(400).send({error, status: false})})
+                }).catch(error => {res.status(400).send({error, status: false})})
+            }).catch(error => {res.status(400).send({error, status: false})})
+        }).catch(error => {res.status(400).send({error, status: false})})
+    }else{
+        res.status(401).send({message: "Missing data in the body", status: false})
     }
 })
 

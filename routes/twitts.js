@@ -2,7 +2,7 @@
 const express = require('express');
 const { addTwitt, verifyKey, setNewKey, likeTwitt, commentTwitt, deleteTwitt, followUser, addFollower, unfollowUser, removeFollower, reportTwitt, unLikeTwitt, getUserTwitts, getFollowsTwitts, getAllTwitts, getUser, getFollowings, getFollowers, getAllGeneratedImages } = require('../apis/apiDynamoDB');
 const { saveTwittFile, updateTwittsLinks, updateTwittsLinks2 } = require('../apis/apiS3');
-const { trendingTwitts, cleanObject, getAllTwitts2, getComments, verifyToken, orderTwittsForDate, obtenerObjetosPorPagina } = require('../apis/apiDynamoDB2');
+const { trendingTwitts, cleanObject, getAllTwitts2, getComments, verifyToken, orderTwittsForDate, obtenerObjetosPorPagina, newPostNotification } = require('../apis/apiDynamoDB2');
 const router = express.Router();
 
 router.post("/postTwitt", async (req, res) => {
@@ -12,10 +12,12 @@ router.post("/postTwitt", async (req, res) => {
     const fileLink = req.body.fileLink;
     if(id && twitt && key){
         verifyKey(id, key).then(newKey => {
-            setNewKey(id, newKey).then(data => {
-                getUser(id).then(user => {
-                    addTwitt(id, twitt, fileLink ? fileLink : false, user.profilePicture, user.userName ? user.userName : user.name + " " + user.lastName, fileLink? "gif" : "text").then(() => {
-                        res.status(200).send({status: true, message: "ok", key: newKey})
+            getUser(id).then(user => {
+                addTwitt(id, twitt, fileLink ? fileLink : false, user.profilePicture, user.userName ? user.userName : user.name + " " + user.lastName, fileLink? "gif" : "text").then(() => {
+                    newPostNotification(user.userName ? user.userName : user.name + " " + user.lastName, user.followers).then(() => {
+                        setNewKey(id, newKey).then(data => {
+                            res.status(200).send({status: true, message: "ok", key: newKey})
+                        }).catch(error => {res.status(400).send({error, status: false})})
                     }).catch(error => {res.status(400).send({error, status: false})})
                 }).catch(error => {res.status(400).send({error, status: false})})
             }).catch(error => {res.status(400).send({error, status: false})})
@@ -32,8 +34,8 @@ router.post("/likeTwitt", async (req, res) => {
     const key = req.body.key;
     if(id && ownerID && twittID && key){
         verifyKey(id, key).then(newKey => {
-            setNewKey(id, newKey).then(() => {
-                likeTwitt(id, ownerID, twittID).then(() => {
+            likeTwitt(id, ownerID, twittID).then(() => {
+                setNewKey(id, newKey).then(() => {
                     res.status(200).send({status: true, message: "ok", key: newKey})
                 }).catch(error => {res.status(400).send({error, status: false})})
             }).catch(error => {res.status(400).send({error, status: false})})
@@ -50,8 +52,8 @@ router.post("/unLikeTwitt", async (req, res) => {
     const key = req.body.key;
     if(id && ownerID && twittID && key){
         verifyKey(id, key).then(newKey => {
-            setNewKey(id, newKey).then(() => {
-                unLikeTwitt(id, ownerID, twittID).then(() => {
+            unLikeTwitt(id, ownerID, twittID).then(() => {
+                setNewKey(id, newKey).then(() => {
                     res.status(200).send({status: true, message: "ok", key: newKey})
                 }).catch(error => {res.status(400).send({error, status: false})})
             }).catch(error => {res.status(400).send({error, status: false})})
@@ -69,9 +71,9 @@ router.post("/commentTwitt", async (req, res) => {
     const key = req.body.key;
     if(id && ownerID && twittID && comment && key){
         verifyKey(id, key).then(newKey => {
-            setNewKey(id, newKey).then(() => {
-                getUser(id).then(user => {
-                    commentTwitt(id, ownerID, twittID, comment, user.profilePicture, user.userName ? user.userName : user.name + " " + user.lastName).then(() => {
+            getUser(id).then(user => {
+                commentTwitt(id, ownerID, twittID, comment, user.profilePicture, user.userName ? user.userName : user.name + " " + user.lastName).then(() => {
+                    setNewKey(id, newKey).then(() => {
                         res.status(200).send({status: true, message: "ok", key: newKey})
                     }).catch(error => {res.status(400).send({error, status: false})})
                 }).catch(error => {res.status(400).send({error, status: false})})
@@ -90,8 +92,8 @@ router.post("/reportTwitt", async (req, res) => {
     const reason = req.body.reason;
     if(id && twittID && key && ownerID && reason){
         verifyKey(id, key).then(newKey => {
-            setNewKey(id, newKey).then(() => {
-                reportTwitt(id, twittID, reason, ownerID).then(() => {
+            reportTwitt(id, twittID, reason, ownerID).then(() => {
+                setNewKey(id, newKey).then(() => {
                     res.status(200).send({status: true, message: "ok", key: newKey})
                 }).catch(error => {res.status(400).send({error, status: false})})
             }).catch(error => {res.status(400).send({error, status: false})})
@@ -107,8 +109,8 @@ router.post("/deleteTwitt", async (req, res) => {
     const key = req.body.key;
     if(id && twittID && key){
         verifyKey(id, key).then(newKey => {
-            setNewKey(id, newKey).then(() => {
-                deleteTwitt(id, twittID).then(() => {
+            deleteTwitt(id, twittID).then(() => {
+                setNewKey(id, newKey).then(() => {
                     res.status(200).send({status: true, message: "ok", key: newKey})
                 }).catch(error => {res.status(400).send({error, status: false})})
             }).catch(error => {res.status(400).send({error, status: false})})
@@ -150,11 +152,11 @@ router.post("/followUser", async (req, res) => {
     const key = req.body.key;
     if(id && followID && key){
         verifyKey(id, key).then(newKey => {
-            setNewKey(id, newKey).then(() => {
-                getUser(followID).then(followedUser => {
-                    followUser(id, followID, followedUser.profilePicture, followedUser.name + " " + followedUser.lastName).then(() => {
-                        getUser(id).then(user => {
-                            addFollower(followID, id, user.profilePicture, user.name + " " + user.lastName).then(() => {
+            getUser(followID).then(followedUser => {
+                followUser(id, followID, followedUser.profilePicture, followedUser.name + " " + followedUser.lastName).then(() => {
+                    getUser(id).then(user => {
+                        addFollower(followID, id, user.profilePicture, user.name + " " + user.lastName).then(() => {
+                            setNewKey(id, newKey).then(() => {
                                 res.status(200).send({status: true, message: "ok", key: newKey})
                             }).catch(error => {res.status(400).send({error, status: false, message: "Already following"})})
                         }).catch(error => {res.status(400).send({error, status: false})})
@@ -173,10 +175,10 @@ router.post("/unfollowUser", async (req, res) => {
     const key = req.body.key;
     if(id && key && unfollowID){
         verifyKey(id, key).then(newKey => {
-            setNewKey(id, newKey).then(() => {
-                unfollowUser(id, unfollowID).then(() => {
-                    console.log("1")
-                    removeFollower(unfollowID, id).then(() => {
+            unfollowUser(id, unfollowID).then(() => {
+                console.log("1")
+                removeFollower(unfollowID, id).then(() => {
+                    setNewKey(id, newKey).then(() => {
                         console.log("2")
                         res.status(200).send({status: true, message: "ok", key: newKey})
                     }).catch(error => {res.status(400).send({error, status: false})})

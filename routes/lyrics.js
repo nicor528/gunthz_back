@@ -10,10 +10,10 @@ router.post("/generate-lyrics", (req, res) => {
     const title = req.body.title;
     if(id && key && prompt && title){
         verifyKey(id, key).then(newKey => {
-            setNewKey(id, newKey).then(data => {
-                getUser(id).then(user => {
-                    lyricsGeneration(prompt).then(data => {
-                        addTwitt(id, title + " " + data, false, user.profilePicture, user.userName ? user.userName : user.name + " " + user.lastName, "lyrics").then(() => {
+            getUser(id).then(user => {
+                lyricsGeneration(prompt).then(data => {
+                    addTwitt(id, title + " " + data, false, user.profilePicture, user.userName ? user.userName : user.name + " " + user.lastName, "lyrics").then(() => {
+                        setNewKey(id, newKey).then(data => {
                             res.status(200).send({status: true, message: "ok", key: newKey, data: data})
                         }).catch(error => {res.status(400).send({error, status: false})})         
                     }).catch(error => {res.status(400).send({error, status: false})})

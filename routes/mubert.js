@@ -101,10 +101,10 @@ router.post("/saveSong", (req, res) => {
     const title = req.body.title;
     if(song && id && key && title){
         verifyKey(id, key).then(newKey => {
-            setNewKey(id, newKey).then(() => {
-                getUser(id).then(user => {
-                    saveInS3_2(id, title, song).then(path => {
-                        addTwitt(id, title, path, user.name + " " + user.lastName, user.profilePicture, "song").then(() => {
+            getUser(id).then(user => {
+                saveInS3_2(id, title, song).then(path => {
+                    addTwitt(id, title, path, user.name + " " + user.lastName, user.profilePicture, "song").then(() => {
+                        setNewKey(id, newKey).then(() => {
                             res.status(200).send({status: true, message: "ok", key: newKey})
                         }).catch(error => {res.status(400).send({error, status: false})})
                     }).catch(error => {res.status(400).send({error, status: false})})
@@ -123,14 +123,14 @@ router.post("/create-song", (req, res) => {
     //const title = req.body.title;
     if(prompt && id && key){
         verifyKey(id, key).then(newKey => {
-            setNewKey(id, newKey).then(() => {
-                getUser(id).then(user => {
-                    createSong(prompt).then(song => {
-                        console.log("test1")
-                        saveSong(id, song, prompt).then(path => {
-                            console.log("test2")
-                            addTwitt(id, prompt, path, user.name + " " + user.lastName, user.profilePicture, "song").then(() => {
-                                generarEnlaceDeDescarga(path).then(link => {
+            getUser(id).then(user => {
+                createSong(prompt).then(song => {
+                    console.log("test1")
+                    saveSong(id, song, prompt).then(path => {
+                        console.log("test2")
+                        addTwitt(id, prompt, path, user.profilePicture, user.name + " " + user.lastName,  "song").then(() => {
+                            generarEnlaceDeDescarga(path).then(link => {
+                                setNewKey(id, newKey).then(() => {
                                     res.status(200).send({status: true, message: "ok", key: newKey, data: link})
                                 }).catch(error => {res.status(400).send({error, status: false})})
                             }).catch(error => {res.status(400).send({error, status: false})})

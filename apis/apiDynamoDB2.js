@@ -896,6 +896,237 @@ const divideArray = (arr, goldCount, silverCount) => {
         return error
     }
 };
+
+async function spaceStartedNotification(name, title, followers){
+    let localDate = new Date();
+    let localDay = await localDate.getDate();
+    let localMonth = await localDate.getMonth() + 1; 
+    let localYear = await localDate.getFullYear();
+    let localHour = await localDate.getHours();
+    let localMinuts = await localDate.getMinutes();
+    let localMili = await localDate.getMilliseconds();
+    return(
+        new Promise ((res, rej) => {
+            try{
+                followers.map(user => {
+                    const command = new GetCommand({
+                        TableName: "gunthz_notifications",
+                        Key: {
+                            id: user.id
+                        }
+                    })
+                    docClient.send(command).then(result => {
+                        const newID = result.Item.notifications.length + 1;
+                        const newNotification = {
+                            notifications: [
+                                ...result.Item.notifications,
+                                {
+                                    title: "Space Started",
+                                    description: "The Space " + title + " of " + name + " is starting, dont loose it",
+                                    serverDate: {
+                                        day: localDay,
+                                        month: localMonth,
+                                        year: localYear,
+                                        hour: localHour,
+                                        minuts: localMinuts,
+                                        miliSeconds: localMili,
+                                        date: localDate
+                                    },
+                                    read: false,
+                                    notificationID : newID
+                                }
+                            ]
+                        }
+                        const command = new PutCommand({
+                            TableName: "gunthz_notifications",
+                            Item: {
+                                id: user.id,
+                                ...newNotification
+                            }
+                        })
+                        docClient.send(command)
+                    })
+                })
+                res()
+            }catch(error){
+                console.log(error)
+                rej(error)
+            }
+        })
+    )
+}
+
+async function newPostNotification(name, followers){
+    let localDate = new Date();
+    let localDay = await localDate.getDate();
+    let localMonth = await localDate.getMonth() + 1; 
+    let localYear = await localDate.getFullYear();
+    let localHour = await localDate.getHours();
+    let localMinuts = await localDate.getMinutes();
+    let localMili = await localDate.getMilliseconds();
+    return(
+        new Promise((res, rej) => {
+            try{
+                followers.map(user => {
+                    const command = new GetCommand({
+                        TableName: "gunthz_notifications",
+                        Key: {
+                            id: user.id
+                        }
+                    })
+                    docClient.send(command).then(result => {
+                        const newID = result.Item.notifications.length + 1;
+                        const newNotification = {
+                            notifications: [
+                                ...result.Item.notifications,
+                                {
+                                    title: "New post",
+                                    description: name + " is posted something, go check it out!",
+                                    serverDate: {
+                                        day: localDay,
+                                        month: localMonth,
+                                        year: localYear,
+                                        hour: localHour,
+                                        minuts: localMinuts,
+                                        miliSeconds: localMili,
+                                        date: localDate
+                                    },
+                                    read: false,
+                                    notificationID : newID
+                                }
+                            ]
+                        }
+                        const command = new PutCommand({
+                            TableName: "gunthz_notifications",
+                            Item: {
+                                id: user.id,
+                                ...newNotification
+                            }
+                        })
+                        docClient.send(command)
+                    })
+                })
+                res()
+            }catch(error){
+                console.log(error)
+                rej(error)
+            }
+        })
+    )
+}
+
+function getAllUsersID() {
+    return(
+        new Promise((res, rej) => {
+            const command = new ScanCommand({TableName: "gunthz-users"})
+            docClient.send(command).then(result => {
+                res(result.Items)
+            }).catch(error => {
+                console.log(error)
+                rej(error)
+            })
+        })
+    )
+}
+
+async function newMessageNotification(name){
+    let localDate = new Date();
+    let localDay = await localDate.getDate();
+    let localMonth = await localDate.getMonth() + 1; 
+    let localYear = await localDate.getFullYear();
+    let localHour = await localDate.getHours();
+    let localMinuts = await localDate.getMinutes();
+    let localMili = await localDate.getMilliseconds();
+    return(
+        new Promise(async (res, rej) => {
+            try{
+                users = await getAllUsersID()
+                users.map(user => {
+                    const command = new GetCommand({
+                        TableName: "gunthz_notifications",
+                        Key: {
+                            id: user.id.S
+                        }
+                    })
+                    docClient.send(command).then(result => {
+                        const newID = result.Item.notifications.length + 1;
+                        const newNotification = {
+                            notifications: [
+                                ...result.Item.notifications,
+                                {
+                                    title: "New message in general chat",
+                                    description: name + " haved send a new message in chat",
+                                    serverDate: {
+                                        day: localDay,
+                                        month: localMonth,
+                                        year: localYear,
+                                        hour: localHour,
+                                        minuts: localMinuts,
+                                        miliSeconds: localMili,
+                                        date: localDate
+                                    },
+                                    read: false,
+                                    notificationID : newID
+                                }
+                            ]
+                        }
+                        const command = new PutCommand({
+                            TableName: "gunthz_notifications",
+                            Item: {
+                                id: user.id.S,
+                                ...newNotification
+                            }
+                        })
+                        docClient.send(command)
+                    })
+                })
+                res()
+            }catch(error){
+                console.log(error)
+                rej(error)
+            }
+        })
+    )
+}
+
+function getAllUserNotifications(id){
+    return(
+        new Promise((res, rej) => {
+            const command = new GetCommand({
+                TableName: "gunthz_notifications",
+                Key: {
+                    id: id
+                }
+            })
+            docClient.send(command).then(result => {
+                res(result.Item.notifications)
+            }).catch(error => {
+                console.log(error)
+                rej(error)
+            })
+        })
+    )
+}
+
+function getUserUnreadnotifications(id){
+    return(
+        new Promise((res, rej) => {
+            const command = new GetCommand({
+                TableName: "gunthz_notifications",
+                Key: {
+                    id: id
+                }
+            })
+            docClient.send(command).then(result => {
+                const unread = result.Item.notifications.filter(notification => !notification.read)
+                res(unread)
+            }).catch(error => {
+                console.log(error)
+                rej(error)
+            })
+        })
+    )
+}
   
 
 
@@ -929,7 +1160,13 @@ module.exports = {
     getUserScore,
     getAllScores,
     sortScores,
-    divideArray
+    divideArray,
+    spaceStartedNotification,
+    newPostNotification,
+    newMessageNotification,
+    getAllUsersID,
+    getAllUserNotifications,
+    getUserUnreadnotifications,
 
 
 }
