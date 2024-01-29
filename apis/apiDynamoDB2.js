@@ -905,6 +905,7 @@ async function spaceStartedNotification(name, title, followers){
     let localHour = await localDate.getHours();
     let localMinuts = await localDate.getMinutes();
     let localMili = await localDate.getMilliseconds();
+    localDate = await localDay + '/' + localMonth + '/' + localYear;
     return(
         new Promise ((res, rej) => {
             try{
@@ -964,6 +965,7 @@ async function newPostNotification(name, followers){
     let localHour = await localDate.getHours();
     let localMinuts = await localDate.getMinutes();
     let localMili = await localDate.getMilliseconds();
+    localDate = await localDay + '/' + localMonth + '/' + localYear;
     return(
         new Promise((res, rej) => {
             try{
@@ -1037,6 +1039,7 @@ async function newMessageNotification(name){
     let localHour = await localDate.getHours();
     let localMinuts = await localDate.getMinutes();
     let localMili = await localDate.getMilliseconds();
+    localDate = await localDay + '/' + localMonth + '/' + localYear;
     return(
         new Promise(async (res, rej) => {
             try{
