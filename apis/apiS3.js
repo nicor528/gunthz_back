@@ -9,12 +9,12 @@ const { default: axios } = require("axios");
 
 const s3Client = new S3Client({
     region: 'eu-central-1', // Reemplaza con tu región deseada
-    credentials: fromIni({ profile: "admin-S3-gunthz" }),
+    credentials: fromIni({ profile: "admin-db-gunthz" }),
 });
 
 const presigner = new S3RequestPresigner({
     region: "eu-central-1", // Reemplaza con la región que corresponda
-    credentials: fromIni({ profile: "admin-S3-gunthz" }),
+    credentials: fromIni({ profile: "admin-db-gunthz" }),
     sha256: Hash.bind(null, "sha256"),
 });
 
