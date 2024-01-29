@@ -19,7 +19,7 @@ router.get("/get-all-user-notifications", (req, res) => {
     }
 })
 
-router.get("get-all-user-unread-notifications", (req, res) => {
+router.get("/get-all-user-unread-notifications", (req, res) => {
     const token = req.query.token;
     const index = req.query.index;
     if(token && index){
