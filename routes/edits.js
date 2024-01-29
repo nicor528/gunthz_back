@@ -18,7 +18,11 @@ router.post("/editInfoUser", async (req, res) => {
             setNewKey(id, newKey).then(data => {
                 editInfoUser(id, name, lastName, description, userName).then(user => {
                     getUser(id).then(user => {
-                        res.status(200).send({status: true, message: "ok", key: newKey, data: user})
+                        generarEnlaceDeDescarga(user.profilePicture).then(async (url) => {
+                            let newUser = user;
+                            newUser.profilePicture = url;
+                            res.status(200).send({status: true, message: "ok", key: newKey, data: newUser})
+                        }).catch(error => {res.status(400).send({error, status:false})})
                     }).catch(error => {res.status(400).send({error, status: false})})
                 }).catch(error => {res.status(400).send({error, status: false})})
             }).catch(error => {res.status(400).send({error, status: false})})
