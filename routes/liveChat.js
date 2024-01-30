@@ -13,7 +13,13 @@ router.post("/addMessagge", async (req, res) => {
             getUser(id).then(user => {
                 addMessage(id, message, user.userName ? user.userName : user.name + " " + user.lastName, user.profilePicture).then(async (messages) => {
                     newMessageNotification(user.userName ? user.userName : user.name + " " + user.lastName).then(() => {
-                        res.status(200).send({data: messages, status: true, message: "succefull"})
+                        getTokenIOSArrayNotis(user.followers).then(tokens => {
+                            sendNotification(tokens, "message", user.userName? user.userName : user.name + " " + user.lastName).then(() => {
+                                setNewKey(id, newKey).then(data => {
+                                    res.status(200).send({status: true, message: "ok", key: newKey})
+                                }).catch(error => {res.status(400).send({error, status: false})})
+                            }).catch(error => {res.status(400).send({error, status: false})})
+                        }).catch(error => {res.status(400).send({error, status: false})})
                     }).catch(error => {res.status(400).send({error, status: false})})
                 }).catch(error => {res.status(400).send({error, status: false})})
             }).catch(error => {res.status(400).send({error, status: false})})

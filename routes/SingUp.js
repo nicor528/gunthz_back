@@ -76,14 +76,17 @@ router.post("/singUpGoogle", async (req, res) => {
     const state = req.body.state;
     const zip = req.body.zip;
     const description = req.body.description;
-    if(userName && uid && name && email && lastName && country && city && state && zip && description){
+    const system = req.body.system;
+    const token_ios = req.body.token_ios;
+    const token_and = req.body.token_and;
+    if(userName && uid && name && email && lastName && country && city && state && zip && description && system){
         getID(uid).then(() => {
             res.status(401).send({message: "User already exist", status: false})
         }).catch(error => {
             if(error == 1){
                 createID(uid).then(id => {
-                    getRot(email).then(rot => {
-                        createUser(id, userName, name, email, "", lastName, country, city, state, zip, description, rot).then(async (token) => {
+                    //getRot(email).then(rot => {
+                        createUser(id, userName, name, email, "", lastName, country, city, state, zip, description, system, token_ios ? token_ios : "", token_and ? token_and : "").then(async (token) => {
                             const key = await generateAlphanumericCode();
                             setNewKey(id, key).then(async () => {
                                 const data = await {
@@ -97,7 +100,7 @@ router.post("/singUpGoogle", async (req, res) => {
                             console.log(error)
                             res.status(400).send({error, status:false})
                         })
-                    }).catch(error => {res.status(400).send({error, status:false})})
+                    //}).catch(error => {res.status(400).send({error, status:false})})
                 }).catch(error => {res.status(400).send({error, status:false})})
             }else{
                 res.status(401).send({error, status:false})
@@ -157,11 +160,14 @@ router.post("/singUpEmail", async (req, res) => {
     const state = req.body.state;
     const zip = req.body.zip;
     const description = req.body.description;
-    if(userName && name && email && pass && lastName && country && city && state && zip && description){
+    const system = req.body.system;
+    const token_ios = req.body.token_ios;
+    const token_and = req.body.token_and;
+    if(userName && name && email && pass && lastName && country && city && state && zip && description && system){
         SingUpEmail1(email, pass).then(user1 => {
             createID(user1.uid).then(id => {
                 //getRot(email).then(rot => {
-                    createUser(id, userName, name, email, pass, lastName, country, city, state, zip, description).then(async (token) => {
+                    createUser(id, userName, name, email, "", lastName, country, city, state, zip, description, system, token_ios ? token_ios : "", token_and ? token_and : "").then(async (token) => {
                         const key = await generateAlphanumericCode();
                         setNewKey(id, key).then(async () => {
                                     const data = await {

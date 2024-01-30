@@ -130,7 +130,7 @@ function getID (uid) {
     )
 }
 
-function createUser (id, userName, name, email, pass, lastName, country, city, state, zip, description) {
+function createUser (id, userName, name, email, pass, lastName, country, city, state, zip, description, system, token_ios, token_and) {
     return(
         new Promise (async (res, rej) => {
             const command = await new PutCommand({
@@ -161,6 +161,9 @@ function createUser (id, userName, name, email, pass, lastName, country, city, s
                         zip: zip,
                         //rot: rot,
                         profilePicture: "profilePicture.jpg",
+                        system: system,
+                        token_ios: token_ios,
+                        token_and: token_and
                     }
                 })
                 docClient.send(command).then(async (result) => {

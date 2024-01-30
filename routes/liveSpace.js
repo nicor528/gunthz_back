@@ -120,8 +120,12 @@ router.post("/space-started", (req, res) => {
         verifyKey(id, key).then(newKey => {
             getUser(id).then(user => {
                 spaceStartedNotification(user.userName ? user.nickname : user.name + " " + user.lastName, title, user.followers).then(() => {
-                    setNewKey(id, newKey).then(data => {
-                        res.status(200).send({status: true, message: "ok", key: newKey})
+                    getTokenIOSArrayNotis(user.followers).then(tokens => {
+                        sendNotification(tokens, "space " + title + " started", user.userName? user.userName : user.name + " " + user.lastName).then(() => {
+                            setNewKey(id, newKey).then(data => {
+                                res.status(200).send({status: true, message: "ok", key: newKey})
+                            }).catch(error => {res.status(400).send({error, status: false})})
+                        }).catch(error => {res.status(400).send({error, status: false})})
                     }).catch(error => {res.status(400).send({error, status: false})})
                 }).catch(error => {res.status(400).send({error, status: false})})
             }).catch(error => {res.status(400).send({error, status: false})})

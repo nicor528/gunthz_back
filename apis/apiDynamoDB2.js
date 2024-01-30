@@ -957,6 +957,33 @@ async function spaceStartedNotification(name, title, followers){
     )
 }
 
+function getTokenIOSArrayNotis(followers){
+    return(
+        new Promise ((res, rej) => {
+            try{
+                let array = [];
+                followers.map(user => {
+                    const command = new GetCommand({
+                        TableName: "gunthz-users",
+                        Key: {
+                            id: user.id
+                        }
+                    })
+                    docClient.send(command).then(result => {
+                        if(result.Item.system === "ios"){
+                            array.push(result.Item.token_ios)
+                        }
+                    })
+                })
+                res(array)
+            }catch(error){
+                console.log(error)
+                rej(error)
+            }
+        })
+    )
+}
+
 async function newPostNotification(name, followers){
     let localDate = new Date();
     let localDay = await localDate.getDate();
@@ -1170,6 +1197,7 @@ module.exports = {
     getAllUsersID,
     getAllUserNotifications,
     getUserUnreadnotifications,
+    getTokenIOSArrayNotis,
 
 
 }
