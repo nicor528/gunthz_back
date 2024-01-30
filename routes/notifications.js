@@ -42,11 +42,11 @@ router.post("/test-notification", (req, res) => {
     const token_ios = req.body.token_ios;
     const token_and = req.body.token_and;
     if(token_ios){
-        sendNotification(token, "test", "test").then(() => {
+        sendNotification(token_ios, "test", "test").then(() => {
             res.status(200).send({ status: true, message: "succefull"})
         }).catch(error => {res.status(400).send({error, status: false})})
     }if(token_and){
-        sendAndroidNotis(token, "test", "test").then(() => {
+        sendAndroidNotis(token_and, "test", "test").then(() => {
             res.status(200).send({ status: true, message: "succefull"})
         }).catch(error => {res.status(400).send({error, status: false})})
     }
