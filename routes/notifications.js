@@ -1,7 +1,7 @@
 const express = require('express');
 const { verifyToken, getUserUnreadnotifications, getAllUserNotifications, orderTwittsForDate, obtenerObjetosPorPagina } = require('../apis/apiDynamoDB2');
-const { sendNotification } = require('../apis/apiPushIos');
-const { sendAndroidNotis } = require('../apis/apiAndNotis');
+const { sendNotification, sendNotification2 } = require('../apis/apiPushIos');
+const { sendAndroidNotis, sendAndroidNotis2 } = require('../apis/apiAndNotis');
 const router = express.Router();
 
 router.get("/get-all-user-notifications", (req, res) => {
@@ -41,14 +41,17 @@ router.get("/get-all-user-unread-notifications", (req, res) => {
 router.post("/test-notification", (req, res) => {
     const token_ios = req.body.token_ios;
     const token_and = req.body.token_and;
-    if(token_ios){
-        sendNotification(token_ios, "test", "test").then(() => {
+    const alert = req.body.alert;
+    if(token_ios && alert){
+        sendNotification2(token_ios, "test", "test").then(() => {
             res.status(200).send({ status: true, message: "succefull"})
         }).catch(error => {res.status(400).send({error, status: false})})
-    }if(token_and){
-        sendAndroidNotis(token_and, "test", "test").then(() => {
+    }if(token_and && alert){
+        sendAndroidNotis2(token_and, alert).then(() => {
             res.status(200).send({ status: true, message: "succefull"})
         }).catch(error => {res.status(400).send({error, status: false})})
+    }else{
+        res.status(400).send({message: "Missing data", status: false})
     }
 })
 

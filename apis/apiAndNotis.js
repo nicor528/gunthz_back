@@ -32,7 +32,36 @@ function sendAndroidNotis(token, type, name){
     )
 }
 
+function sendAndroidNotis2(token, alert){
+    const message = {
+        data: {
+            title: alert.title,
+            subtitle: alert.subtitle,
+            body: alert.body
+        },
+        tokens: token
+    }
+    return(
+        new Promise((res, rej) => {
+            if(token.length > 0){
+                admin.messaging().sendEachForMulticast(message)
+                .then((response) => {
+                  console.log('Notificación enviada con éxito:', response);
+                    res()
+                })
+                .catch((error) => {
+                  console.error('Error al enviar la notificación:', error);
+                    rej(error)
+                });
+            }else{
+                res()
+            }
+        })
+    )
+}
+
 module.exports = {
     sendAndroidNotis,
+    sendAndroidNotis2,
 
 }

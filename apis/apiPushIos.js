@@ -43,7 +43,36 @@ const sendNotification = (deviceToken, type, name) => {
     )
 };
 
+const sendNotification2 = (deviceToken, alert) => {
+    const notification = new apn.Notification();
+    notification.alert = {
+        title: alert.title,
+        subtitle: alert.subtitle,
+        body: alert.body
+    }
+    notification.sound = 'default';
+    notification.badge = 1;
+    notification.topic = "com.gunther.gunthz";
+    notification.title = "Send Notification";
+    return(
+        new Promise ((res, rej) => {
+            if(deviceToken.length > 0){
+                apnProvider.send(notification, deviceToken).then((result) => {
+                    console.log(result);
+                    res()
+                }).catch(error => {
+                    console.log(error);
+                    rej(error)
+                });
+            }else{
+                res()
+            }
+        })
+    )
+};
+
 module.exports = {
     sendNotification,
+    sendNotification2,
 
 }
