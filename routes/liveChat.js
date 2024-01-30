@@ -1,7 +1,9 @@
 const express = require('express');
 const { setNewKey, verifyKey, getUser } = require('../apis/apiDynamoDB');
-const { addMessage, addThread, getLast50LiveChat, getLiveChat, likeMessage, likeThread, unLikeThread, unLikeMessage, verifyToken, getThread, newMessageNotification } = require('../apis/apiDynamoDB2');
+const { addMessage, addThread, getLast50LiveChat, getLiveChat, likeMessage, likeThread, unLikeThread, unLikeMessage, verifyToken, getThread, newMessageNotification, getTokenIOSArrayNotis, getTokenANDROIDArrayNotis } = require('../apis/apiDynamoDB2');
 const { updateLiveChatLinks } = require('../apis/apiS3');
+const { sendNotification } = require('../apis/apiPushIos');
+const { sendAndroidNotis } = require('../apis/apiAndNotis');
 const router = express.Router();
 
 router.post("/addMessagge", async (req, res) => {
@@ -15,9 +17,13 @@ router.post("/addMessagge", async (req, res) => {
                     newMessageNotification(user.userName ? user.userName : user.name + " " + user.lastName).then(() => {
                         getTokenIOSArrayNotis(user.followers).then(tokens => {
                             sendNotification(tokens, "message", user.userName? user.userName : user.name + " " + user.lastName).then(() => {
-                                setNewKey(id, newKey).then(data => {
-                                    res.status(200).send({status: true, message: "ok", key: newKey})
-                                }).catch(error => {res.status(400).send({error, status: false})})
+                                getTokenANDROIDArrayNotis(user.followers).then(tokens => {
+                                    sendAndroidNotis(tokens, post, user.userName? user.userName : user.name + " " + user.lastName).then(() => {
+                                        setNewKey(id, newKey).then(data => {
+                                            res.status(200).send({status: true, message: "ok", key: newKey})
+                                        }).catch(error => {res.status(400).send({error, status: false})})
+                                    }).catch(error => {res.status(400).send({error, status: false})})
+                                }) .catch(error => {res.status(400).send({error, status: false})})
                             }).catch(error => {res.status(400).send({error, status: false})})
                         }).catch(error => {res.status(400).send({error, status: false})})
                     }).catch(error => {res.status(400).send({error, status: false})})

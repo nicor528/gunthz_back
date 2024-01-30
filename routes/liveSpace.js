@@ -1,8 +1,10 @@
 const express = require('express');
 const { verifyKey, setNewKey, checkPermisions, createLiveSpace, getUser } = require('../apis/apiDynamoDB');
 const { createOradorToken, createUserToken } = require('../apis/apiAgora');
-const { saveNewLiveSpace, verifyToken, getUserSpaces, getAllSpaces, flatSpaces } = require('../apis/apiDynamoDB2');
+const { saveNewLiveSpace, verifyToken, getUserSpaces, getAllSpaces, flatSpaces, spaceStartedNotification, getTokenIOSArrayNotis, getTokenANDROIDArrayNotis } = require('../apis/apiDynamoDB2');
 const { updateTwittsLinks } = require('../apis/apiS3');
+const { sendNotification } = require('../apis/apiPushIos');
+const { sendAndroidNotis } = require('../apis/apiAndNotis');
 const router = express.Router();
 
 router.post("/createSpace", async (req, res) => {
@@ -122,9 +124,13 @@ router.post("/space-started", (req, res) => {
                 spaceStartedNotification(user.userName ? user.nickname : user.name + " " + user.lastName, title, user.followers).then(() => {
                     getTokenIOSArrayNotis(user.followers).then(tokens => {
                         sendNotification(tokens, "space " + title + " started", user.userName? user.userName : user.name + " " + user.lastName).then(() => {
-                            setNewKey(id, newKey).then(data => {
-                                res.status(200).send({status: true, message: "ok", key: newKey})
-                            }).catch(error => {res.status(400).send({error, status: false})})
+                            getTokenANDROIDArrayNotis(user.followers).then(tokens => {
+                                sendAndroidNotis(tokens, post, user.userName? user.userName : user.name + " " + user.lastName).then(() => {
+                                    setNewKey(id, newKey).then(data => {
+                                        res.status(200).send({status: true, message: "ok", key: newKey})
+                                    }).catch(error => {res.status(400).send({error, status: false})})
+                                }).catch(error => {res.status(400).send({error, status: false})})
+                            }) .catch(error => {res.status(400).send({error, status: false})})
                         }).catch(error => {res.status(400).send({error, status: false})})
                     }).catch(error => {res.status(400).send({error, status: false})})
                 }).catch(error => {res.status(400).send({error, status: false})})

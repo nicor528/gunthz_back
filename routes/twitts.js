@@ -2,8 +2,9 @@
 const express = require('express');
 const { addTwitt, verifyKey, setNewKey, likeTwitt, commentTwitt, deleteTwitt, followUser, addFollower, unfollowUser, removeFollower, reportTwitt, unLikeTwitt, getUserTwitts, getFollowsTwitts, getAllTwitts, getUser, getFollowings, getFollowers, getAllGeneratedImages } = require('../apis/apiDynamoDB');
 const { saveTwittFile, updateTwittsLinks, updateTwittsLinks2 } = require('../apis/apiS3');
-const { trendingTwitts, cleanObject, getAllTwitts2, getComments, verifyToken, orderTwittsForDate, obtenerObjetosPorPagina, newPostNotification, getTokenIOSArrayNotis } = require('../apis/apiDynamoDB2');
+const { trendingTwitts, cleanObject, getAllTwitts2, getComments, verifyToken, orderTwittsForDate, obtenerObjetosPorPagina, newPostNotification, getTokenIOSArrayNotis, getTokenANDROIDArrayNotis } = require('../apis/apiDynamoDB2');
 const { sendNotification } = require('../apis/apiPushIos');
+const { sendAndroidNotis } = require('../apis/apiAndNotis');
 const router = express.Router();
 
 router.post("/postTwitt", async (req, res) => {
@@ -18,9 +19,13 @@ router.post("/postTwitt", async (req, res) => {
                     newPostNotification(user.userName ? user.userName : user.name + " " + user.lastName, user.followers).then(() => {
                         getTokenIOSArrayNotis(user.followers).then(tokens => {
                             sendNotification(tokens, "post", user.userName? user.userName : user.name + " " + user.lastName).then(() => {
-                                setNewKey(id, newKey).then(data => {
-                                    res.status(200).send({status: true, message: "ok", key: newKey})
-                                }).catch(error => {res.status(400).send({error, status: false})})
+                                getTokenANDROIDArrayNotis(user.followers).then(tokens => {
+                                    sendAndroidNotis(tokens, post, user.userName? user.userName : user.name + " " + user.lastName).then(() => {
+                                        setNewKey(id, newKey).then(data => {
+                                            res.status(200).send({status: true, message: "ok", key: newKey})
+                                        }).catch(error => {res.status(400).send({error, status: false})})
+                                    }).catch(error => {res.status(400).send({error, status: false})})
+                                }) .catch(error => {res.status(400).send({error, status: false})})
                             }).catch(error => {res.status(400).send({error, status: false})})
                         }).catch(error => {res.status(400).send({error, status: false})})
                     }).catch(error => {res.status(400).send({error, status: false})})
