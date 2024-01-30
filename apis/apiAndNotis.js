@@ -15,15 +15,19 @@ function sendAndroidNotis(token, type, name){
     }
     return(
         new Promise((res, rej) => {
-            admin.messaging().sendEachForMulticast(message)
-            .then((response) => {
-              console.log('Notificación enviada con éxito:', response);
+            if(token.length > 0){
+                admin.messaging().sendEachForMulticast(message)
+                .then((response) => {
+                  console.log('Notificación enviada con éxito:', response);
+                    res()
+                })
+                .catch((error) => {
+                  console.error('Error al enviar la notificación:', error);
+                    rej(error)
+                });
+            }else{
                 res()
-            })
-            .catch((error) => {
-              console.error('Error al enviar la notificación:', error);
-                rej(error)
-            });
+            }
         })
     )
 }

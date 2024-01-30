@@ -79,7 +79,7 @@ router.post("/singUpGoogle", async (req, res) => {
     const system = req.body.system;
     const token_ios = req.body.token_ios;
     const token_and = req.body.token_and;
-    if(userName && uid && name && email && lastName && country && city && state && zip && description && system){
+    if(userName && uid && name && email && lastName && country && city && state && zip && description && system && (token_and || token_ios)){
         getID(uid).then(() => {
             res.status(401).send({message: "User already exist", status: false})
         }).catch(error => {
@@ -163,7 +163,7 @@ router.post("/singUpEmail", async (req, res) => {
     const system = req.body.system;
     const token_ios = req.body.token_ios;
     const token_and = req.body.token_and;
-    if(userName && name && email && pass && lastName && country && city && state && zip && description && system){
+    if(userName && name && email && pass && lastName && country && city && state && zip && description && system && (token_and || token_ios)){
         SingUpEmail1(email, pass).then(user1 => {
             createID(user1.uid).then(id => {
                 //getRot(email).then(rot => {
