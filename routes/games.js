@@ -46,14 +46,10 @@ router.get("/allScores", (req, res) => {
     }
 })
 
-router.get("/top-scores", (req, res) => {
-    const token = req.query.token;
-    if(token){
-        verifyToken(token).then(id => {
-            getAllScores().then(scores => {
-                sortScores(scores).then(async (scores) => {
-                    const newScores = divideArray(scores, 10, 10)
-                    let gold = []; let silver = []; let bronce = [];
+function x(newScores){
+    return(
+        new Promise(async (res, rej) => {
+            let gold1 = []; let silver1 = []; let bronce1 = [];
                     console.log(newScores.goldScores)
                     console.log(newScores.goldScores[0])
                     if(newScores.goldScores.length > 0){
@@ -62,7 +58,7 @@ router.get("/top-scores", (req, res) => {
                             getUser(user1.id.S).then(user => {
                                 user1.userName = user.userName;
                                 console.log(user1)
-                                gold.push(user1)
+                                gold1.push(user1)
                             })
                         })
                     }
@@ -70,7 +66,7 @@ router.get("/top-scores", (req, res) => {
                         await newScores.silverScores.map(user1 => {
                             getUser(user1.id).then(user => {
                                 user1.userName = user.userName;
-                                silver.push(user1)
+                                silver1.push(user1)
                             })
                         })
                     }
@@ -78,14 +74,29 @@ router.get("/top-scores", (req, res) => {
                         await newScores.bronzeScores.map(user1 => {
                             getUser(user1.id).then(user => {
                                 user1.userName = user.userName;
-                                bronce.push(user1)
+                                bronce1.push(user1)
                             })
                         })
                     }
                     console.log(gold)
+                    
                     const scores1 = await {goldScores: gold, silverScores: silver, bronzeScores: bronce}
-                    console.log(scores1)
-                    res.status(200).send({status: true, message: "ok", data: scores1})
+                    res(scores1)
+                })
+    )
+}
+
+router.get("/top-scores", (req, res) => {
+    const token = req.query.token;
+    if(token){
+        verifyToken(token).then(id => {
+            getAllScores().then(scores => {
+                sortScores(scores).then(async (scores) => {
+                    const newScores = divideArray(scores, 10, 10)
+                    x(newScores).then(scores => {
+                        console.log(scores)
+                        res.status(200).send({status: true, message: "ok", data: scores})
+                    })
                 }).catch(error => {res.status(400).send({error, status: false})})
             }).catch(error => {res.status(400).send({error, status: false})})
         })
