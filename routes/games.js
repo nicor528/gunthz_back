@@ -84,6 +84,7 @@ router.get("/top-scores", (req, res) => {
                     }
                     console.log(gold)
                     const scores1 = await {goldScores: gold, silverScores: silver, bronzeScores: bronce}
+                    console.log(scores1)
                     res.status(200).send({status: true, message: "ok", data: scores1})
                 }).catch(error => {res.status(400).send({error, status: false})})
             }).catch(error => {res.status(400).send({error, status: false})})
