@@ -46,7 +46,7 @@ router.get("/allScores", (req, res) => {
     }
 })
 
-function x(newScores){
+async function x(newScores){
     return(
         new Promise(async (res, rej) => {
     try{            let gold1 = []; let silver1 = []; let bronce1 = [];
@@ -96,7 +96,7 @@ router.get("/top-scores", (req, res) => {
             getAllScores().then(scores => {
                 sortScores(scores).then(async (scores) => {
                     const newScores = divideArray(scores, 10, 10)
-                    x(newScores).then(scores => {
+                    await x(newScores).then(scores => {
                         console.log(scores)
                         res.status(200).send({status: true, message: "ok", data: scores})
                     }).catch(error => {res.status(400).send({error, status: false})})
