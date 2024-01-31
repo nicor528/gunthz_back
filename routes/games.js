@@ -52,7 +52,6 @@ function x(newScores){
     try{            let gold1 = []; let silver1 = []; let bronce1 = [];
                     console.log(newScores.goldScores)
                     console.log(newScores.goldScores[0])
-                    if(newScores.goldScores.length > 0){
                         await newScores.goldScores.map(user1 => {
                             //console.log(user1)
                             getUser(user1.id.S).then(user => {
@@ -61,23 +60,23 @@ function x(newScores){
                                 gold1.push(user1)
                             })
                         })
-                    }
-                    if(newScores.silverScores.length > 0){
+                    
+
                         await newScores.silverScores.map(user1 => {
                             getUser(user1.id).then(user => {
                                 user1.userName = user.userName;
                                 silver1.push(user1)
                             })
                         })
-                    }
-                    if(newScores.bronzeScores.length > 0){
+                    
+                    
                         await newScores.bronzeScores.map(user1 => {
                             getUser(user1.id).then(user => {
                                 user1.userName = user.userName;
                                 bronce1.push(user1)
                             })
                         })
-                    }
+                    
                     console.log(gold1)
                     
                     const scores1 = await {goldScores: gold1, silverScores: silver1, bronzeScores: bronce1}
