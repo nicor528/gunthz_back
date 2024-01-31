@@ -892,7 +892,7 @@ const divideArray = (arr, goldCount, silverCount) => {
         console.log(goldScores)
         const score = {goldScores: [goldScores]}
         console.log(score)
-        return { goldScores: goldScores, silverScores: [...silverScores], bronzeScores: [...bronzeScores] };
+        return { goldScores: goldScores, silverScores: silverScores, bronzeScores: bronzeScores };
     }catch(error){
         console.log(error)
         return error
