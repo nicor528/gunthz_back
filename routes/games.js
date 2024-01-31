@@ -1,5 +1,5 @@
 const express = require('express');
-const { verifyKey, setNewKey } = require('../apis/apiDynamoDB');
+const { verifyKey, setNewKey, getUser } = require('../apis/apiDynamoDB');
 const { setNewScore, getUserScore, verifyToken, getAllScores, sortScores, divideArray } = require('../apis/apiDynamoDB2');
 const router = express.Router();
 
@@ -53,7 +53,33 @@ router.get("/top-scores", (req, res) => {
             getAllScores().then(scores => {
                 sortScores(scores).then(scores => {
                     const newScores = divideArray(scores, 10, 10)
-                    res.status(200).send({status: true, message: "ok", data: newScores})
+                    let gold = []; let silver = []; let bronce = [];
+                    if(newScores.goldScores.length > 0){
+                        newScores.goldScores.map(user1 => {
+                            getUser(user1.id).then(user => {
+                                user1.userName = user.userName;
+                                gold.push(user1)
+                            })
+                        })
+                    }
+                    if(newScores.silverScores.length > 1){
+                        newScores.silverScores.map(user1 => {
+                            getUser(user1.id).then(user => {
+                                user1.userName = user.userName;
+                                silver.push(user1)
+                            })
+                        })
+                    }
+                    if(newScores.bronzeScores.length > 1){
+                        newScores.bronzeScores.map(user1 => {
+                            getUser(user1.id).then(user => {
+                                user1.userName = user.userName;
+                                bronce.push(user1)
+                            })
+                        })
+                    }
+                    const scores1 = {goldScores: gold, silverScores: silver, bronzeScores: bronce}
+                    res.status(200).send({status: true, message: "ok", data: scores1})
                 }).catch(error => {res.status(400).send({error, status: false})})
             }).catch(error => {res.status(400).send({error, status: false})})
         })
