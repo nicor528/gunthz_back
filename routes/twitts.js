@@ -17,8 +17,11 @@ router.post("/postTwitt", async (req, res) => {
             getUser(id).then(user => {
                 addTwitt(id, twitt, fileLink ? fileLink : false, user.profilePicture, user.userName ? user.userName : user.name + " " + user.lastName, fileLink? "gif" : "text").then(() => {
                     newPostNotification(user.userName ? user.userName : user.name + " " + user.lastName, user.followers).then(() => {
+                        console.log("test1")
                         getTokenIOSArrayNotis(user.followers).then(tokens => {
+                            console.log("test2")
                             sendNotification(tokens, "post", user.userName? user.userName : user.name + " " + user.lastName, "").then(() => {
+                                console.log("test3")
                                 getTokenANDROIDArrayNotis(user.followers).then(tokens => {
                                     sendAndroidNotis(tokens, post, user.userName? user.userName : user.name + " " + user.lastName, "").then(() => {
                                         setNewKey(id, newKey).then(data => {
