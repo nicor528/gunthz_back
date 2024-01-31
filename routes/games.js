@@ -54,6 +54,7 @@ router.get("/top-scores", (req, res) => {
                 sortScores(scores).then(async (scores) => {
                     const newScores = divideArray(scores, 10, 10)
                     let gold = []; let silver = []; let bronce = [];
+                    console.log(newScores.goldScores)
                     console.log(newScores.goldScores[0])
                     if(newScores.goldScores.length > 0){
                         newScores.goldScores.map(user1 => {
@@ -81,7 +82,7 @@ router.get("/top-scores", (req, res) => {
                             })
                         })
                     }
-                    console.log(gold)
+                    //console.log(gold)
                     const scores1 = await {goldScores: gold, silverScores: silver, bronzeScores: bronce}
                     res.status(200).send({status: true, message: "ok", data: scores1})
                 }).catch(error => {res.status(400).send({error, status: false})})

@@ -889,9 +889,9 @@ const divideArray = (arr, goldCount, silverCount) => {
         const goldScores = arr.slice(0, goldCount);
         const silverScores = arr.slice(goldCount, goldCount + silverCount);
         const bronzeScores = arr.slice(goldCount + silverCount);
-        console.log(goldScores)
+        //console.log(goldScores)
         const score = {goldScores: [goldScores]}
-        console.log(score)
+        //console.log(score)
         return { goldScores: goldScores, silverScores: silverScores, bronzeScores: bronzeScores };
     }catch(error){
         console.log(error)
