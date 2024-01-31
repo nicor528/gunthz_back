@@ -53,31 +53,24 @@ async function x(newScores){
             let gold1 = []; let silver1 = []; let bronce1 = [];
                     console.log(newScores.goldScores)
                     //console.log(newScores.goldScores[0])
-                    const gold2 = newScores.goldScores.map(async (user1) => {
-                            //console.log(user1)
-                            await getUser(user1.id.S).then(async (user) => {
-                                user1.userName = user.userName;
-                                //console.log(user1)
-                                return user1
-                            })
-                        })
-                    
-
-                    const silver2 = newScores.silverScores.map(user1 => {
-                            getUser(user1.id).then(user => {
-                                user1.userName = user.userName;
-                                return user1
-                            })
-                        })
-                    
-                    
-                    const bronze2 = newScores.bronzeScores.map(user1 => {
-                            getUser(user1.id).then(user => {
-                                user1.userName = user.userName;
-                                return user1
-                            })
-                        })
-                    
+                    const gold2 = await Promise.all(newScores.goldScores.map(async (user1) => {
+                        const user = await getUser(user1.id.S);
+                        user1.userName = user.userName;
+                        return user1;
+                    }));
+        
+                    const silver2 = await Promise.all(newScores.silverScores.map(async (user1) => {
+                        const user = await getUser(user1.id);
+                        user1.userName = user.userName;
+                        return user1;
+                    }));
+        
+                    const bronze2 = await Promise.all(newScores.bronzeScores.map(async (user1) => {
+                        const user = await getUser(user1.id);
+                        user1.userName = user.userName;
+                        return user1;
+                    }));
+                            
                     //console.log(gold1)
                     
                     const scores1 = {goldScores: gold2, silverScores: silver2, bronzeScores: bronze2}
