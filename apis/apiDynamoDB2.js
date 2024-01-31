@@ -960,25 +960,29 @@ async function spaceStartedNotification(name, title, followers){
 function getTokenIOSArrayNotis(followers){
     return(
         new Promise ((res, rej) => {
-            try{
-                let array = [];
-                followers.map(user => {
-                    const command = new GetCommand({
-                        TableName: "gunthz-users",
-                        Key: {
-                            id: user.id
-                        }
+            if(followers.length > 0){
+                try{
+                    let array = [];
+                    followers.map(user => {
+                        const command = new GetCommand({
+                            TableName: "gunthz-users",
+                            Key: {
+                                id: user.id
+                            }
+                        })
+                        docClient.send(command).then(result => {
+                            if(result.Item.system === "ios"){
+                                array.push(result.Item.token_ios)
+                            }
+                        })
                     })
-                    docClient.send(command).then(result => {
-                        if(result.Item.system === "ios"){
-                            array.push(result.Item.token_ios)
-                        }
-                    })
-                })
-                res(array)
-            }catch(error){
-                console.log(error)
-                rej(error)
+                    res(array)
+                }catch(error){
+                    console.log(error)
+                    rej(error)
+                }
+            }else{
+                res()
             }
         })
     )
@@ -1037,7 +1041,7 @@ async function newPostNotification(name, followers){
                                 ...result.Item.notifications,
                                 {
                                     title: "New post",
-                                    description: name + " is posted something, go check it out!",
+                                    description: name + " is posted something Günthastic ",
                                     serverDate: {
                                         day: localDay,
                                         month: localMonth,
@@ -1063,6 +1067,124 @@ async function newPostNotification(name, followers){
                     })
                 })
                 res()
+            }catch(error){
+                console.log(error)
+                rej(error)
+            }
+        })
+    )
+}
+
+async function newLikeNotification(name, id){
+    let localDate = new Date();
+    let localDay = await localDate.getDate();
+    let localMonth = await localDate.getMonth() + 1; 
+    let localYear = await localDate.getFullYear();
+    let localHour = await localDate.getHours();
+    let localMinuts = await localDate.getMinutes();
+    let localMili = await localDate.getMilliseconds();
+    localDate = await localDay + '/' + localMonth + '/' + localYear;
+    return(
+        new Promise((res, rej) => {
+            try{
+                    const command = new GetCommand({
+                        TableName: "gunthz_notifications",
+                        Key: {
+                            id: id
+                        }
+                    })
+                    docClient.send(command).then(result => {
+                        const newID = result.Item.notifications.length + 1;
+                        const newNotification = {
+                            notifications: [
+                                ...result.Item.notifications,
+                                {
+                                    title: "New Like",
+                                    description: name + " liked your post",
+                                    serverDate: {
+                                        day: localDay,
+                                        month: localMonth,
+                                        year: localYear,
+                                        hour: localHour,
+                                        minuts: localMinuts,
+                                        miliSeconds: localMili,
+                                        date: localDate
+                                    },
+                                    read: false,
+                                    notificationID : newID
+                                }
+                            ]
+                        }
+                        const command = new PutCommand({
+                            TableName: "gunthz_notifications",
+                            Item: {
+                                id: id,
+                                ...newNotification
+                            }
+                        })
+                        docClient.send(command).then(result => {
+                            res()
+                        })
+                    })
+            }catch(error){
+                console.log(error)
+                rej(error)
+            }
+        })
+    )
+}
+
+async function newComentNotification(name, id){
+    let localDate = new Date();
+    let localDay = await localDate.getDate();
+    let localMonth = await localDate.getMonth() + 1; 
+    let localYear = await localDate.getFullYear();
+    let localHour = await localDate.getHours();
+    let localMinuts = await localDate.getMinutes();
+    let localMili = await localDate.getMilliseconds();
+    localDate = await localDay + '/' + localMonth + '/' + localYear;
+    return(
+        new Promise((res, rej) => {
+            try{
+                    const command = new GetCommand({
+                        TableName: "gunthz_notifications",
+                        Key: {
+                            id: id
+                        }
+                    })
+                    docClient.send(command).then(result => {
+                        const newID = result.Item.notifications.length + 1;
+                        const newNotification = {
+                            notifications: [
+                                ...result.Item.notifications,
+                                {
+                                    title: "New comment",
+                                    description: name + " comment on your post",
+                                    serverDate: {
+                                        day: localDay,
+                                        month: localMonth,
+                                        year: localYear,
+                                        hour: localHour,
+                                        minuts: localMinuts,
+                                        miliSeconds: localMili,
+                                        date: localDate
+                                    },
+                                    read: false,
+                                    notificationID : newID
+                                }
+                            ]
+                        }
+                        const command = new PutCommand({
+                            TableName: "gunthz_notifications",
+                            Item: {
+                                id: id,
+                                ...newNotification
+                            }
+                        })
+                        docClient.send(command).then(result => {
+                            res()
+                        })
+                    })
             }catch(error){
                 console.log(error)
                 rej(error)
@@ -1226,6 +1348,8 @@ module.exports = {
     getUserUnreadnotifications,
     getTokenIOSArrayNotis,
     getTokenANDROIDArrayNotis,
+    newLikeNotification,
+    newComentNotification,
 
 
 }

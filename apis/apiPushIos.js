@@ -15,32 +15,32 @@ const options = {
 
 const apnProvider = new apn.Provider(options) //apn.Provider(options);
 
-const sendNotification = (deviceToken, type, name) => {
-    const notification = new apn.Notification();
-    notification.alert = {
-        title: "new " + type + "from " + name,
-        subtitle: "new " + type + "from " + name,
-        body: "new  " + type + "from " + name
-    }
-    notification.sound = 'default';
-    notification.badge = 1;
-    notification.topic = "com.gunther.gunthz";
-    notification.title = "Send Notification";
-    return(
-        new Promise ((res, rej) => {
-            if(deviceToken.length > 0){
-                apnProvider.send(notification, deviceToken).then((result) => {
-                    console.log(result);
+const sendNotification = (deviceToken, type, name, message) => {
+        const notification = new apn.Notification();
+        notification.alert = {
+            title: "new " + type + "from " + name,
+            subtitle: "new " + type + "from " + name,
+            body: "new  " + type + "from " + name + " :" + message
+        }
+        notification.sound = 'default';
+        notification.badge = 1;
+        notification.topic = "com.gunther.gunthz";
+        notification.title = "Send Notification";
+        return(
+            new Promise ((res, rej) => {
+                if(deviceToken.length > 0){
+                    apnProvider.send(notification, deviceToken).then((result) => {
+                        console.log(result);
+                        res()
+                    }).catch(error => {
+                        console.log(error);
+                        rej(error)
+                    });
+                }else{
                     res()
-                }).catch(error => {
-                    console.log(error);
-                    rej(error)
-                });
-            }else{
-                res()
-            }
-        })
-    )
+                }
+            })
+        )
 };
 
 const sendNotification2 = (deviceToken, alert) => {

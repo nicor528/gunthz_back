@@ -2,7 +2,7 @@
 const express = require('express');
 const { addTwitt, verifyKey, setNewKey, likeTwitt, commentTwitt, deleteTwitt, followUser, addFollower, unfollowUser, removeFollower, reportTwitt, unLikeTwitt, getUserTwitts, getFollowsTwitts, getAllTwitts, getUser, getFollowings, getFollowers, getAllGeneratedImages } = require('../apis/apiDynamoDB');
 const { saveTwittFile, updateTwittsLinks, updateTwittsLinks2 } = require('../apis/apiS3');
-const { trendingTwitts, cleanObject, getAllTwitts2, getComments, verifyToken, orderTwittsForDate, obtenerObjetosPorPagina, newPostNotification, getTokenIOSArrayNotis, getTokenANDROIDArrayNotis } = require('../apis/apiDynamoDB2');
+const { trendingTwitts, cleanObject, getAllTwitts2, getComments, verifyToken, orderTwittsForDate, obtenerObjetosPorPagina, newPostNotification, getTokenIOSArrayNotis, getTokenANDROIDArrayNotis, newLikeNotification, newComentNotification } = require('../apis/apiDynamoDB2');
 const { sendNotification } = require('../apis/apiPushIos');
 const { sendAndroidNotis } = require('../apis/apiAndNotis');
 const router = express.Router();
@@ -18,9 +18,9 @@ router.post("/postTwitt", async (req, res) => {
                 addTwitt(id, twitt, fileLink ? fileLink : false, user.profilePicture, user.userName ? user.userName : user.name + " " + user.lastName, fileLink? "gif" : "text").then(() => {
                     newPostNotification(user.userName ? user.userName : user.name + " " + user.lastName, user.followers).then(() => {
                         getTokenIOSArrayNotis(user.followers).then(tokens => {
-                            sendNotification(tokens, "post", user.userName? user.userName : user.name + " " + user.lastName).then(() => {
+                            sendNotification(tokens, "post", user.userName? user.userName : user.name + " " + user.lastName, "").then(() => {
                                 getTokenANDROIDArrayNotis(user.followers).then(tokens => {
-                                    sendAndroidNotis(tokens, post, user.userName? user.userName : user.name + " " + user.lastName).then(() => {
+                                    sendAndroidNotis(tokens, post, user.userName? user.userName : user.name + " " + user.lastName, "").then(() => {
                                         setNewKey(id, newKey).then(data => {
                                             res.status(200).send({status: true, message: "ok", key: newKey})
                                         }).catch(error => {res.status(400).send({error, status: false})})
@@ -44,9 +44,25 @@ router.post("/likeTwitt", async (req, res) => {
     const key = req.body.key;
     if(id && ownerID && twittID && key){
         verifyKey(id, key).then(newKey => {
-            likeTwitt(id, ownerID, twittID).then(() => {
-                setNewKey(id, newKey).then(() => {
-                    res.status(200).send({status: true, message: "ok", key: newKey})
+            getUser(id).then(user1 => {
+                likeTwitt(id, ownerID, twittID).then(() => {
+                    getUser(ownerID).then(user2 => {
+                        newLikeNotification(user1.userName? user1.userName : user1.name + " " + user1.lastName, ownerID).then(() => {
+                            if(user2.system === "ios"){
+                                sendNotification([user2.token_ios], "like", user1.userName? user1.userName : user1.name + " " + user1.lastName, "").then(() => {
+                                    setNewKey(id, newKey).then(() => {
+                                        res.status(200).send({status: true, message: "ok", key: newKey})
+                                    }).catch(error => {res.status(400).send({error, status: false})})
+                                }).catch(error => {res.status(400).send({error, status: false})})
+                            }else{
+                                sendAndroidNotis([user2.token_and], "like", user1.userName? user1.userName : user1.name + " " + user1.lastName, "").then(() => {
+                                    setNewKey(id, newKey).then(() => {
+                                        res.status(200).send({status: true, message: "ok", key: newKey})
+                                    }).catch(error => {res.status(400).send({error, status: false})})
+                                }).catch(error => {res.status(400).send({error, status: false})})
+                            }
+                        }).catch(error => {res.status(400).send({error, status: false})})
+                    }).catch(error => {res.status(400).send({error, status: false})})
                 }).catch(error => {res.status(400).send({error, status: false})})
             }).catch(error => {res.status(400).send({error, status: false})})
         }).catch(error => {res.status(400).send({error, status: false})})
@@ -81,10 +97,24 @@ router.post("/commentTwitt", async (req, res) => {
     const key = req.body.key;
     if(id && ownerID && twittID && comment && key){
         verifyKey(id, key).then(newKey => {
-            getUser(id).then(user => {
-                commentTwitt(id, ownerID, twittID, comment, user.profilePicture, user.userName ? user.userName : user.name + " " + user.lastName).then(() => {
-                    setNewKey(id, newKey).then(() => {
-                        res.status(200).send({status: true, message: "ok", key: newKey})
+            getUser(id).then(user1 => {
+                commentTwitt(id, ownerID, twittID, comment, user1.profilePicture, user1.userName ? user1.userName : user1.name + " " + user1.lastName).then(() => {
+                    getUser(ownerID).then(user2 => {
+                        newComentNotification(user1.userName? user1.userName : user1.name + " " + user1.lastName, ownerID).then(() => {
+                            if(user2.system === "ios"){
+                                sendNotification([user2.token_ios], "comment", user1.userName? user1.userName : user1.name + " " + user1.lastName, "").then(() => {
+                                    setNewKey(id, newKey).then(() => {
+                                        res.status(200).send({status: true, message: "ok", key: newKey})
+                                    }).catch(error => {res.status(400).send({error, status: false})})
+                                }).catch(error => {res.status(400).send({error, status: false})})
+                            }else{
+                                sendAndroidNotis([user2.token_and], "comment", user1.userName? user1.userName : user1.name + " " + user1.lastName, "").then(() => {
+                                    setNewKey(id, newKey).then(() => {
+                                        res.status(200).send({status: true, message: "ok", key: newKey})
+                                    }).catch(error => {res.status(400).send({error, status: false})})
+                                }).catch(error => {res.status(400).send({error, status: false})})
+                            }
+                        }).catch(error => {res.status(400).send({error, status: false})})
                     }).catch(error => {res.status(400).send({error, status: false})})
                 }).catch(error => {res.status(400).send({error, status: false})})
             }).catch(error => {res.status(400).send({error, status: false})})
@@ -93,6 +123,7 @@ router.post("/commentTwitt", async (req, res) => {
         res.status(401).send({message: "Missing data in the body", status: false})
     }
 })
+
 
 router.post("/reportTwitt", async (req, res) => {
     const id = req.body.id;

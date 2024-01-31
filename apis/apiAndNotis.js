@@ -4,12 +4,12 @@ const serviceAccount = require('../gunthz-efdba-firebase-adminsdk-ir5fx-83a359e8
 
 const keyPath = path.join(__dirname, '..', 'gunthz-efdba-firebase-adminsdk-ir5fx-83a359e88f.json');
 
-function sendAndroidNotis(token, type, name){
+function sendAndroidNotis(token, type, name, message){
     const message = {
         data: {
             title: "new " + type + "from " + name,
             subtitle: "new " + type + "from " + name,
-            body: "new  " + type + "from " + name
+            body: "new  " + type + "from " + name + " : " + message
         },
         tokens: token
     }

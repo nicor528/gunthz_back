@@ -16,9 +16,9 @@ router.post("/addMessagge", async (req, res) => {
                 addMessage(id, message, user.userName ? user.userName : user.name + " " + user.lastName, user.profilePicture).then(async (messages) => {
                     newMessageNotification(user.userName ? user.userName : user.name + " " + user.lastName).then(() => {
                         getTokenIOSArrayNotis(user.followers).then(tokens => {
-                            sendNotification(tokens, "message", user.userName? user.userName : user.name + " " + user.lastName).then(() => {
+                            sendNotification(tokens, "message", user.userName? user.userName : user.name + " " + user.lastName, message).then(() => {
                                 getTokenANDROIDArrayNotis(user.followers).then(tokens => {
-                                    sendAndroidNotis(tokens, post, user.userName? user.userName : user.name + " " + user.lastName).then(() => {
+                                    sendAndroidNotis(tokens, post, user.userName? user.userName : user.name + " " + user.lastName, message).then(() => {
                                         setNewKey(id, newKey).then(data => {
                                             res.status(200).send({status: true, message: "ok", key: newKey})
                                         }).catch(error => {res.status(400).send({error, status: false})})
