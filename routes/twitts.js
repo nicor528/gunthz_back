@@ -25,6 +25,7 @@ router.post("/postTwitt", async (req, res) => {
                                 getTokenANDROIDArrayNotis(user.followers).then(tokens => {
                                     console.log(tokens)
                                     sendAndroidNotis(tokens, post, user.userName? user.userName : user.name + " " + user.lastName, "").then(() => {
+                                        console.log("test4")
                                         setNewKey(id, newKey).then(data => {
                                             res.status(200).send({status: true, message: "ok", key: newKey})
                                         }).catch(error => {res.status(400).send({error, status: false})})
