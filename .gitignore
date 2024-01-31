@@ -10,6 +10,10 @@ yarn-error.log*
 firebase-debug.log*
 firebase-debug.*.log*
 
+.gitignore
+
 key.p8
+
+tests.js
 
 gunthz-efdba-firebase-adminsdk-ir5fx-83a359e88f.json

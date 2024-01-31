@@ -1,6 +1,6 @@
 const { getAllTwitts, getUser } = require("./apis/apiDynamoDB");
 const { getAllTwitts2, trendingTwitts, getComments, getAllScores, divideArray, sortScores, getAllUsersID } = require("./apis/apiDynamoDB2");
-const { imageGeneration } = require("./apis/apiOpenAI");
+const { imageGeneration, imageGenerationX } = require("./apis/apiOpenAI");
 const { sendNotification } = require("./apis/apiPushIos");
 const { updateTwittsLinks } = require("./apis/apiS3");
 const { createSong } = require("./apis/apiSongs");
@@ -69,6 +69,15 @@ getAllUsersID().then(data => {
     console.log(error)
 })*/
 
+/*
 sendNotification(["9032ca69bdd7abf3f3846eeca37c9a50f68fbe3d519c238547bb84c2e701fe0f", "80cf77d6daa97fadeb20f22adac87137a92289986561e2549b54c58ccb593d8ef907d8c2cea1870c0a076e83ecbf9b31676d8e224db4fce239e2393285db9736e677deea10d0c88edf555b383fac941b"], "post").then(() => {
     console.log("ok")
-}).catch(error => console.log(error))
+}).catch(error => console.log(error))*/
+/*
+imageGenerationX("diseño realista para una camiseta de futbol basada en el futbol argentino, pensada para un equipo amateur de amigos de la vida, que tenga cosas de la cultura argentina en muy pocos y pequños detalles, como el mate, el fernet y sus 3 copas del mundo, utilizando el azul oscuro como color principal y el blanco y dorado para los detalles").then(result => {
+    console.log(result)
+}).catch(error => {
+    console.log(error)
+})*/
+
+

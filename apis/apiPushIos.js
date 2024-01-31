@@ -22,7 +22,7 @@ const sendNotification = (deviceToken, type, name, message) => {
             subtitle: "new " + type + "from " + name,
             body: "new  " + type + "from " + name + " :" + message
         }
-        notification.sound = 'default';
+        notification.sound = 'mmhh-yeahh (mp3cut.net).wav';
         notification.badge = 1;
         notification.topic = "com.gunther.gunthz";
         notification.title = "Send Notification";

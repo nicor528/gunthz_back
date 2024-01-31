@@ -51,8 +51,32 @@ function lyricsGeneration(description) {
     )
 }
 
+function imageGenerationX(prompt) {
+    return(
+        new Promise (async (res, rej) => {
+            try{
+                const image = await openai.images.generate({ 
+                    prompt: prompt,
+                    model: "dall-e-3",
+                    size: "1024x1024",
+                    quality:"standard",
+                    //response_format: "b64_json",
+                    n:1
+                });
+                console.log(image.data);
+                console.log(image)
+                res(image.data[0])
+            }catch(error){
+                console.log(error);
+                rej(error)
+            }
+        })
+    )
+}
+
 module.exports = {
     imageGeneration,
     lyricsGeneration,
+    imageGenerationX,
     
 }
