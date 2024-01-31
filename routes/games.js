@@ -57,7 +57,7 @@ router.get("/top-scores", (req, res) => {
                     console.log(newScores.goldScores)
                     console.log(newScores.goldScores[0])
                     if(newScores.goldScores.length > 0){
-                        newScores.goldScores.map(user1 => {
+                        await newScores.goldScores.map(user1 => {
                             //console.log(user1)
                             getUser(user1.id.S).then(user => {
                                 user1.userName = user.userName;
@@ -67,7 +67,7 @@ router.get("/top-scores", (req, res) => {
                         })
                     }
                     if(newScores.silverScores.length > 0){
-                        newScores.silverScores.map(user1 => {
+                        await newScores.silverScores.map(user1 => {
                             getUser(user1.id).then(user => {
                                 user1.userName = user.userName;
                                 silver.push(user1)
@@ -75,7 +75,7 @@ router.get("/top-scores", (req, res) => {
                         })
                     }
                     if(newScores.bronzeScores.length > 0){
-                        newScores.bronzeScores.map(user1 => {
+                        await newScores.bronzeScores.map(user1 => {
                             getUser(user1.id).then(user => {
                                 user1.userName = user.userName;
                                 bronce.push(user1)
