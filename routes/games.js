@@ -59,7 +59,7 @@ router.get("/top-scores", (req, res) => {
                     if(newScores.goldScores.length > 0){
                         newScores.goldScores.map(user1 => {
                             //console.log(user1)
-                            getUser(user1.id).then(user => {
+                            getUser(user1.id.S).then(user => {
                                 user1.userName = user.userName;
                                 //console.log(user1)
                                 gold.push(user1)
