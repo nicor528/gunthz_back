@@ -49,7 +49,7 @@ router.get("/allScores", (req, res) => {
 function x(newScores){
     return(
         new Promise(async (res, rej) => {
-            let gold1 = []; let silver1 = []; let bronce1 = [];
+    try{            let gold1 = []; let silver1 = []; let bronce1 = [];
                     console.log(newScores.goldScores)
                     console.log(newScores.goldScores[0])
                     if(newScores.goldScores.length > 0){
@@ -82,6 +82,10 @@ function x(newScores){
                     
                     const scores1 = await {goldScores: gold1, silverScores: silver1, bronzeScores: bronce1}
                     res(scores1)
+                }catch(error){
+                    console.log(error)
+                    rej(error)
+                }
                 })
     )
 }
@@ -96,7 +100,7 @@ router.get("/top-scores", (req, res) => {
                     x(newScores).then(scores => {
                         console.log(scores)
                         res.status(200).send({status: true, message: "ok", data: scores})
-                    })
+                    }).catch(error => {res.status(400).send({error, status: false})})
                 }).catch(error => {res.status(400).send({error, status: false})})
             }).catch(error => {res.status(400).send({error, status: false})})
         })
