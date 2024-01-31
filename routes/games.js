@@ -78,9 +78,9 @@ function x(newScores){
                             })
                         })
                     }
-                    console.log(gold)
+                    console.log(gold1)
                     
-                    const scores1 = await {goldScores: gold, silverScores: silver, bronzeScores: bronce}
+                    const scores1 = await {goldScores: gold1, silverScores: silver1, bronzeScores: bronce1}
                     res(scores1)
                 })
     )
