@@ -53,40 +53,40 @@ async function x(newScores){
             let gold1 = []; let silver1 = []; let bronce1 = [];
                     console.log(newScores.goldScores)
                     //console.log(newScores.goldScores[0])
-                    await newScores.goldScores.map(async (user1) => {
+                    const gold2 = newScores.goldScores.map(async (user1) => {
                             //console.log(user1)
                             await getUser(user1.id.S).then(async (user) => {
                                 user1.userName = user.userName;
-                                console.log(user1)
-                                gold1.push(user1)
+                                //console.log(user1)
+                                return user1
                             })
                         })
                     
 
-                        await newScores.silverScores.map(user1 => {
+                    const silver2 = newScores.silverScores.map(user1 => {
                             getUser(user1.id).then(user => {
                                 user1.userName = user.userName;
-                                silver1.push(user1)
+                                return user1
                             })
                         })
                     
                     
-                        await newScores.bronzeScores.map(user1 => {
+                    const bronze2 = newScores.bronzeScores.map(user1 => {
                             getUser(user1.id).then(user => {
                                 user1.userName = user.userName;
-                                bronce1.push(user1)
+                                return user1
                             })
                         })
                     
                     //console.log(gold1)
                     
-                    const scores1 = {goldScores: gold1, silverScores: silver1, bronzeScores: bronce1}
+                    const scores1 = {goldScores: gold2, silverScores: silver2, bronzeScores: bronze2}
                     res(scores1)
                 }catch(error){
                     console.log(error)
                     rej(error)
                 }
-                })
+        })
     )
 }
 
