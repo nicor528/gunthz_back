@@ -15,7 +15,7 @@ function sendAndroidNotis(token, type, name, message1){
     }
     return(
         new Promise((res, rej) => {
-            if(token.length > 0){
+            if(token && token.length > 0){
                 admin.messaging().sendEachForMulticast(message)
                 .then((response) => {
                   console.log('Notificación enviada con éxito:', response);
@@ -43,7 +43,7 @@ function sendAndroidNotis2(token, alert){
     }
     return(
         new Promise((res, rej) => {
-            if(token.length > 0){
+            if(token && token.length > 0){
                 admin.messaging().sendEachForMulticast(message)
                 .then((response) => {
                   console.log('Notificación enviada con éxito:', response);
