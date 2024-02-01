@@ -34,7 +34,7 @@ const sendNotification = (deviceToken, type, name, message) => {
                         res()
                     }).catch(error => {
                         console.log(error);
-                        rej(error)
+                        rej(error.json())
                     });
                 }else{
                     res()
