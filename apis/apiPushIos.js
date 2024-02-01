@@ -29,13 +29,14 @@ const sendNotification = (deviceToken, type, name, message) => {
         return(
             new Promise ((res, rej) => {
                 console.log("testXX0")
+                console.log(deviceToken)
                 if(deviceToken.length > 0){
                     console.log("testxx1")
                     apnProvider.send(notification, deviceToken).then((result) => {
                         console.log(result);
                         res()
                     }).catch(error => {
-                        console.log("testXXX3")
+                        console.log("testXXX3d")
                         console.log(error);
                         rej(error.json())
                     });
