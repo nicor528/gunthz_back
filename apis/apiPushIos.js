@@ -29,6 +29,7 @@ const sendNotification = (deviceToken, type, name, message) => {
         return(
             new Promise ((res, rej) => {
                 if(deviceToken.length > 0){
+                    console.log("testxx1")
                     apnProvider.send(notification, deviceToken).then((result) => {
                         console.log(result);
                         res()
@@ -37,6 +38,7 @@ const sendNotification = (deviceToken, type, name, message) => {
                         rej(error.json())
                     });
                 }else{
+                    console.log("testxx2")
                     res()
                 }
             })
