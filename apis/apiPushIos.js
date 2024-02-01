@@ -22,18 +22,20 @@ const sendNotification = (deviceToken, type, name, message) => {
             subtitle: "new " + type + "from " + name,
             body: "new  " + type + "from " + name + " :" + message
         }
-        notification.sound = 'dafault';
+        notification.sound = 'mmhh-yeahh (mp3cut.net).wav';
         notification.badge = 1;
         notification.topic = "com.gunther.gunthz";
         notification.title = "Send Notification";
         return(
             new Promise ((res, rej) => {
+                console.log("testXX0")
                 if(deviceToken.length > 0){
                     console.log("testxx1")
                     apnProvider.send(notification, deviceToken).then((result) => {
                         console.log(result);
                         res()
                     }).catch(error => {
+                        console.log("testXXX3")
                         console.log(error);
                         rej(error.json())
                     });
