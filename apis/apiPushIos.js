@@ -55,7 +55,7 @@ const sendNotification2 = (deviceToken, alert) => {
         subtitle: alert.subtitle,
         body: alert.body
     }
-    notification.sound = 'default';
+    notification.sound = 'mmhh-yeahh (mp3cut.net).wav';
     notification.badge = 1;
     notification.topic = "com.gunther.gunthz";
     notification.title = "Send Notification";

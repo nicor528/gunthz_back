@@ -565,7 +565,7 @@ function followUser(id, followID, profilePicture, name) {
             docClient.send(command).then(result => {
                 let newUser = result.Item;
                 const follows = newUser.following;
-                const followerIndex = newUser.followers.findIndex((follower) => follower.id === followID);
+                const followerIndex = newUser.following.findIndex((follower) => follower.id === followID);
                 if(followerIndex === -1){
                     const newFollow = {
                         id: followID,
