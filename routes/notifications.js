@@ -1,7 +1,8 @@
 const express = require('express');
-const { verifyToken, getUserUnreadnotifications, getAllUserNotifications, orderTwittsForDate, obtenerObjetosPorPagina } = require('../apis/apiDynamoDB2');
+const { verifyToken, getUserUnreadnotifications, getAllUserNotifications, orderTwittsForDate, obtenerObjetosPorPagina, readNotification } = require('../apis/apiDynamoDB2');
 const { sendNotification, sendNotification2 } = require('../apis/apiPushIos');
 const { sendAndroidNotis, sendAndroidNotis2 } = require('../apis/apiAndNotis');
+const { verifyKey, setNewKey } = require('../apis/apiDynamoDB');
 const router = express.Router();
 
 router.get("/get-all-user-notifications", (req, res) => {
@@ -30,6 +31,23 @@ router.get("/get-all-user-unread-notifications", (req, res) => {
                 orderTwittsForDate(notifications).then(notifications => {
                     const final = obtenerObjetosPorPagina(notifications, index)
                     res.status(200).send({data: final, status: true, message: "succefull"})
+                }).catch(error => {res.status(400).send({error, status: false})})
+            }).catch(error => {res.status(400).send({error, status: false})})
+        }).catch(error => {res.status(400).send({error, status: false})})
+    }else{
+        res.status(401).send({message: "Missing data", status: false})
+    }
+})
+
+router.post("/read-notification", (req, res) => {
+    const notificationID = req.body.notificationID;
+    const id = req.body.id;
+    const key = req.body.key;
+    if(notificationID && id){
+        verifyKey(id, key).then(newKey => {
+            readNotification(id, notificationID).then(() => {
+                setNewKey(id, newKey).then(() => {
+                    res.status(200).send({status: true, message: "ok", key: newKey})
                 }).catch(error => {res.status(400).send({error, status: false})})
             }).catch(error => {res.status(400).send({error, status: false})})
         }).catch(error => {res.status(400).send({error, status: false})})

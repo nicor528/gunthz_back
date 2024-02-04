@@ -1309,6 +1309,39 @@ function getUserUnreadnotifications(id){
     )
 }
 
+function readNotification(id, notificationID) {
+    return(
+        new Promise((res, rej) => {
+            const command = new GetCommand({
+                TableName: "gunthz_notifications",
+                Key: {
+                    id: id
+                }
+            })
+            docClient.send(command).then(result => {
+                let notis = result.Item.notifications
+                notis[notificationID - 1].read = true
+                const command = new PutCommand({
+                    TableName: "gunthz_notifications",
+                    Item: {
+                        id: id,
+                        notifications: [...notis]
+                    }
+                })
+                docClient.send(command).then(result => {
+                    res()
+                }).catch(error => {
+                    console.log(error)
+                    rej(error)
+                })
+            }).catch(error => {
+                console.log(error)
+                rej(error)
+            })
+        })
+    )
+}
+
 
 
 
@@ -1352,6 +1385,6 @@ module.exports = {
     getTokenANDROIDArrayNotis,
     newLikeNotification,
     newComentNotification,
-
+    readNotification,
 
 }
